@@ -184,7 +184,7 @@ public abstract class ImpUtils
             deserializedObj = JsonConvert.DeserializeObject<T>(jsonString);
             return deserializedObj != null;
         }
-        catch (JsonSerializationException)
+        catch (Exception)
         {
             deserializedObj = default;
             return false;

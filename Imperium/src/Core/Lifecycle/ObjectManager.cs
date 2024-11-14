@@ -339,6 +339,7 @@ internal class ObjectManager : ImpLifecycleObject
 
         foreach (var enemyType in Resources.FindObjectsOfTypeAll<EnemyType>().Distinct())
         {
+            if (!enemyType.enemyPrefab) continue;
             allEntities.Add(enemyType);
 
             switch (enemyType.enemyName)

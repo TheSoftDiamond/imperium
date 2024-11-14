@@ -1,5 +1,12 @@
 # Changelog
 
+## Imperium v0.2.9 [Beta] - Pre-Release Patch
+
+### Internal Fixes
+
+- Fixed an issue where faulty UI config would break the Imperium startup sequence.
+- Made it so entities without prefabs are not showing up in the spawn menu.
+
 ## Imperium v0.2.8 [Beta] - V66 Compatibility Patch
 
 **Note:** *This version of Imperium is compatible with the [Version 66](<https://steamdb.info/changelist/25889392/>) of Lethal Company.*
