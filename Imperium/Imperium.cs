@@ -46,7 +46,7 @@ public class Imperium : BaseUnityPlugin
     private static Harmony Harmony;
 
     /*
-     * Relays to vanilla singletons.
+     * Relays to vanilla singletons. This makes tracking Imperium singleton access easier.
      */
     internal static Terminal Terminal { get; private set; }
     internal static HUDManager HUDManager { get; private set; }
@@ -85,7 +85,7 @@ public class Imperium : BaseUnityPlugin
     internal static ImpNightVision NightVision { get; private set; }
     internal static ImpNoiseListener NoiseListener { get; private set; }
     internal static ImpTapeMeasure ImpTapeMeasure { get; private set; }
-    internal static ImpLevelEditor ImpLevelEditor { get; }
+    internal static ImpLevelEditor ImpLevelEditor { get; private set;  }
     internal static ImpInputBindings InputBindings { get; private set; }
     internal static ImpPositionIndicator ImpPositionIndicator { get; private set; }
     internal static ImpInterfaceManager Interface { get; private set; }
@@ -96,7 +96,7 @@ public class Imperium : BaseUnityPlugin
     internal static bool IsImperiumLoaded { get; private set; }
 
     /// <summary>
-    ///     Set to true, then Imperium is launched and ready be used and serve API calls.
+    ///     Set to true, then Imperium is launched and ready to be used and serve API calls.
     /// </summary>
     internal static bool IsImperiumLaunched { get; private set; }
 
@@ -161,8 +161,7 @@ public class Imperium : BaseUnityPlugin
         InputBindings.FreecamMap.Enable();
         InputBindings.InterfaceMap.Enable();
 
-        Interface = ImpInterfaceManager.Create(Settings.Preferences.Theme);
-        StartUI();
+        Interface = CreateUI();
 
         Settings.LoadAll();
 
@@ -236,10 +235,10 @@ public class Imperium : BaseUnityPlugin
 
             Settings.LoadAll();
 
-            StartUI();
+            Interface = CreateUI();
 // #if DEBUG
 //             // This needs to be here as it depends on the UI
-//             ImpLevelEditor = ImpLevelEditor.Create();
+             // ImpLevelEditor = ImpLevelEditor.Create();
 // #endif
 
             // Send scene update to ensure consistency in the UIs
@@ -293,35 +292,37 @@ public class Imperium : BaseUnityPlugin
         Launch();
     }
 
-    private static void StartUI()
+    private static ImpInterfaceManager CreateUI()
     {
-        Interface.OpenInterface.onUpdate += openInterface =>
+        var impInterface = ImpInterfaceManager.Create(Settings.Preferences.Theme);
+
+        impInterface.OpenInterface.onUpdate += openInterface =>
         {
             if (openInterface) ImpPositionIndicator.Deactivate();
         };
 
-        Interface.RegisterInterface<ImperiumUI>(
+        impInterface.RegisterInterface<ImperiumUI>(
             ImpAssets.ImperiumUIObject,
             "ImperiumUI",
             "Imperium UI",
             "Imperium's main interface.",
             InputBindings.InterfaceMap.ImperiumUI
         );
-        Interface.RegisterInterface<SpawningUI>(
+        impInterface.RegisterInterface<SpawningUI>(
             ImpAssets.SpawningUIObject,
             "SpawningUI",
             "Spawning",
             "Allows you to spawn objects\nsuch as Scrap or Entities.",
             InputBindings.InterfaceMap.SpawningUI
         );
-        Interface.RegisterInterface<MapUI>(
+        impInterface.RegisterInterface<MapUI>(
             ImpAssets.MapUIObject,
             "MapUI",
             "Map",
             "Imperium's built-in map.",
             InputBindings.InterfaceMap.MapUI
         );
-        Interface.RegisterInterface<OracleUI>(
+        impInterface.RegisterInterface<OracleUI>(
             ImpAssets.OracleUIObject,
             "OracleUI",
             "Oracle",
@@ -329,12 +330,14 @@ public class Imperium : BaseUnityPlugin
             InputBindings.InterfaceMap.OracleUI,
             IsSceneLoaded
         );
-        Interface.RegisterInterface<MinimapSettings>(ImpAssets.MinimapSettingsObject);
-        // Interface.RegisterInterface<ComponentManager>(ImpAssets.ComponentManagerObject);
+        impInterface.RegisterInterface<MinimapSettings>(ImpAssets.MinimapSettingsObject);
+        // impInterface.RegisterInterface<ComponentManager>(ImpAssets.ComponentManagerObject);
 
-        Interface.RefreshTheme();
+        impInterface.RefreshTheme();
 
         IO.LogInfo("[OK] Imperium UIs have been registered! \\o/");
+
+        return impInterface;
     }
 
     private static void PreLaunchPatch()

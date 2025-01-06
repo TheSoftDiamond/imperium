@@ -1,3 +1,8 @@
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using BepInEx.Bootstrap;
+using WeatherRegistry;
+
 namespace Imperium.Integration;
 
 public static class WeatherRegistryIntegration
