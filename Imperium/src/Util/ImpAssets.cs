@@ -79,8 +79,8 @@ internal abstract class ImpAssets
     /*
      * Audio Clips
      */
-    internal static AudioClip GrassClick;
     internal static AudioClip ButtonClick;
+    internal static AudioClip OpenClick;
 
     /*
      * Materials
@@ -188,8 +188,8 @@ internal abstract class ImpAssets
             LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_green.mat", out WireframeGreen),
             LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_red.mat", out WireframeRed),
             LoadAsset(ImperiumAssets, "Assets/Materials/shig.mat", out ShiggyMaterial),
-            LoadAsset(ImperiumAssets, "Assets/Audio/GrassClick.wav", out GrassClick),
-            LoadAsset(ImperiumAssets, "Assets/Audio/ButtonClick.ogg", out ButtonClick)
+            LoadAsset(ImperiumAssets, "Assets/Audio/ButtonClick.wav", out ButtonClick),
+            LoadAsset(ImperiumAssets, "Assets/Audio/OpenClick.ogg", out OpenClick)
         ];
 
         foreach (var material in Resources.FindObjectsOfTypeAll<Material>())

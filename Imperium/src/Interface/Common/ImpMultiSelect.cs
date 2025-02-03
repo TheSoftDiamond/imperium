@@ -82,7 +82,7 @@ public abstract class ImpMultiSelect
                     selectionBinding,
                     hoveredEntry,
                     theme,
-                    labelMaker(item)
+                    label: labelMaker(item)
                 );
                 listEntries.Add(listEntryObj);
             }

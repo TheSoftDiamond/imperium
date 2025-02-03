@@ -8,7 +8,7 @@ using BepInEx.Configuration;
 namespace Imperium.Util.Binding;
 
 /// <summary>
-///     Imperium configuration that is linked to a BepInEx config file.
+///     Imperium binding that is linked to a BepInEx config file.
 ///     It is recommended to set the ignoreBroadcasts flag when multiple configs have the same expensive update function
 ///     e.g. PlayerManager.UpdateCameras()
 /// </summary>

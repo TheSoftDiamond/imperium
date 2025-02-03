@@ -62,7 +62,8 @@ internal class PreferencesWindow : ImperiumWindow
             tooltipDefinition: new TooltipDefinition
             {
                 Title = "Allow Imperium Clients",
-                Description = "Whether clients are allowed to use Imperium in the current lobby."
+                Description = "Whether clients are allowed to use Imperium in the current lobby.",
+                Tooltip = tooltip
             }
         );
 

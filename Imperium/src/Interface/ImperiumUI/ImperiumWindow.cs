@@ -95,7 +95,7 @@ internal abstract class ImperiumWindow : MonoBehaviour, IDragHandler, IBeginDrag
         if (windowDefinition.IsOpen)
         {
             FocusWindow();
-            if (Imperium.Settings.Preferences.PlaySounds.Value) GameUtils.PlayClip(ImpAssets.ButtonClick);
+            if (Imperium.Settings.Preferences.PlaySounds.Value) GameUtils.PlayClip(ImpAssets.OpenClick);
         }
         else
         {
@@ -155,7 +155,7 @@ internal abstract class ImperiumWindow : MonoBehaviour, IDragHandler, IBeginDrag
         windowDefinition.IsOpen = true;
 
         onOpen?.Invoke();
-        if (Imperium.Settings.Preferences.PlaySounds.Value) GameUtils.PlayClip(ImpAssets.ButtonClick);
+        if (Imperium.Settings.Preferences.PlaySounds.Value) GameUtils.PlayClip(ImpAssets.OpenClick);
     }
 
     /// <summary>

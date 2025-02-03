@@ -191,7 +191,7 @@ internal class LayerSelector : BaseUI
 
     private void OnLayerSelect()
     {
-        if (Imperium.Settings.Preferences.PlaySounds.Value) GameUtils.PlayClip(ImpAssets.GrassClick);
+        if (Imperium.Settings.Preferences.PlaySounds.Value) GameUtils.PlayClip(ImpAssets.ButtonClick);
 
         var newMask = ImpUtils.ToggleLayerInMask(layerMaskBinding.Value, selectedLayer);
         layerMaskBinding.Set(newMask);

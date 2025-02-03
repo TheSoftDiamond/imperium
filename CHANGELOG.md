@@ -5,7 +5,6 @@
 ### General Changes
 
 - Removed support for vain shrouds since they are no longer used in the base game.
-- Added an option to turn off UI sounds.
 
 ### Internal Fixes
 
@@ -13,6 +12,7 @@
 - Fixed an issue where faulty UI config would break the Imperium startup sequence.
 - Made it so entities without prefabs are not showing up in the spawn menu.
 - Made it so the map camera's near and far clip can't overlap anymore.
+- Fixed notification settings not applying without restarting.
 
 ### API Changes
 
@@ -22,6 +22,7 @@
 
 - Improved tooltip experience with new smooth transitions and delays.
 - Various UI layout fixes and adjustments to improve usability.
+- Made UI sounds more consistent and toggleable. 
 
 ## Imperium v0.2.8 [Beta] - V66 Compatibility Patch
 

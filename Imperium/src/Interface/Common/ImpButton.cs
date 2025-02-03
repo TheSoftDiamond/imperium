@@ -51,8 +51,8 @@ public abstract class ImpButton
         button.onClick.AddListener(() =>
         {
             onClick();
-            
-            if (Imperium.Settings.Preferences.PlaySounds.Value && playClickSound) GameUtils.PlayClip(ImpAssets.GrassClick);
+
+            if (Imperium.Settings.Preferences.PlaySounds.Value && playClickSound) GameUtils.PlayClip(ImpAssets.ButtonClick);
         });
 
         var icon = buttonObject.Find("Icon")?.GetComponent<Image>();
@@ -118,7 +118,7 @@ public abstract class ImpButton
         {
             stateBinding.Set(!stateBinding.Value);
 
-            if (Imperium.Settings.Preferences.PlaySounds.Value && playClickSound) GameUtils.PlayClip(ImpAssets.GrassClick);
+            if (Imperium.Settings.Preferences.PlaySounds.Value && playClickSound) GameUtils.PlayClip(ImpAssets.ButtonClick);
         });
 
         var icon = buttonObject.Find("Icon")?.GetComponent<Image>();
@@ -181,7 +181,7 @@ public abstract class ImpButton
             button.transform.Rotate(0, 0, 180);
             updateFunction?.Invoke();
 
-            if (Imperium.Settings.Preferences.PlaySounds.Value) GameUtils.PlayClip(ImpAssets.GrassClick);
+            if (Imperium.Settings.Preferences.PlaySounds.Value) GameUtils.PlayClip(ImpAssets.ButtonClick);
         });
 
         if (stateBinding != null && collapseArea)

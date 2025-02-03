@@ -220,7 +220,7 @@ internal class MapUI : BaseUI
             tooltipDefinition: new TooltipDefinition
             {
                 Tooltip = tooltip,
-                Description = "Whether the camera is clamped\nto the target's rotation"
+                Description = "Whether the camera is clamped\nto the target's rotation",
             }
         );
         ImpToggle.Bind(

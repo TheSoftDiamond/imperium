@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Logging;
 using Imperium.API.Types.Networking;
+using Imperium.Core;
 using Imperium.Util.Binding;
 using UnityEngine;
 using LogLevel = BepInEx.Logging.LogLevel;
@@ -14,19 +15,30 @@ namespace Imperium.Util;
 
 internal class ImpOutput(ManualLogSource logger)
 {
-    private readonly Dictionary<NotificationType, ImpBinding<bool>> NotificationSettings = new()
+    // Notification settings will be bound later on when Imperium is loaded
+    private Dictionary<NotificationType, ImpBinding<bool>> NotificationSettings = new();
+
+    internal void BindNotificationSettings(ImpSettings settings)
     {
-        { NotificationType.GodMode, Imperium.Settings.Preferences.NotificationsGodMode },
-        { NotificationType.OracleUpdate, Imperium.Settings.Preferences.NotificationsOracle },
-        { NotificationType.Confirmation, Imperium.Settings.Preferences.NotificationsConfirmation },
-        { NotificationType.SpawnReport, Imperium.Settings.Preferences.NotificationsSpawnReports },
-        { NotificationType.Entities, Imperium.Settings.Preferences.NotificationsEntities },
-        { NotificationType.Server, Imperium.Settings.Preferences.NotificationsServer },
-        { NotificationType.AccessControl, Imperium.Settings.Preferences.NotificationsAccessControl },
-        { NotificationType.Spawning, Imperium.Settings.Preferences.NotificationsSpawning },
-        { NotificationType.Required, new ImpBinding<bool>(true) },
-        { NotificationType.Other, Imperium.Settings.Preferences.NotificationsOther }
-    };
+        NotificationSettings = new Dictionary<NotificationType, ImpBinding<bool>>
+        {
+            { NotificationType.GodMode, settings.Preferences.NotificationsGodMode },
+            { NotificationType.OracleUpdate, settings.Preferences.NotificationsOracle },
+            { NotificationType.Confirmation, settings.Preferences.NotificationsConfirmation },
+            { NotificationType.SpawnReport, settings.Preferences.NotificationsSpawnReports },
+            { NotificationType.Entities, settings.Preferences.NotificationsEntities },
+            { NotificationType.Server, settings.Preferences.NotificationsServer },
+            { NotificationType.AccessControl, settings.Preferences.NotificationsAccessControl },
+            { NotificationType.Spawning, settings.Preferences.NotificationsSpawning },
+            { NotificationType.Required, new ImpBinding<bool>(true) },
+            { NotificationType.Other, settings.Preferences.NotificationsOther }
+        };
+    }
+
+    private bool IsNotificationEnabled(NotificationType type)
+    {
+        return NotificationSettings.GetValueOrDefault(type, null)?.Value ?? false;
+    }
 
     internal void Status(string text) => HUDManager.Instance.DisplayStatusEffect(text);
     internal void Debug(string text) => HUDManager.Instance.SetDebugText(text);
@@ -40,14 +52,12 @@ internal class ImpOutput(ManualLogSource logger)
     {
         if (!HUDManager.Instance)
         {
-            LogError($"Failed to send notification, HUDManager is not defined, message: {text}");
+            LogError($"Failed to send notification, HUDManager is not yet instantiated, message: {text}");
             return;
         }
 
-        Imperium.IO.LogInfo($"Notification of type {type} was sent. Binding Value: {NotificationSettings[type].Value}");
-
         // Disable notifications if turned off or during loading of settings
-        if (!NotificationSettings[type].Value || Imperium.Settings.IsLoading) return;
+        if (!IsNotificationEnabled(type) || Imperium.Settings.IsLoading) return;
 
         HUDManager.Instance.DisplayTip(title, text, isWarning);
     }

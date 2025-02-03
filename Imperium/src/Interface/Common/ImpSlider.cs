@@ -86,7 +86,7 @@ public class ImpSlider : MonoBehaviour
         impSlider.indicatorText = sliderObject.Find("Slider/SlideArea/Handle/Text").GetComponent<TMP_Text>();
 
         indicatorFormatter ??= value => $"{Mathf.RoundToInt(value)}";
-        clickAudio ??= ImpAssets.GrassClick;
+        clickAudio ??= ImpAssets.ButtonClick;
 
         var currentValue = useLogarithmicScale ? (float)Math.Log10(valueBinding.Value) : valueBinding.Value;
         impSlider.Slider.value = currentValue;

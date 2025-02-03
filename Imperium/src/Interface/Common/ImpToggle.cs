@@ -68,7 +68,7 @@ public abstract class ImpToggle
         {
             if (Imperium.Settings.Preferences.PlaySounds.Value && playClickSound)
             {
-                GameUtils.PlayClip(ImpAssets.GrassClick);
+                GameUtils.PlayClip(ImpAssets.ButtonClick);
             }
         };
 

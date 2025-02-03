@@ -2,6 +2,7 @@
 
 using BepInEx;
 using BepInEx.Configuration;
+using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
 using Imperium.Core;
@@ -44,6 +45,7 @@ public class Imperium : BaseUnityPlugin
 
     private static ConfigFile configFile;
     private static Harmony Harmony;
+    private static ManualLogSource Log;
 
     /*
      * Relays to vanilla singletons. This makes tracking Imperium singleton access easier.
@@ -118,9 +120,14 @@ public class Imperium : BaseUnityPlugin
     private void Awake()
     {
         configFile = Config;
+        Log = Logger;
 
+        /*
+         * Instantiate settings temporarily for startup.
+         * This object will be replaced once Imperium launches, meaning all listeners will be removed!
+         */
         Settings = new ImpSettings(Config);
-        IO = new ImpOutput(Logger);
+        IO = new ImpOutput(Log);
 
         InputBindings = new ImpInputBindings();
         InputBindings.BaseMap.Disable();
@@ -177,6 +184,7 @@ public class Imperium : BaseUnityPlugin
 
         // Re-instantiate settings to get rid of existing bindings
         Settings = new ImpSettings(configFile);
+        IO.BindNotificationSettings(Settings);
         Networking.BindAllowClients(Settings.Preferences.AllowClients);
 
         Terminal = GameObject.Find("TerminalScript").GetComponent<Terminal>();
