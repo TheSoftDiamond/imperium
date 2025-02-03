@@ -33,7 +33,13 @@ internal class PreferencesWindow : ImperiumWindow
             general,
             Imperium.Settings.Preferences.UnityExplorerMouseFix,
             theme,
-            interactableBindings: new ImpBinding<bool>(Chainloader.PluginInfos.ContainsKey("com.sinai.unityexplorer"))
+            interactableBindings: new ImpBinding<bool>(Chainloader.PluginInfos.ContainsKey("com.sinai.unityexplorer")),
+            tooltipDefinition: new TooltipDefinition
+            {
+                Title = "Unity Explorer Mouse Fix",
+                Description = "Makes it so the camera doesn't follow the mouse when unity explorer is open.",
+                Tooltip = tooltip
+            }
         );
 
         var hosting = content.Find("Grid/Hosting/Hosting");
@@ -42,7 +48,12 @@ internal class PreferencesWindow : ImperiumWindow
             hosting,
             Imperium.Settings.Preferences.AllowClients,
             theme,
-            interactableBindings: new ImpBinding<bool>(NetworkManager.Singleton.IsHost)
+            interactableBindings: new ImpBinding<bool>(NetworkManager.Singleton.IsHost),
+            tooltipDefinition: new TooltipDefinition
+            {
+                Title = "Allow Imperium Clients",
+                Description = "Whether clients are allowed to use Imperium in the current lobby."
+            }
         );
 
         var notifications = content.Find("Grid/Notifications/Notifications");

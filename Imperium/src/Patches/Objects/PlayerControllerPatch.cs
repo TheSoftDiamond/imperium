@@ -234,7 +234,7 @@ internal static class PlayerControllerPatch
     private static void BeginGrabObjectPrefixPatch(PlayerControllerB __instance)
     {
         gameHasStartedBridge = GameNetworkManager.Instance.gameHasStarted;
-        if (Imperium.Settings.Player.PickupOverwrite.Value && Imperium.IsImperiumEnabled)
+        if (Imperium.Settings.Player.PickupOverride.Value && Imperium.IsImperiumEnabled)
         {
             GameNetworkManager.Instance.gameHasStarted = true;
         }

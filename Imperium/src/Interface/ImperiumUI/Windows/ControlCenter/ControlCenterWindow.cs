@@ -103,6 +103,18 @@ internal class ControlCenterWindow : ImperiumWindow
             Imperium.Settings.AnimationSkipping.Interact,
             theme: theme
         );
+        ImpToggle.Bind(
+            "Right/AnimationSettings/DisableLocking",
+            content,
+            Imperium.Settings.Player.DisableLocking,
+            theme,
+            tooltipDefinition: new TooltipDefinition
+            {
+                Title = "Disable Locking",
+                Description = "Disables entity and ladder locking for the local player.",
+                Tooltip = tooltip
+            }
+        );
     }
 
     private void InitGameSettings()
@@ -164,19 +176,6 @@ internal class ControlCenterWindow : ImperiumWindow
         );
 
         ImpToggle.Bind(
-            "Right/PlayerSettings/DisableLocking",
-            content,
-            Imperium.Settings.Player.DisableLocking,
-            theme,
-            tooltipDefinition: new TooltipDefinition
-            {
-                Title = "Disable Locking",
-                Description = "Disables entity and ladder locking for the local player.",
-                Tooltip = tooltip
-            }
-        );
-
-        ImpToggle.Bind(
             "Right/PlayerSettings/InfiniteBattery",
             content,
             Imperium.Settings.Player.InfiniteBattery,
@@ -184,14 +183,14 @@ internal class ControlCenterWindow : ImperiumWindow
         );
 
         ImpToggle.Bind(
-            "Right/PlayerSettings/PickupOverwrite",
+            "Right/PlayerSettings/PickupOverride",
             content,
-            Imperium.Settings.Player.PickupOverwrite,
+            Imperium.Settings.Player.PickupOverride,
             theme,
             tooltipDefinition: new TooltipDefinition
             {
-                Title = "Pickup Overwrite",
-                Description = "Disables entity and ladder locking for the local player.",
+                Title = "Pickup Override",
+                Description = "Makes it so items can be picked up before the game has started.",
                 Tooltip = tooltip
             }
         );

@@ -74,7 +74,7 @@ internal class SpawningUI : BaseUI
                 SpawningObjectEntry.SpawnObjectType.Entity,
                 entity.enemyName,
                 () => Spawn(spawningEntry, 1, -1),
-                () => SelectItemAndDeselectOthers(currentIndex),
+                _ => SelectItemAndDeselectOthers(currentIndex),
                 theme
             );
             entries.Add(spawningEntry);
@@ -89,7 +89,7 @@ internal class SpawningUI : BaseUI
                 SpawningObjectEntry.SpawnObjectType.Item,
                 item.itemName,
                 () => Spawn(spawningEntry, 1, -1),
-                () => SelectItemAndDeselectOthers(currentIndex),
+                _ => SelectItemAndDeselectOthers(currentIndex),
                 theme
             );
             entries.Add(spawningEntry);
@@ -104,7 +104,7 @@ internal class SpawningUI : BaseUI
                 SpawningObjectEntry.SpawnObjectType.MapHazard,
                 hazardName,
                 () => Spawn(spawningEntry, 1, -1),
-                () => SelectItemAndDeselectOthers(currentIndex),
+                _ => SelectItemAndDeselectOthers(currentIndex),
                 theme
             );
             entries.Add(spawningEntry);
@@ -123,7 +123,7 @@ internal class SpawningUI : BaseUI
                 spawnType,
                 prefabName,
                 () => Spawn(spawningEntry, 1, -1),
-                () => SelectItemAndDeselectOthers(currentIndex),
+                _ => SelectItemAndDeselectOthers(currentIndex),
                 theme
             );
             entries.Add(spawningEntry);
@@ -138,7 +138,7 @@ internal class SpawningUI : BaseUI
                 SpawningObjectEntry.SpawnObjectType.LocalStaticPrefab,
                 prefabName,
                 () => Spawn(spawningEntry, 1, -1),
-                () => SelectItemAndDeselectOthers(currentIndex),
+                _ => SelectItemAndDeselectOthers(currentIndex),
                 theme
             );
             entries.Add(spawningEntry);
@@ -153,7 +153,7 @@ internal class SpawningUI : BaseUI
                 SpawningObjectEntry.SpawnObjectType.OutsideObject,
                 prefabName,
                 () => Spawn(spawningEntry, 1, -1),
-                () => SelectItemAndDeselectOthers(currentIndex),
+                _ => SelectItemAndDeselectOthers(currentIndex),
                 theme
             );
             entries.Add(spawningEntry);

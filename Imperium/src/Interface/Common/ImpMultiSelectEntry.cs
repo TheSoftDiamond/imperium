@@ -48,7 +48,7 @@ internal abstract class ImpMultiSelectEntry : MonoBehaviour
         var hoverOverlay = entryObj.transform.Find("Hover").gameObject;
         hoverOverlay.SetActive(EqualityComparer<T>.Default.Equals(value, selectionBinding.Value));
 
-        entryInteractable.onEnter += () => hoverBinding.Set(value);
+        entryInteractable.onEnter += _ => hoverBinding.Set(value);
         entryInteractable.onExit += () => hoverBinding.Set(default);
         entryInteractable.onDown += () => selectionBinding.Set(value);
 

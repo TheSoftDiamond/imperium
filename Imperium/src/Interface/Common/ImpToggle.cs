@@ -85,13 +85,13 @@ public abstract class ImpToggle
                 );
             }
 
-            interactable.onEnter += () => tooltipDefinition.Tooltip.Activate(
+            interactable.onOver += position => tooltipDefinition.Tooltip.SetPosition(
                 tooltipDefinition.Title,
                 tooltipDefinition.Description,
+                position,
                 tooltipDefinition.HasAccess
             );
             interactable.onExit += () => tooltipDefinition.Tooltip.Deactivate();
-            interactable.onOver += position => tooltipDefinition.Tooltip.UpdatePosition(position);
         }
 
         if (theme != null)

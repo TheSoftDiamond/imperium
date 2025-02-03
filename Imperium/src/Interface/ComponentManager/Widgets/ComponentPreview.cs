@@ -77,7 +77,7 @@ public class ComponentPreview : MonoBehaviour
             mouseOffsetX += drag.x * 0.25f;
             mouseOffsetY = Mathf.Clamp(mouseOffsetY - drag.y * 0.25f, -60f, 60f);
         };
-        canvasInteractable.onEnter += () => mouseInCanvas = true;
+        canvasInteractable.onEnter += _ => mouseInCanvas = true;
         canvasInteractable.onExit += () => mouseInCanvas = false;
 
         var cameraLightTop = new GameObject("Top").AddComponent<Light>();

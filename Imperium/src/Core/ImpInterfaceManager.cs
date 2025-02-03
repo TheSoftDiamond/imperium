@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Configuration;
+using HarmonyLib;
 using Imperium.Integration;
 using Imperium.Interface;
 using Imperium.Types;
@@ -11,6 +12,7 @@ using Imperium.Util;
 using Imperium.Util.Binding;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 #endregion
 
@@ -202,7 +204,6 @@ internal class ImpInterfaceManager : MonoBehaviour
 
         controller.OnUIOpen();
         imperiumDock.OnUIOpen();
-        tooltip.Deactivate();
 
         OpenInterface.Set(controller);
 
@@ -214,11 +215,9 @@ internal class ImpInterfaceManager : MonoBehaviour
 
         if (closeOthers)
         {
-            foreach (var interfaceController in interfaceControllers.Values)
-            {
-                if (interfaceController == controller || !interfaceController) continue;
-                interfaceController.OnUIClose();
-            }
+            interfaceControllers.Values
+                .Where(interfaceController => interfaceController != controller && interfaceController)
+                .Do(interfaceController => interfaceController.OnUIClose());
         }
 
         if (toggleCursorState) ImpUtils.Interface.ToggleCursorState(true);

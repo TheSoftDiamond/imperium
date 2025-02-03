@@ -44,6 +44,8 @@ internal class ImpOutput(ManualLogSource logger)
             return;
         }
 
+        Imperium.IO.LogInfo($"Notification of type {type} was sent. Binding Value: {NotificationSettings[type].Value}");
+
         // Disable notifications if turned off or during loading of settings
         if (!NotificationSettings[type].Value || Imperium.Settings.IsLoading) return;
 

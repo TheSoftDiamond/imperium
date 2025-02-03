@@ -44,7 +44,7 @@ public class ImpSettings(ConfigFile config)
         internal readonly ImpConfig<bool> Invisibility = new(config, "Player", "Invisibility", false);
         internal readonly ImpConfig<bool> Untargetable = new(config, "Player", "Untargetable", false);
         internal readonly ImpConfig<bool> Muted = new(config, "Player", "Muted", false);
-        internal readonly ImpConfig<bool> PickupOverwrite = new(config, "Player", "PickupOverwrite", false);
+        internal readonly ImpConfig<bool> PickupOverride = new(config, "Player", "PickupOverride", false);
         internal readonly ImpConfig<bool> DisableOOB = new(config, "Player", "DisableOOB", false);
 
         internal readonly ImpConfig<bool> EnableFlying = new(

@@ -160,7 +160,7 @@ public class Imperium : BaseUnityPlugin
         InputBindings.FreecamMap.Enable();
         InputBindings.InterfaceMap.Enable();
 
-        Interface = CreateUI();
+        Interface = BuildInterfaces();
 
         Settings.LoadAll();
 
@@ -234,7 +234,8 @@ public class Imperium : BaseUnityPlugin
 
             Settings.LoadAll();
 
-            Interface = CreateUI();
+            BuildInterfaces();
+
 // #if DEBUG
 //             // This needs to be here as it depends on the UI
              // ImpLevelEditor = ImpLevelEditor.Create();
@@ -291,37 +292,35 @@ public class Imperium : BaseUnityPlugin
         Launch();
     }
 
-    private static ImpInterfaceManager CreateUI()
+    private static ImpInterfaceManager BuildInterfaces()
     {
-        var impInterface = ImpInterfaceManager.Create(Settings.Preferences.Theme);
-
-        impInterface.OpenInterface.onUpdate += openInterface =>
+        Interface.OpenInterface.onUpdate += openInterface =>
         {
             if (openInterface) ImpPositionIndicator.Deactivate();
         };
 
-        impInterface.RegisterInterface<ImperiumUI>(
+        Interface.RegisterInterface<ImperiumUI>(
             ImpAssets.ImperiumUIObject,
             "ImperiumUI",
             "Imperium UI",
             "Imperium's main interface.",
             InputBindings.InterfaceMap.ImperiumUI
         );
-        impInterface.RegisterInterface<SpawningUI>(
+        Interface.RegisterInterface<SpawningUI>(
             ImpAssets.SpawningUIObject,
             "SpawningUI",
             "Spawning",
             "Allows you to spawn objects\nsuch as Scrap or Entities.",
             InputBindings.InterfaceMap.SpawningUI
         );
-        impInterface.RegisterInterface<MapUI>(
+        Interface.RegisterInterface<MapUI>(
             ImpAssets.MapUIObject,
             "MapUI",
             "Map",
             "Imperium's built-in map.",
             InputBindings.InterfaceMap.MapUI
         );
-        impInterface.RegisterInterface<OracleUI>(
+        Interface.RegisterInterface<OracleUI>(
             ImpAssets.OracleUIObject,
             "OracleUI",
             "Oracle",
@@ -329,14 +328,14 @@ public class Imperium : BaseUnityPlugin
             InputBindings.InterfaceMap.OracleUI,
             IsSceneLoaded
         );
-        impInterface.RegisterInterface<MinimapSettings>(ImpAssets.MinimapSettingsObject);
-        // impInterface.RegisterInterface<ComponentManager>(ImpAssets.ComponentManagerObject);
+        Interface.RegisterInterface<MinimapSettings>(ImpAssets.MinimapSettingsObject);
+        // Interface.RegisterInterface<ComponentManager>(ImpAssets.ComponentManagerObject);
 
-        impInterface.RefreshTheme();
+        Interface.RefreshTheme();
 
         IO.LogInfo("[OK] Imperium UIs have been registered! \\o/");
 
-        return impInterface;
+        return Interface;
     }
 
     private static void PreLaunchPatch()

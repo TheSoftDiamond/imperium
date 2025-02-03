@@ -36,9 +36,8 @@ internal class EventLogEntry : MonoBehaviour
         hover = transform.Find("Hover").gameObject;
         var interactable = gameObject.AddComponent<ImpInteractable>();
 
-        interactable.onEnter += OnEnter;
-        interactable.onExit += OnExit;
         interactable.onOver += OnOver;
+        interactable.onExit += OnExit;
     }
 
     internal void ClearItem(float positionY)
@@ -51,7 +50,7 @@ internal class EventLogEntry : MonoBehaviour
         count.text = "";
 
         tooltip = null;
-        currentLog = default;
+        currentLog = null;
 
         rect.anchoredPosition = new Vector2(0, -positionY);
     }
@@ -69,7 +68,7 @@ internal class EventLogEntry : MonoBehaviour
         rect.anchoredPosition = new Vector2(0, -positionY);
     }
 
-    private void OnEnter()
+    private void OnOver(Vector2 mousePosition)
     {
         if (currentLog == null || !tooltip) return;
 
@@ -77,18 +76,13 @@ internal class EventLogEntry : MonoBehaviour
         var detailsString = string.Join(
             "\n", currentLog.Value.Details.Select(detail => $"{detail.Title}: {RichText.Size(detail.Text, 7)}")
         );
-        tooltip.Activate(currentLog.Value.DetailsTitle, detailsString);
+        tooltip.SetPosition(currentLog.Value.DetailsTitle, detailsString, mousePosition);
     }
 
     private void OnExit()
     {
         hover.SetActive(false);
         if (tooltip) tooltip.Deactivate();
-    }
-
-    private void OnOver(Vector2 position)
-    {
-        if (tooltip) tooltip.UpdatePosition(position);
     }
 
     internal void OnClose() => hover.SetActive(false);

@@ -48,11 +48,12 @@ public class ImpMap : MonoBehaviour
         Camera.orthographicSize = Imperium.Settings.Map.CameraZoom.Value;
         Imperium.Settings.Map.CameraZoom.onUpdate += value => Camera.orthographicSize = value;
 
-        Camera.farClipPlane = CameraFarClip.Value;
-        CameraFarClip.onUpdate += value => Camera.farClipPlane = value;
+        // We need to make sure that the far clip isn't smaller than the near clip and vice versa
+        Camera.farClipPlane = Mathf.Max(CameraFarClip.Value, CameraNearClip.Value);
+        CameraFarClip.onUpdate += value => Camera.farClipPlane = Mathf.Max(CameraNearClip.Value + 1, value);
 
-        Camera.nearClipPlane = CameraNearClip.Value;
-        CameraNearClip.onUpdate += value => Camera.nearClipPlane = value;
+        Camera.nearClipPlane = Mathf.Min(CameraFarClip.Value, CameraNearClip.Value);
+        CameraNearClip.onUpdate += value => Camera.nearClipPlane = Mathf.Min(CameraFarClip.Value - 1, value);
 
         var hdCameraData = cameraMapObject.AddComponent<HDAdditionalCameraData>();
         hdCameraData.customRenderingSettings = true;

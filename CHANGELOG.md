@@ -11,12 +11,16 @@
 - Moved all network logging to the DEBUG level to decrease log volume.
 - Fixed an issue where faulty UI config would break the Imperium startup sequence.
 - Made it so entities without prefabs are not showing up in the spawn menu.
+- Made it so the map camera's near and far clip can't overlap anymore.
 
 ### API Changes
 
 - Removed vain shroud related endpoints.
 
 ### QoL Improvements
+
+- Improved tooltip experience with new smooth transitions and delays.
+- Various UI layout fixes and adjustments to improve usability.
 
 ## Imperium v0.2.8 [Beta] - V66 Compatibility Patch
 

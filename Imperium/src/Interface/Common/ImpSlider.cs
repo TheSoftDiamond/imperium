@@ -18,7 +18,7 @@ namespace Imperium.Interface.Common;
 
 public class ImpSlider : MonoBehaviour
 {
-    private Slider slider;
+    public Slider Slider { get; private set; }
     private TMP_Text indicatorText;
 
     private string indicatorUnit;
@@ -82,26 +82,26 @@ public class ImpSlider : MonoBehaviour
         impSlider.debounceTime = debounceTime;
         impSlider.indicatorFormatter = indicatorFormatter;
         impSlider.indicatorUnit = indicatorUnit;
-        impSlider.slider = sliderObject.Find("Slider").GetComponent<Slider>();
+        impSlider.Slider = sliderObject.Find("Slider").GetComponent<Slider>();
         impSlider.indicatorText = sliderObject.Find("Slider/SlideArea/Handle/Text").GetComponent<TMP_Text>();
 
         indicatorFormatter ??= value => $"{Mathf.RoundToInt(value)}";
         clickAudio ??= ImpAssets.GrassClick;
 
         var currentValue = useLogarithmicScale ? (float)Math.Log10(valueBinding.Value) : valueBinding.Value;
-        impSlider.slider.value = currentValue;
+        impSlider.Slider.value = currentValue;
 
         if (options is { Value: not null, Value.Count: > 0 })
         {
-            impSlider.slider.minValue = 0;
-            impSlider.slider.maxValue = options.Value.Count - 1;
+            impSlider.Slider.minValue = 0;
+            impSlider.Slider.maxValue = options.Value.Count - 1;
 
             impSlider.indicatorText.text = $"{options.Value[(int)valueBinding.Value]}{indicatorUnit}";
 
             options.onUpdate += newOptions =>
             {
-                impSlider.slider.minValue = 0;
-                impSlider.slider.maxValue = newOptions.Count - 1;
+                impSlider.Slider.minValue = 0;
+                impSlider.Slider.maxValue = newOptions.Count - 1;
 
                 impSlider.indicatorText.text = $"{newOptions[(int)valueBinding.Value]}{indicatorUnit}";
             };
@@ -111,7 +111,7 @@ public class ImpSlider : MonoBehaviour
             impSlider.indicatorText.text = $"{indicatorFormatter(valueBinding.Value)}{indicatorUnit}";
         }
 
-        impSlider.slider.onValueChanged.AddListener(newValue =>
+        impSlider.Slider.onValueChanged.AddListener(newValue =>
         {
             // Fixes weird null pointer error after respawning UI
             if (!impSlider) return;
@@ -139,7 +139,7 @@ public class ImpSlider : MonoBehaviour
 
         valueBinding.onUpdate += newValue =>
         {
-            impSlider.slider.value = useLogarithmicScale ? (float)Math.Log10(newValue) : newValue;
+            impSlider.Slider.value = useLogarithmicScale ? (float)Math.Log10(newValue) : newValue;
 
             // Use option label if options are used
             impSlider.indicatorText.text = options is { Value: not null, Value.Count: > 0 }
@@ -152,7 +152,7 @@ public class ImpSlider : MonoBehaviour
             {
                 var defaultValue = indicatorDefaultValue ?? valueBinding.DefaultValue;
 
-                impSlider.slider.value = useLogarithmicScale ? (float)Math.Log10(defaultValue) : defaultValue;
+                impSlider.Slider.value = useLogarithmicScale ? (float)Math.Log10(defaultValue) : defaultValue;
 
                 // Use option label if options are used
                 impSlider.indicatorText.text = options is { Value: not null, Value.Count: > 0 }
@@ -179,13 +179,13 @@ public class ImpSlider : MonoBehaviour
                 );
             }
 
-            interactable.onEnter += () => tooltipDefinition.Tooltip.Activate(
+            interactable.onOver += position => tooltipDefinition.Tooltip.SetPosition(
                 tooltipDefinition.Title,
                 tooltipDefinition.Description,
+                position,
                 tooltipDefinition.HasAccess
             );
             interactable.onExit += () => tooltipDefinition.Tooltip.Deactivate();
-            interactable.onOver += position => tooltipDefinition.Tooltip.UpdatePosition(position);
         }
 
         if (interactableBindings.Length > 0)
@@ -193,14 +193,14 @@ public class ImpSlider : MonoBehaviour
             var sliderArea = sliderObject.Find("Slider/SliderArea").GetComponent<Image>();
 
             ToggleInteractable(
-                impSlider.slider, sliderArea,
+                impSlider.Slider, sliderArea,
                 interactableBindings.All(entry => entry.Value), interactableInvert
             );
             foreach (var interactableBinding in interactableBindings)
             {
                 interactableBinding.onUpdate += value =>
                 {
-                    ToggleInteractable(impSlider.slider, sliderArea, value, interactableInvert);
+                    ToggleInteractable(impSlider.Slider, sliderArea, value, interactableInvert);
                 };
             }
         }
@@ -240,7 +240,7 @@ public class ImpSlider : MonoBehaviour
 
     public void SetValue(float value)
     {
-        slider.value = value;
+        Slider.value = value;
         SetIndicatorText(value);
     }
 

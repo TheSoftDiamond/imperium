@@ -175,7 +175,7 @@ internal abstract class ImperiumWindow : MonoBehaviour, IDragHandler, IBeginDrag
     {
     }
 
-    internal void FocusWindow()
+    private void FocusWindow()
     {
         transform.SetAsLastSibling();
         onFocus?.Invoke();

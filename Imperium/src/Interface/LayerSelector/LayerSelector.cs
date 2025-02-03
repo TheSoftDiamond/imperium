@@ -54,7 +54,7 @@ internal class LayerSelector : BaseUI
             layerToggles[i] = toggleObj.AddComponent<LayerToggle>();
             layerToggles[i].Init(LayerMask.LayerToName(i), i);
             var currentIndex = i;
-            layerToggles[i].gameObject.AddComponent<ImpInteractable>().onEnter += () =>
+            layerToggles[i].gameObject.AddComponent<ImpInteractable>().onEnter += _ =>
             {
                 layerToggles[selectedLayer].SetSelected(false);
                 selectedLayer = currentIndex;

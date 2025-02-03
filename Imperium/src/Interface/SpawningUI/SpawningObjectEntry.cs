@@ -28,7 +28,7 @@ public class SpawningObjectEntry : MonoBehaviour
         SpawnObjectType type,
         string objectName,
         Action onClick,
-        Action onHover,
+        Action<Vector2> onHover,
         ImpBinding<ImpTheme> themeBinding
     )
     {

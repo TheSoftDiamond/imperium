@@ -129,31 +129,31 @@ internal class MapUI : BaseUI
     private void InitMouseBlockers()
     {
         var mapSettings = container.Find("MapSettings").gameObject.AddComponent<ImpInteractable>();
-        mapSettings.onEnter += () => mouseDragBlocked = true;
+        mapSettings.onEnter += _ => mouseDragBlocked = true;
         mapSettings.onExit += () => mouseDragBlocked = false;
 
         var targetSelection = container.Find("TargetSelection").gameObject.AddComponent<ImpInteractable>();
-        targetSelection.onEnter += () => mouseDragBlocked = true;
+        targetSelection.onEnter += _ => mouseDragBlocked = true;
         targetSelection.onExit += () => mouseDragBlocked = false;
 
         var zoomSlider = container.Find("ZoomSlider").gameObject.AddComponent<ImpInteractable>();
-        zoomSlider.onEnter += () => mouseDragBlocked = true;
+        zoomSlider.onEnter += _ => mouseDragBlocked = true;
         zoomSlider.onExit += () => mouseDragBlocked = false;
 
         var nearPlaneSlider = container.Find("NearClip").gameObject.AddComponent<ImpInteractable>();
-        nearPlaneSlider.onEnter += () => mouseDragBlocked = true;
+        nearPlaneSlider.onEnter += _ => mouseDragBlocked = true;
         nearPlaneSlider.onExit += () => mouseDragBlocked = false;
 
         var farPlaneSlider = container.Find("FarClip").gameObject.AddComponent<ImpInteractable>();
-        farPlaneSlider.onEnter += () => mouseDragBlocked = true;
+        farPlaneSlider.onEnter += _ => mouseDragBlocked = true;
         farPlaneSlider.onExit += () => mouseDragBlocked = false;
 
         var layerSelector = container.Find("LayerSelector").gameObject.AddComponent<ImpInteractable>();
-        layerSelector.onEnter += () => mouseDragBlocked = true;
+        layerSelector.onEnter += _ => mouseDragBlocked = true;
         layerSelector.onExit += () => mouseDragBlocked = false;
 
         var floorSlider = container.Find("FloorSlider").gameObject.AddComponent<ImpInteractable>();
-        floorSlider.onEnter += () => mouseDragBlocked = true;
+        floorSlider.onEnter += _ => mouseDragBlocked = true;
         floorSlider.onExit += () => mouseDragBlocked = false;
     }
 
@@ -188,7 +188,7 @@ internal class MapUI : BaseUI
         farClipSlider = ImpSlider.Bind(
             path: "NearClip",
             container: container,
-            valueBinding: Imperium.Map.CameraNearClip,
+            valueBinding: Imperium.Map.CameraFarClip,
             indicatorFormatter: value => Mathf.RoundToInt(value).ToString(),
             playClickSound: false,
             theme: theme
@@ -199,7 +199,7 @@ internal class MapUI : BaseUI
         nearClipSlider = ImpSlider.Bind(
             path: "FarClip",
             container: container,
-            valueBinding: Imperium.Map.CameraFarClip,
+            valueBinding: Imperium.Map.CameraNearClip,
             indicatorFormatter: value => Mathf.RoundToInt(value).ToString(),
             playClickSound: false,
             theme: theme
