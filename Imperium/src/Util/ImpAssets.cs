@@ -30,7 +30,7 @@ internal abstract class ImpAssets
 
     internal static GameObject ControlCenterWindowObject;
     internal static GameObject ObjectExplorerWindowObject;
-    internal static GameObject ObjectSettingsWindowObject;
+    internal static GameObject ObjectControlWindowObject;
     internal static GameObject ConfirmationWindowObject;
     internal static GameObject InfoWindowObject;
     internal static GameObject EventLogWindowObject;
@@ -154,7 +154,7 @@ internal abstract class ImpAssets
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/event_log.prefab", out EventLogWindowObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/moon_control.prefab", out MoonControlWindowObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/object_explorer.prefab", out ObjectExplorerWindowObject),
-            LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/object_settings.prefab", out ObjectSettingsWindowObject),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/object_control.prefab", out ObjectControlWindowObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/preferences.prefab", out PreferencesWindowObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/rendering.prefab", out RenderingWindowObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/save_editor.prefab", out SaveEditorWindowObject),

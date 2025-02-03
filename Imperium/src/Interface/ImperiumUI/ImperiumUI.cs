@@ -9,8 +9,8 @@ using Imperium.Interface.ImperiumUI.Windows.CruiserControl;
 using Imperium.Interface.ImperiumUI.Windows.EventLog;
 using Imperium.Interface.ImperiumUI.Windows.Info;
 using Imperium.Interface.ImperiumUI.Windows.MoonControl;
+using Imperium.Interface.ImperiumUI.Windows.ObjectControl;
 using Imperium.Interface.ImperiumUI.Windows.ObjectExplorer;
-using Imperium.Interface.ImperiumUI.Windows.ObjectSettings;
 using Imperium.Interface.ImperiumUI.Windows.Preferences;
 using Imperium.Interface.ImperiumUI.Windows.Rendering;
 using Imperium.Interface.ImperiumUI.Windows.SaveEditor;
@@ -66,27 +66,22 @@ public class ImperiumUI : BaseUI
             "Center/ShipControl",
             "Ship Control"
         );
-        RegisterImperiumWindow<CruiserControlWindow>(
-            ImpAssets.CruiserControlWindowObject,
-            "Center/CruiserControl",
-            "Cruiser Control"
-        );
         RegisterImperiumWindow<MoonControlWindow>(
             ImpAssets.MoonControlWindowObject,
             "Center/MoonControl",
             "Moon Control"
         );
-        RegisterImperiumWindow<InfoWindow>(
-            ImpAssets.InfoWindowObject,
-            "Center/Info",
-            "Info"
+        RegisterImperiumWindow<CruiserControlWindow>(
+            ImpAssets.CruiserControlWindowObject,
+            "Center/CruiserControl",
+            "Cruiser Control"
+        );
+        RegisterImperiumWindow<ObjectControlWindow>(
+            ImpAssets.ObjectControlWindowObject,
+            "Center/ObjectControl",
+            "Object Control"
         );
 
-        RegisterImperiumWindow<ObjectSettingsWindow>(
-            ImpAssets.ObjectSettingsWindowObject,
-            "Right/ObjectSettings",
-            "Object Settings"
-        );
         RegisterImperiumWindow<RenderingWindow>(
             ImpAssets.RenderingWindowObject,
             "Right/Rendering",
@@ -101,6 +96,11 @@ public class ImperiumUI : BaseUI
             ImpAssets.EventLogWindowObject,
             "Right/EventLog",
             "Event Log"
+        );
+        RegisterImperiumWindow<InfoWindow>(
+            ImpAssets.InfoWindowObject,
+            "Right/Info",
+            "Level Information"
         );
         RegisterImperiumWindow<PreferencesWindow>(
             ImpAssets.PreferencesWindowObject,
