@@ -59,12 +59,6 @@ internal class ObjectEntryEngine
             ObjectCategory.OutsideObjects,
             componentGetter: obj => obj.transform
         );
-        AddType(
-            Imperium.ObjectManager.CurrentLevelVainShrouds,
-            ObjectType.VainShroud,
-            ObjectCategory.Vains,
-            componentGetter: obj => obj.transform
-        );
 
         incrementalCategoryCounts = GetIncrementalCategoryCounts();
         return (entries, categoryCounts, incrementalCategoryCounts);

@@ -2,22 +2,21 @@
 
 ## Imperium v1.0 - The Release
 
+### General Changes
+
+- Removed support for vain shrouds since they are no longer used in the base game.
+
 ### Internal Fixes
 
 - Moved all network logging to the DEBUG level to decrease log volume.
+- Fixed an issue where faulty UI config would break the Imperium startup sequence.
+- Made it so entities without prefabs are not showing up in the spawn menu.
 
 ### API Changes
 
+- Removed vain shroud related endpoints.
+
 ### QoL Improvements
-
-
-
-## Imperium v0.2.9 [Beta] - Pre-Release Patch
-
-### Internal Fixes
-
-- Fixed an issue where faulty UI config would break the Imperium startup sequence.
-- Made it so entities without prefabs are not showing up in the spawn menu.
 
 ## Imperium v0.2.8 [Beta] - V66 Compatibility Patch
 

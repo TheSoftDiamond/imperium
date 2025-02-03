@@ -42,9 +42,6 @@ internal class ObjectExplorerWindow : ImperiumWindow
     private RectTransform outsideObjectsTitle;
     private TMP_Text outsideObjectsCount;
 
-    private RectTransform vainsTitle;
-    private TMP_Text vainsCount;
-
     private GameObject entryTemplate;
 
     private ScrollRect scrollRect;
@@ -99,8 +96,6 @@ internal class ObjectExplorerWindow : ImperiumWindow
         othersCount = contentRect.Find("OtherListTitle/Count").GetComponent<TMP_Text>();
         outsideObjectsTitle = contentRect.Find("OutsideObjectsListTitle").GetComponent<RectTransform>();
         outsideObjectsCount = contentRect.Find("OutsideObjectsListTitle/Count").GetComponent<TMP_Text>();
-        vainsTitle = contentRect.Find("VainShroudListTitle").GetComponent<RectTransform>();
-        vainsCount = contentRect.Find("VainShroudListTitle/Count").GetComponent<TMP_Text>();
 
         ImpButton.CreateCollapse("PlayerListTitle/Arrow", contentRect, stateBinding: PlayersCollapsed);
         ImpButton.CreateCollapse("EntityListTitle/Arrow", contentRect, stateBinding: EntitiesCollapsed);
@@ -110,7 +105,6 @@ internal class ObjectExplorerWindow : ImperiumWindow
         ImpButton.CreateCollapse("VentListTitle/Arrow", contentRect, stateBinding: VentsCollapsed);
         ImpButton.CreateCollapse("OtherListTitle/Arrow", contentRect, stateBinding: OtherCollapsed);
         ImpButton.CreateCollapse("OutsideObjectsListTitle/Arrow", contentRect, stateBinding: OutsideObjectsCollapsed);
-        ImpButton.CreateCollapse("VainShroudListTitle/Arrow", contentRect, stateBinding: VainsCollapsed);
 
         PlayersCollapsed.onTrigger += RefreshEntries;
         EntitiesCollapsed.onTrigger += RefreshEntries;
@@ -136,8 +130,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
             {
                 ObjectCategory.OutsideObjects,
                 new CategoryDefinition { TitleRect = outsideObjectsTitle, Binding = OutsideObjectsCollapsed }
-            },
-            { ObjectCategory.Vains, new CategoryDefinition { TitleRect = vainsTitle, Binding = VainsCollapsed } },
+            }
         };
 
         categoryOrder =
@@ -149,8 +142,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
             ObjectCategory.Items,
             ObjectCategory.Vents,
             ObjectCategory.Other,
-            ObjectCategory.OutsideObjects,
-            ObjectCategory.Vains,
+            ObjectCategory.OutsideObjects
         ];
 
         InitEntryEngine();
@@ -168,8 +160,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
             new StyleOverride("ItemListTitle", Variant.DARKER),
             new StyleOverride("VentListTitle", Variant.DARKER),
             new StyleOverride("OtherListTitle", Variant.DARKER),
-            new StyleOverride("OutsideObjectsListTitle", Variant.DARKER),
-            new StyleOverride("VainShroudListTitle", Variant.DARKER)
+            new StyleOverride("OutsideObjectsListTitle", Variant.DARKER)
         );
 
         ImpThemeManager.Style(
@@ -189,8 +180,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
             new StyleOverride("ItemListTitle/Count", Variant.FADED_TEXT),
             new StyleOverride("VentListTitle/Count", Variant.FADED_TEXT),
             new StyleOverride("OtherListTitle/Count", Variant.FADED_TEXT),
-            new StyleOverride("OutsideObjectsListTitle/Count", Variant.FADED_TEXT),
-            new StyleOverride("VainShroudListTitle/Count", Variant.FADED_TEXT)
+            new StyleOverride("OutsideObjectsListTitle/Count", Variant.FADED_TEXT)
         );
     }
 
@@ -300,7 +290,6 @@ internal class ObjectExplorerWindow : ImperiumWindow
         ventsCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Vents, 0).ToString()})";
         othersCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Other, 0).ToString()})";
         outsideObjectsCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.OutsideObjects, 0).ToString()})";
-        vainsCount.text = $"({categoryCounts.GetValueOrDefault(ObjectCategory.Vains, 0).ToString()})";
     }
 
     private void OnScroll(Vector2 _) => StartCoroutine(refreshEntries(useCache: true));

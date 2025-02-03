@@ -83,7 +83,6 @@ public readonly struct LocalObjectTeleportRequest
 
 public enum LocalObjectType
 {
-    VainShroud,
     OutsideObject
 }
 
@@ -94,7 +93,6 @@ public enum ObjectType
     Entity,
     Item,
     Landmine,
-    VainShroud,
     Player,
     SpiderWeb,
     SpikeTrap,

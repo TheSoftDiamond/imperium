@@ -40,7 +40,7 @@ internal class MapUI : BaseUI
 
     private readonly ImpBinding<PlayerControllerB> selectedPlayer = new(null);
     private readonly ImpBinding<EnemyAI> selectedEntity = new(null);
-    private readonly ImpBinding<KeyValuePair<GameObject, string>> selectedMapHazard = new();
+    private readonly ImpBinding<(GameObject, string)> selectedMapHazard = new();
 
     protected override void InitUI()
     {
@@ -268,13 +268,13 @@ internal class MapUI : BaseUI
 
         selectedMapHazard.onUpdate += mapHazardEntry =>
         {
-            if (!mapHazardEntry.Key) return;
+            if (!mapHazardEntry.Item1) return;
 
             selectedPlayer.Set(null);
             selectedEntity.Set(null);
 
-            target = mapHazardEntry.Key.transform;
-            MoveCameraToTarget(mapHazardEntry.Key.transform);
+            target = mapHazardEntry.Item1.transform;
+            MoveCameraToTarget(mapHazardEntry.Item1.transform);
         };
 
         ImpMultiSelect.Bind(
@@ -300,7 +300,7 @@ internal class MapUI : BaseUI
             container,
             selectedMapHazard,
             GenerateMapHazardBinding(),
-            entry => entry.Value,
+            entry => entry.Item2,
             theme: theme
         );
 
@@ -326,31 +326,28 @@ internal class MapUI : BaseUI
     ///     The list has to subscribe to all the source bindings in order to be updated when something changes.
     /// </summary>
     /// <returns></returns>
-    private static ImpBinding<IReadOnlyCollection<KeyValuePair<GameObject, string>>> GenerateMapHazardBinding()
+    private static ImpBinding<IReadOnlyCollection<(GameObject, string)>> GenerateMapHazardBinding()
     {
         var mapHazardBinding =
-            new ImpExternalBinding<IReadOnlyCollection<KeyValuePair<GameObject, string>>, IReadOnlyCollection<Turret>>(
+            new ImpExternalBinding<IReadOnlyCollection<(GameObject, string)>, IReadOnlyCollection<Turret>>(
                 () => Imperium.ObjectManager.CurrentLevelTurrets.Value
                     .Where(obj => obj)
-                    .Select(entry => new KeyValuePair<GameObject, string>(entry.gameObject, "Turret"))
+                    .Select(entry => (entry.gameObject, "Turret"))
                     .Concat(Imperium.ObjectManager.CurrentLevelBreakerBoxes.Value
                         .Where(obj => obj)
-                        .Select(entry => new KeyValuePair<GameObject, string>(entry.gameObject, "Breaker Box")))
+                        .Select(entry => (entry.gameObject, "Breaker Box")))
                     .Concat(Imperium.ObjectManager.CurrentLevelVents.Value
                         .Where(obj => obj)
-                        .Select(entry => new KeyValuePair<GameObject, string>(entry.gameObject, "Vent")))
+                        .Select(entry => (entry.gameObject, "Vent")))
                     .Concat(Imperium.ObjectManager.CurrentLevelLandmines.Value
                         .Where(obj => obj)
-                        .Select(entry => new KeyValuePair<GameObject, string>(entry.gameObject, "Landmine")))
+                        .Select(entry => (entry.gameObject, "Landmine")))
                     .Concat(Imperium.ObjectManager.CurrentLevelSpikeTraps.Value
                         .Where(obj => obj)
-                        .Select(entry => new KeyValuePair<GameObject, string>(entry.gameObject, "Spike Trap")))
+                        .Select(entry => (entry.gameObject, "Spike Trap")))
                     .Concat(Imperium.ObjectManager.CurrentLevelSpiderWebs.Value
                         .Where(obj => obj)
-                        .Select(entry => new KeyValuePair<GameObject, string>(entry.gameObject, "Spider Web")))
-                    .Concat(Imperium.ObjectManager.CurrentLevelVainShrouds.Value
-                        .Where(obj => obj)
-                        .Select(entry => new KeyValuePair<GameObject, string>(entry, "Mold Spore")))
+                        .Select(entry => (entry.gameObject, "Spider Web")))
                     .ToHashSet(),
                 Imperium.ObjectManager.CurrentLevelTurrets
             );

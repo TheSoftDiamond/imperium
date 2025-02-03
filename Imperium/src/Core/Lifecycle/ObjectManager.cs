@@ -74,7 +74,6 @@ internal class ObjectManager : ImpLifecycleObject
     internal readonly ImpBinding<IReadOnlyCollection<TerminalAccessibleObject>> CurrentLevelSecurityDoors = new([]);
 
     // Local objects without a network object or script to reference
-    internal readonly ImpBinding<IReadOnlyCollection<GameObject>> CurrentLevelVainShrouds = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<GameObject>> CurrentLevelOutsideObjects = new([]);
 
     // Event that is fired when multiple types of objects have been changed
@@ -401,9 +400,6 @@ internal class ObjectManager : ImpLifecycleObject
                 case "StickyNoteItem":
                     allStaticPrefabs["StickyNote"] = obj;
                     break;
-                case "MoldSpore":
-                    allLocalStaticPrefabs["MoldSpore"] = obj;
-                    break;
             }
         }
 
@@ -472,7 +468,6 @@ internal class ObjectManager : ImpLifecycleObject
     }
 
     private readonly LayerMask terrainMask = LayerMask.NameToLayer("Terrain");
-    private readonly LayerMask vainShroudMask = LayerMask.NameToLayer("MoldSpore");
 
     internal void RefreshLevelObjects()
     {
@@ -484,7 +479,6 @@ internal class ObjectManager : ImpLifecycleObject
         HashSet<EnemyAI> currentLevelEntities = [];
         HashSet<Landmine> currentLevelLandmines = [];
         HashSet<GrabbableObject> currentLevelItems = [];
-        HashSet<GameObject> currentLevelVainShrouds = [];
         HashSet<BreakerBox> currentLevelBreakerBoxes = [];
         HashSet<SpikeRoofTrap> currentLevelSpikeTraps = [];
         HashSet<GameObject> currentLevelOutsideObjects = [];
@@ -496,8 +490,6 @@ internal class ObjectManager : ImpLifecycleObject
 
         foreach (var obj in FindObjectsOfType<GameObject>())
         {
-            if (obj.layer == vainShroudMask && currentLevelVainShrouds.Add(obj)) continue;
-
             if (obj.layer == terrainMask
                 && OutsideObjectPrefabNameMap.Contains(obj.name)
                 && currentLevelOutsideObjects.Add(obj)
@@ -570,7 +562,6 @@ internal class ObjectManager : ImpLifecycleObject
         CurrentLevelSpiderWebs.Set(currentLevelSpiderWebs);
         CurrentScrapSpawnPoints.Set(currentScrapSpawnPoints);
         CurrentLevelCruisers.Set(currentLevelCompanyCruisers);
-        CurrentLevelVainShrouds.Set(currentLevelVainShrouds);
 
         stopwatch.Stop();
         Imperium.IO.LogInfo($"REFRESH : {stopwatch.ElapsedMilliseconds}");
@@ -596,8 +587,6 @@ internal class ObjectManager : ImpLifecycleObject
             var displayName = item.spawnPrefab.GetComponentInChildren<ScanNodeProperties>()?.headerText;
             if (!string.IsNullOrEmpty(displayName)) displayNameMap[item.itemName] = displayName;
         }
-
-        displayNameMap["MoldSpore"] = "Vain Shroud";
 
         overrideDisplayNameMap["StickyNote"] = "Sticky Note";
         overrideDisplayNameMap["Clipboard"] = "Clipboard";
@@ -1134,7 +1123,7 @@ internal class ObjectManager : ImpLifecycleObject
             var itemTransform = item.transform;
             itemTransform.position = request.Destination + Vector3.up;
             item.startFallingPosition = itemTransform.position;
-            if (item.transform.parent != null)
+            if (item.transform.parent)
             {
                 item.startFallingPosition = item.transform.parent.InverseTransformPoint(item.startFallingPosition);
             }
@@ -1157,16 +1146,6 @@ internal class ObjectManager : ImpLifecycleObject
     {
         switch (request.Type)
         {
-            case LocalObjectType.VainShroud:
-                TeleportLocalObject(
-                    request.Type,
-                    request.Position,
-                    CurrentLevelVainShrouds.Value
-                        .Where(obj => obj)
-                        .FirstOrDefault(obj => obj.transform.position == request.Position),
-                    request.Destination
-                );
-                break;
             case LocalObjectType.OutsideObject:
                 TeleportLocalObject(
                     request.Type,
@@ -1178,7 +1157,7 @@ internal class ObjectManager : ImpLifecycleObject
                 );
                 break;
             default:
-                Imperium.IO.LogError($"[NET] Teleportation request has invalid outside object type '{request.Type}'");
+                Imperium.IO.LogError($"[NET] Local teleportation request has invalid outside object type '{request.Type}'");
                 break;
         }
     }
@@ -1224,11 +1203,6 @@ internal class ObjectManager : ImpLifecycleObject
     {
         switch (request.Type)
         {
-            case LocalObjectType.VainShroud:
-                DespawnLocalObject(request.Type, request.Position, CurrentLevelVainShrouds.Value.FirstOrDefault(
-                    obj => obj.transform.position == request.Position
-                ));
-                break;
             case LocalObjectType.OutsideObject:
                 DespawnLocalObject(request.Type, request.Position, CurrentLevelOutsideObjects.Value.FirstOrDefault(
                     obj => obj.transform.position == request.Position

@@ -257,21 +257,5 @@ public static class Resources
         }
     }
 
-    /// <summary>
-    ///     List of all the mold spores in the current level.
-    /// </summary>
-    /// <exception cref="ImperiumAPIException">Thrown when Imperium is not yet ready to handle calls.</exception>
-    public static ReadOnlyBinding<IReadOnlyCollection<GameObject>> CurrentLevelVainShrouds
-    {
-        get
-        {
-            APIHelpers.AssertImperiumReady();
-
-            return ReadOnlyBinding<IReadOnlyCollection<GameObject>>.Wrap(
-                Imperium.ObjectManager.CurrentLevelVainShrouds
-            );
-        }
-    }
-
     #endregion
 }

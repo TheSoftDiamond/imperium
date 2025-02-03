@@ -32,7 +32,6 @@ internal static class ObjectEntryGenerator
         ObjectType.Vent => false,
         ObjectType.Player => false,
         ObjectType.SteamValve => false,
-        ObjectType.VainShroud => false,
         ObjectType.OutsideObject => false,
         _ => true
     };
@@ -62,7 +61,6 @@ internal static class ObjectEntryGenerator
         ObjectType.Item => false,
         ObjectType.SpiderWeb => false,
         ObjectType.SpikeTrap => false,
-        ObjectType.VainShroud => false,
         ObjectType.OutsideObject => false,
         _ => true
     };
@@ -80,13 +78,6 @@ internal static class ObjectEntryGenerator
                 break;
             case ObjectType.Item:
                 Imperium.ObjectManager.DespawnItem(entry.objectNetId!.Value);
-                break;
-            case ObjectType.VainShroud:
-                Imperium.ObjectManager.DespawnLocalObject(new LocalObjectDespawnRequest
-                {
-                    Type = LocalObjectType.VainShroud,
-                    Position = entry.containerObject.transform.position
-                });
                 break;
             case ObjectType.OutsideObject:
                 Imperium.ObjectManager.DespawnLocalObject(new LocalObjectDespawnRequest
@@ -173,7 +164,6 @@ internal static class ObjectEntryGenerator
             case ObjectType.Player:
             case ObjectType.BreakerBox:
             case ObjectType.Item:
-            case ObjectType.VainShroud:
             case ObjectType.OutsideObject:
                 break;
             default:
@@ -202,7 +192,6 @@ internal static class ObjectEntryGenerator
             case ObjectType.SteamValve:
             case ObjectType.Vent:
             case ObjectType.Entity:
-            case ObjectType.VainShroud:
             case ObjectType.Player:
             case ObjectType.BreakerBox:
             case ObjectType.OutsideObject:
@@ -227,7 +216,6 @@ internal static class ObjectEntryGenerator
             case ObjectType.SteamValve:
             case ObjectType.Vent:
             case ObjectType.Entity:
-            case ObjectType.VainShroud:
             case ObjectType.Item:
             case ObjectType.BreakerBox:
             case ObjectType.OutsideObject:
@@ -252,7 +240,6 @@ internal static class ObjectEntryGenerator
             case ObjectType.SteamValve:
             case ObjectType.Vent:
             case ObjectType.Entity:
-            case ObjectType.VainShroud:
             case ObjectType.Item:
             case ObjectType.BreakerBox:
             case ObjectType.OutsideObject:
@@ -293,7 +280,6 @@ internal static class ObjectEntryGenerator
                 break;
             case ObjectType.SpikeTrap:
             case ObjectType.SpiderWeb:
-            case ObjectType.VainShroud:
             case ObjectType.Player:
             case ObjectType.Cruiser:
             case ObjectType.Item:
@@ -330,17 +316,6 @@ internal static class ObjectEntryGenerator
                     });
                 }, Imperium.Freecam.IsFreecamEnabled.Value ? Imperium.Freecam.transform : null, castGround: true);
                 Imperium.Interface.Close();
-                break;
-            case ObjectType.VainShroud:
-                Imperium.ImpPositionIndicator.Activate(position =>
-                {
-                    Imperium.ObjectManager.TeleportLocalObject(new LocalObjectTeleportRequest
-                    {
-                        Type = LocalObjectType.VainShroud,
-                        Position = entry.containerObject.transform.position,
-                        Destination = position
-                    });
-                }, origin, castGround: true);
                 break;
             case ObjectType.OutsideObject:
                 Imperium.ImpPositionIndicator.Activate(position =>
@@ -406,7 +381,6 @@ internal static class ObjectEntryGenerator
             case ObjectType.BreakerBox:
             case ObjectType.SpikeTrap:
             case ObjectType.SpiderWeb:
-            case ObjectType.VainShroud:
             case ObjectType.Player:
             case ObjectType.Cruiser:
             case ObjectType.OutsideObject:
@@ -420,7 +394,6 @@ internal static class ObjectEntryGenerator
     {
         switch (entry.Type)
         {
-            case ObjectType.VainShroud:
             case ObjectType.SteamValve:
             case ObjectType.Landmine:
             case ObjectType.Turret:
@@ -446,7 +419,6 @@ internal static class ObjectEntryGenerator
         ObjectType.Entity => GetEntityName((EnemyAI)entry.component),
         ObjectType.Item => ((GrabbableObject)entry.component).itemProperties.itemName,
         ObjectType.Landmine => $"Landmine (<i>ID: {entry.component.GetInstanceID()})</i>",
-        ObjectType.VainShroud => $"Mold Spore (<i>ID: {entry.component.GetInstanceID()})</i>",
         ObjectType.Player => GetPlayerName((PlayerControllerB)entry.component),
         ObjectType.SpiderWeb => $"Spider Web (<i>ID: {entry.component.GetInstanceID()})</i>",
         ObjectType.SpikeTrap => $"Spike Trap (<i>ID: {entry.component.GetInstanceID()})</i>",
