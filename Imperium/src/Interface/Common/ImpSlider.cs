@@ -133,7 +133,10 @@ public class ImpSlider : MonoBehaviour
             else
             {
                 valueBinding.Set(bindingValue);
-                if (playClickSound) GameUtils.PlayClip(clickAudio);
+                if (Imperium.Settings.Preferences.PlaySounds.Value && playClickSound)
+                {
+                    GameUtils.PlayClip(clickAudio);
+                }
             }
         });
 

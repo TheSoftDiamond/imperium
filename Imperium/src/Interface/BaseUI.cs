@@ -158,7 +158,7 @@ public abstract class BaseUI : MonoBehaviour
         IsOpen = true;
 
         onOpen?.Invoke();
-        GameUtils.PlayClip(ImpAssets.ButtonClick);
+        if (Imperium.Settings.Preferences.PlaySounds.Value) GameUtils.PlayClip(ImpAssets.ButtonClick);
 
         if (closeOnMove)
         {

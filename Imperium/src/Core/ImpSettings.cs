@@ -936,7 +936,8 @@ public class ImpSettings(ConfigFile config)
         internal readonly ImpConfig<bool> LeftHandedMode = new(config, "Preferences.General", "LeftHandedMode", false);
         internal readonly ImpConfig<bool> OptimizeLogs = new(config, "Preferences.General", "OptimizeLogsToggle", true);
         internal readonly ImpConfig<bool> CustomWelcome = new(config, "Preferences.General", "CustomWelcome", true);
-        internal readonly ImpConfig<bool> ShowTooltips = new(config, "Preferences.Tooltips", "CustomWelcome", true);
+        internal readonly ImpConfig<bool> ShowTooltips = new(config, "Preferences.General", "Tooltips", true);
+        internal readonly ImpConfig<bool> PlaySounds = new(config, "Preferences.General", "Sounds", true);
 
         internal readonly ImpConfig<string> ImperiumWindowLayout = new(
             config,

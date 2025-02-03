@@ -5,6 +5,7 @@
 ### General Changes
 
 - Removed support for vain shrouds since they are no longer used in the base game.
+- Added an option to turn off UI sounds.
 
 ### Internal Fixes
 

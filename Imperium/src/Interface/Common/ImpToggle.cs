@@ -32,6 +32,7 @@ public abstract class ImpToggle
     /// <param name="container"></param>
     /// <param name="valueBinding">Binding that decides on the state of the toggle</param>
     /// <param name="theme">The theme the button will use</param>
+    /// <param name="playClickSound">Whether the click sound playes when the button is clicked.</param>
     /// <param name="tooltipDefinition">The tooltip definition of the toggle tooltip.</param>
     /// <param name="interactableBindings">List of bindings that decide if the button is interactable</param>
     internal static Toggle Bind(
@@ -39,6 +40,7 @@ public abstract class ImpToggle
         Transform container,
         IBinding<bool> valueBinding,
         IBinding<ImpTheme> theme = null,
+        bool playClickSound = true,
         TooltipDefinition tooltipDefinition = null,
         params ImpBinding<bool>[] interactableBindings
     )
@@ -62,7 +64,13 @@ public abstract class ImpToggle
         valueBinding.onUpdate += value => toggle.isOn = value;
 
         // Only play the click sound when the update was invoked by the local client
-        valueBinding.onUpdateFromLocal += _ => GameUtils.PlayClip(ImpAssets.GrassClick);
+        valueBinding.onUpdateFromLocal += _ =>
+        {
+            if (Imperium.Settings.Preferences.PlaySounds.Value && playClickSound)
+            {
+                GameUtils.PlayClip(ImpAssets.GrassClick);
+            }
+        };
 
         if (interactableBindings.Length > 0)
         {

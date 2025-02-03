@@ -28,6 +28,16 @@ internal class PreferencesWindow : ImperiumWindow
         ImpToggle.Bind("OptimizeLogsToggle", general, Imperium.Settings.Preferences.OptimizeLogs, theme);
         ImpToggle.Bind("TooltipsToggle", general, Imperium.Settings.Preferences.ShowTooltips, theme);
 
+        // Play click sounds needs to be the opposite of the setting here, as we are about to toggle it
+        ImpToggle.Bind(
+            "SoundsToggle",
+            general,
+            Imperium.Settings.Preferences.PlaySounds,
+            theme,
+            playClickSound:
+            !Imperium.Settings.Preferences.PlaySounds.Value
+        );
+
         ImpToggle.Bind(
             "UEMouseFixToggle",
             general,
