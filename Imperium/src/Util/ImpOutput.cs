@@ -77,6 +77,7 @@ internal class ImpOutput(ManualLogSource logger)
 
     internal void Log(LogLevel level, string text) => logger.Log(level, text);
     internal void LogInfo(string text) => logger.LogInfo(text);
+    internal void LogDebug(string text) => logger.LogDebug(text);
     internal void LogWarning(string text) => logger.LogWarning(text);
     internal void LogError(string text) => logger.LogError(text);
 }

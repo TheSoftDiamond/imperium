@@ -1,5 +1,17 @@
 # Changelog
 
+## Imperium v1.0 - The Release
+
+### Internal Fixes
+
+- Moved all network logging to the DEBUG level to decrease log volume.
+
+### API Changes
+
+### QoL Improvements
+
+
+
 ## Imperium v0.2.9 [Beta] - Pre-Release Patch
 
 ### Internal Fixes

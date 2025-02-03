@@ -41,7 +41,7 @@ public class ImpNetMessage<T> : INetworkSubscribable
     [ImpAttributes.RemoteMethod]
     internal void DispatchToServer(T data)
     {
-        Imperium.IO.LogInfo($"[NET] Client sends {identifier} data to server.");
+        Imperium.IO.LogDebug($"[NET] Client sends {identifier} data to server.");
         networkMessage.SendServer(data);
     }
 
@@ -50,12 +50,12 @@ public class ImpNetMessage<T> : INetworkSubscribable
     {
         if (NetworkManager.Singleton.IsHost)
         {
-            Imperium.IO.LogInfo($"[NET] Server sends {identifier} data to clients.");
+            Imperium.IO.LogDebug($"[NET] Server sends {identifier} data to clients.");
             networkMessage.SendClients(data);
         }
         else
         {
-            Imperium.IO.LogInfo($"[NET] Client sends {identifier} data to other clients.");
+            Imperium.IO.LogDebug($"[NET] Client sends {identifier} data to other clients.");
             networkMessage.SendOtherClients(data);
 
             OnClientRecive?.Invoke(data);
@@ -65,7 +65,7 @@ public class ImpNetMessage<T> : INetworkSubscribable
     [ImpAttributes.HostOnly]
     internal void DispatchToClients(T data, params ulong[] clientIds)
     {
-        Imperium.IO.LogInfo($"[NET] Server sends {identifier} data to clients ({string.Join(",", clientIds)}).");
+        Imperium.IO.LogDebug($"[NET] Server sends {identifier} data to clients ({string.Join(",", clientIds)}).");
         networkMessage.SendClients(data, clientIds);
     }
 

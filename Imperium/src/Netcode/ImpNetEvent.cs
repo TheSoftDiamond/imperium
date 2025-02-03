@@ -39,7 +39,7 @@ public class ImpNetEvent : INetworkSubscribable
     [ImpAttributes.RemoteMethod]
     internal void DispatchToServer()
     {
-        Imperium.IO.LogInfo($"[NET] Client sends {identifier} event to server.");
+        Imperium.IO.LogDebug($"[NET] Client sends {identifier} event to server.");
         networkEvent.InvokeServer();
     }
 
@@ -48,12 +48,12 @@ public class ImpNetEvent : INetworkSubscribable
     {
         if (NetworkManager.Singleton.IsHost)
         {
-            Imperium.IO.LogInfo($"[NET] Server sends {identifier} event to clients.");
+            Imperium.IO.LogDebug($"[NET] Server sends {identifier} event to clients.");
             networkEvent.InvokeClients();
         }
         else
         {
-            Imperium.IO.LogInfo($"[NET] Client sends {identifier} event to other clients.");
+            Imperium.IO.LogDebug($"[NET] Client sends {identifier} event to other clients.");
             networkEvent.InvokeOtherClients();
 
             OnClientRecive?.Invoke();
@@ -63,7 +63,7 @@ public class ImpNetEvent : INetworkSubscribable
     [ImpAttributes.HostOnly]
     internal void DispatchToClients(params ulong[] clientIds)
     {
-        Imperium.IO.LogInfo($"[NET] Server sends {identifier} event to clients ({string.Join(",", clientIds)}).");
+        Imperium.IO.LogDebug($"[NET] Server sends {identifier} event to clients ({string.Join(",", clientIds)}).");
         networkEvent.InvokeClients(clientIds);
     }
 

@@ -141,7 +141,6 @@ public class Imperium : BaseUnityPlugin
     internal static void DisableImperium()
     {
         IsImperiumEnabled = false;
-
         Interface.Destroy();
         PlayerManager.IsFlying.SetFalse();
         Freecam.IsFreecamEnabled.SetFalse();
