@@ -153,6 +153,7 @@ internal class ImpInterfaceManager : MonoBehaviour
     {
         Close();
         Imperium.Settings.Preferences.ImperiumWindowLayout.Reset();
+        Imperium.Reload();
     }
 
     public void Close(bool toggleCursorState)

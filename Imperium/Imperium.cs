@@ -5,6 +5,7 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using GameNetcodeStuff;
 using HarmonyLib;
+using Imperium.API.Types.Networking;
 using Imperium.Core;
 using Imperium.Core.EventLogging;
 using Imperium.Core.Input;
@@ -298,6 +299,8 @@ public class Imperium : BaseUnityPlugin
     {
         Unload();
         Launch();
+
+        IO.Send("Successfully reloaded Imperium.");
     }
 
     private static ImpInterfaceManager BuildInterfaces()
