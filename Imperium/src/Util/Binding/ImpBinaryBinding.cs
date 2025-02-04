@@ -1,6 +1,7 @@
 #region
 
 using System;
+using UnityEngine.UIElements;
 
 #endregion
 
@@ -37,5 +38,28 @@ public class ImpBinaryBinding : ImpBinding<bool>
         {
             onFalse?.Invoke();
         }
+    }
+
+    public static ImpBinaryBinding CreateOr(
+        IBinding<bool> binding1,
+        IBinding<bool> binding2,
+        bool invertBinding1 = false,
+        bool invertBinding2 = false
+    )
+    {
+        var binaryBinding = new ImpBinaryBinding(
+            invertBinding1 ? !binding1.Value : binding1.Value || invertBinding2 ? !binding2.Value : binding2.Value
+        );
+
+        binding1.onUpdate += value =>
+        {
+            binaryBinding.Set(invertBinding1 ? !value : value || invertBinding2 ? !binding2.Value : binding2.Value);
+        };
+        binding2.onUpdate += value =>
+        {
+            binaryBinding.Set(invertBinding2 ? !value : value || invertBinding1 ? !binding1.Value : binding1.Value);
+        };
+
+        return binaryBinding;
     }
 }

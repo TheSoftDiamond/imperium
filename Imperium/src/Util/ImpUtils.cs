@@ -229,50 +229,50 @@ public abstract class ImpUtils
         /**
          * Binds a dropdown's interactability to a binding. Includes title, label and arrow image, if present.
          */
-        internal static void BindDropdownInteractable(IBinding<bool> binding, Transform parent)
+        internal static void BindDropdownInteractable(IBinding<bool> binding, Transform parent, bool inverted = false)
         {
             var dropdown = parent.Find("Dropdown").GetComponent<TMP_Dropdown>();
-            dropdown.interactable = binding.Value;
+            dropdown.interactable = inverted ? !binding.Value : binding.Value;
 
             var title = parent.Find("Title")?.GetComponent<TMP_Text>();
-            if (title) ToggleTextActive(title, binding.Value);
+            if (title) ToggleTextActive(title, inverted ? !binding.Value : binding.Value);
 
             var label = parent.Find("Dropdown/Label")?.GetComponent<TMP_Text>();
-            if (label) ToggleTextActive(label, binding.Value);
+            if (label) ToggleTextActive(label, inverted ? !binding.Value : binding.Value);
 
             var arrow = parent.Find("Dropdown/Arrow")?.GetComponent<Image>();
-            if (arrow) ToggleImageActive(arrow, binding.Value);
+            if (arrow) ToggleImageActive(arrow, inverted ? !binding.Value : binding.Value);
 
             binding.onUpdate += isActive =>
             {
-                dropdown.interactable = isActive;
+                dropdown.interactable = inverted ? !isActive : isActive;
 
-                if (title) ToggleTextActive(title, isActive);
-                if (label) ToggleTextActive(label, isActive);
-                if (arrow) ToggleImageActive(arrow, isActive);
+                if (title) ToggleTextActive(title, inverted ? !isActive : isActive);
+                if (label) ToggleTextActive(label, inverted ? !isActive : isActive);
+                if (arrow) ToggleImageActive(arrow, inverted ? !isActive : isActive);
             };
         }
 
         /**
          * Binds an inputs' interactability to a binding. Includes title and text, if present.
          */
-        internal static void BindInputInteractable(IBinding<bool> binding, Transform parent)
+        internal static void BindInputInteractable(IBinding<bool> binding, Transform parent, bool inverted = false)
         {
             var input = parent.Find("Input").GetComponent<TMP_InputField>();
-            input.interactable = binding.Value;
+            input.interactable = inverted ? !binding.Value : binding.Value;
 
             var title = parent.Find("Title")?.GetComponent<TMP_Text>();
-            if (title) ToggleTextActive(title, binding.Value);
+            if (title) ToggleTextActive(title, inverted ? !binding.Value : binding.Value);
 
             var text = parent.Find("Input/Text Area/Text")?.GetComponent<TMP_Text>();
-            if (text) ToggleTextActive(text, binding.Value);
+            if (text) ToggleTextActive(text, inverted ? !binding.Value : binding.Value);
 
             binding.onUpdate += isActive =>
             {
-                input.interactable = isActive;
+                input.interactable = inverted ? !isActive : isActive;
 
-                if (title) ToggleTextActive(title, isActive);
-                if (text) ToggleTextActive(text, isActive);
+                if (title) ToggleTextActive(title, inverted ? !isActive : isActive);
+                if (text) ToggleTextActive(text, inverted ? !isActive : isActive);
             };
         }
 

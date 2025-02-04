@@ -51,6 +51,8 @@ internal static class ObjectEntryGenerator
 
     internal static bool CanRevive(ObjectEntry entry) => entry.Type switch
     {
+
+
         ObjectType.Player when entry.component is PlayerControllerB { isPlayerDead: true } => true,
         _ => false
     };

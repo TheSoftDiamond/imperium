@@ -4,8 +4,6 @@ using Imperium.Core.Lifecycle;
 using Imperium.Interface.Common;
 using Imperium.Interface.ImperiumUI.Windows.MoonControl.Widgets;
 using Imperium.Types;
-using Imperium.Util;
-using TMPro;
 
 #endregion
 
@@ -13,19 +11,15 @@ namespace Imperium.Interface.ImperiumUI.Windows.MoonControl;
 
 internal class MoonControlWindow : ImperiumWindow
 {
-    private TMP_InputField levelSeedInput;
-    private TMP_Text levelSeedTitle;
-    private TMP_Text levelSeedText;
-
     protected override void InitWindow()
     {
         InitSpawnPropertyFields();
         InitMapObstacleButtons();
         InitEntitySpawning();
-        InitGeneration();
 
         RegisterWidget<WeatherForecaster>(transform, "Right/Weather");
         RegisterWidget<TimeManipulation>(transform, "Right/Time");
+        RegisterWidget<LevelGeneration>(transform, "Left/Generation");
     }
 
     protected override void OnThemeUpdate(ImpTheme themeUpdate)
@@ -56,31 +50,6 @@ internal class MoonControlWindow : ImperiumWindow
             "Left/PauseDaytimeSpawning", transform,
             Imperium.MoonManager.DaytimeSpawningPaused,
             theme
-        );
-    }
-
-    private void InitGeneration()
-    {
-        levelSeedTitle = transform.Find("Right/Generation/Seed/Title").GetComponent<TMP_Text>();
-        levelSeedText = transform.Find("Right/Generation/Seed/Input/Text Area/Text").GetComponent<TMP_Text>();
-
-        ImpButton.Bind(
-            "Right/Generation/Seed/Reset",
-            transform,
-            () => Imperium.GameManager.CustomSeed.Reset(),
-            theme: theme,
-            interactableInvert: true,
-            interactableBindings: Imperium.IsSceneLoaded
-        );
-
-        levelSeedInput = ImpInput.Bind(
-            "Right/Generation/Seed/Input",
-            transform,
-            Imperium.GameManager.CustomSeed,
-            theme: theme,
-            interactableInvert: true,
-            negativeIsEmpty: true,
-            interactableBindings: Imperium.IsSceneLoaded
         );
     }
 
@@ -239,18 +208,8 @@ internal class MoonControlWindow : ImperiumWindow
 
     protected override void OnOpen()
     {
-        levelSeedInput.text = Imperium.IsSceneLoaded.Value
-            ? Imperium.StartOfRound.randomMapSeed.ToString()
-            : Imperium.GameManager.CustomSeed.Value != -1
-                ? Imperium.GameManager.CustomSeed.Value.ToString()
-                : "";
-
         Imperium.GameManager.ProfitQuota.Refresh();
         Imperium.GameManager.GroupCredits.Refresh();
         Imperium.GameManager.QuotaDeadline.Refresh();
-
-        levelSeedInput.interactable = !Imperium.IsSceneLoaded.Value;
-        ImpUtils.Interface.ToggleTextActive(levelSeedTitle, !Imperium.IsSceneLoaded.Value);
-        ImpUtils.Interface.ToggleTextActive(levelSeedText, !Imperium.IsSceneLoaded.Value);
     }
 }

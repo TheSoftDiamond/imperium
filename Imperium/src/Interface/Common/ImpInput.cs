@@ -116,6 +116,7 @@ public abstract class ImpInput
     /// <param name="min">Minimum input value</param>
     /// <param name="max">Maximum input value</param>
     /// <param name="interactableInvert">Whether the interactable binding values should be inverted</param>
+    /// <param name="negativeIsEmpty">Whether the input field should be cleared on updates with negative value</param>
     /// <param name="interactableBindings">List of boolean bindings that decide if the button is interactable</param>
     internal static TMP_InputField Bind(
         string path,
@@ -125,6 +126,7 @@ public abstract class ImpInput
         float min = float.MinValue,
         float max = float.MaxValue,
         bool interactableInvert = false,
+        bool negativeIsEmpty = false,
         params IBinding<bool>[] interactableBindings
     )
     {
@@ -154,7 +156,18 @@ public abstract class ImpInput
                     valueBinding.Set(parsed);
                 }
             });
-            valueBinding.onUpdate += value => input.text = value.ToString(CultureInfo.InvariantCulture);
+
+            valueBinding.onUpdate += value =>
+            {
+                if (value < 0 && negativeIsEmpty)
+                {
+                    input.text = "";
+                }
+                else
+                {
+                    input.text = value.ToString(CultureInfo.InvariantCulture);
+                }
+            };
         }
 
         if (interactableBindings.Length > 0)

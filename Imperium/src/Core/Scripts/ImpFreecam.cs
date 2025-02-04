@@ -1,5 +1,6 @@
 #region
 
+using Imperium.Integration;
 using Imperium.Interface.LayerSelector;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -40,6 +41,7 @@ public class ImpFreecam : MonoBehaviour
         FreecamCamera.cullingMask = Imperium.Settings.Freecam.FreecamLayerMask.Value;
         FreecamCamera.farClipPlane = 2000f;
         FreecamCamera.enabled = false;
+        CullFactoryIntegration.DisableCulling(FreecamCamera);
 
         var hdCameraData = FreecamCamera.gameObject.AddComponent<HDAdditionalCameraData>();
         hdCameraData.renderingPathCustomFrameSettingsOverrideMask.mask[(int)FrameSettingsField.Volumetrics] = true;
