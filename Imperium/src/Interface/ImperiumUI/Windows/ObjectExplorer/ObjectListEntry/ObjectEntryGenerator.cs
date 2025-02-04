@@ -32,6 +32,7 @@ internal static class ObjectEntryGenerator
         ObjectType.Vent => false,
         ObjectType.Player => false,
         ObjectType.SteamValve => false,
+        ObjectType.SecurityDoor => false,
         ObjectType.OutsideObject => false,
         _ => true
     };
@@ -100,6 +101,7 @@ internal static class ObjectEntryGenerator
             case ObjectType.SpikeTrap:
             case ObjectType.SteamValve:
             case ObjectType.Vent:
+            case ObjectType.SecurityDoor:
                 Imperium.ObjectManager.DespawnObstacle(entry.objectNetId!.Value);
                 break;
             default:
@@ -164,6 +166,7 @@ internal static class ObjectEntryGenerator
             case ObjectType.Player:
             case ObjectType.BreakerBox:
             case ObjectType.Item:
+            case ObjectType.SecurityDoor:
             case ObjectType.OutsideObject:
                 break;
             default:
@@ -194,6 +197,7 @@ internal static class ObjectEntryGenerator
             case ObjectType.Entity:
             case ObjectType.Player:
             case ObjectType.BreakerBox:
+            case ObjectType.SecurityDoor:
             case ObjectType.OutsideObject:
                 break;
             default:
@@ -218,6 +222,7 @@ internal static class ObjectEntryGenerator
             case ObjectType.Entity:
             case ObjectType.Item:
             case ObjectType.BreakerBox:
+            case ObjectType.SecurityDoor:
             case ObjectType.OutsideObject:
                 break;
             default:
@@ -242,6 +247,7 @@ internal static class ObjectEntryGenerator
             case ObjectType.Entity:
             case ObjectType.Item:
             case ObjectType.BreakerBox:
+            case ObjectType.SecurityDoor:
             case ObjectType.OutsideObject:
                 break;
             default:
@@ -277,6 +283,9 @@ internal static class ObjectEntryGenerator
                 break;
             case ObjectType.BreakerBox:
                 MoonManager.ToggleBreaker((BreakerBox)entry.component, isActive);
+                break;
+            case ObjectType.SecurityDoor:
+                ((TerminalAccessibleObject)entry.component).SetDoorToggleLocalClient();
                 break;
             case ObjectType.SpikeTrap:
             case ObjectType.SpiderWeb:
@@ -337,6 +346,7 @@ internal static class ObjectEntryGenerator
             case ObjectType.Turret:
             case ObjectType.SteamValve:
             case ObjectType.Vent:
+            case ObjectType.SecurityDoor:
                 Imperium.ImpPositionIndicator.Activate(position =>
                 {
                     Imperium.ObjectManager.TeleportObject(new ObjectTeleportRequest
@@ -383,6 +393,7 @@ internal static class ObjectEntryGenerator
             case ObjectType.SpiderWeb:
             case ObjectType.Player:
             case ObjectType.Cruiser:
+            case ObjectType.SecurityDoor:
             case ObjectType.OutsideObject:
                 break;
             default:
@@ -405,6 +416,7 @@ internal static class ObjectEntryGenerator
             case ObjectType.Player:
             case ObjectType.Cruiser:
             case ObjectType.Item:
+            case ObjectType.SecurityDoor:
             case ObjectType.OutsideObject:
                 break;
             default:
@@ -424,6 +436,7 @@ internal static class ObjectEntryGenerator
         ObjectType.SpikeTrap => $"Spike Trap (<i>ID: {entry.component.GetInstanceID()})</i>",
         ObjectType.SteamValve => $"Steam Valve (<i>ID: {entry.component.GetInstanceID()})</i>",
         ObjectType.Turret => $"Turret (<i>ID: {entry.component.GetInstanceID()})</i>",
+        ObjectType.SecurityDoor => $"Security Door (<i>ID: {entry.component.GetInstanceID()})</i>",
         ObjectType.OutsideObject => GetOutsideObjectName(entry.component.gameObject),
         ObjectType.Vent => GetVentName((EnemyVent)entry.component),
         _ => throw new ArgumentOutOfRangeException()
@@ -445,7 +458,8 @@ internal static class ObjectEntryGenerator
 
     private static string GetOutsideObjectName(GameObject obj)
     {
-        return Imperium.ObjectManager.GetOverrideDisplayName(obj.name) ?? obj.name;
+        var displayName = Imperium.ObjectManager.GetOverrideDisplayName(obj.name) ?? obj.name;
+        return $"{displayName} (ID: {obj.GetInstanceID()})";
     }
 
     private static string GetVentName(EnemyVent vent)
@@ -455,7 +469,7 @@ internal static class ObjectEntryGenerator
             return $"Vent <i>{vent.GetInstanceID()}</i> ({vent.enemyType.enemyName})";
         }
 
-        return $"Vent <i>{vent.GetInstanceID()}</i>";
+        return $"Vent <i>{vent.GetInstanceID()}</i> (Empty)";
     }
 
     private static string GetEntityName(EnemyAI entity)

@@ -20,6 +20,7 @@ Thanks to the continuous support from so many of you loyal employees, mod devs a
 - Fixed notification settings not applying without restarting.
 - Fixed a bug that caused the UI reload button to not work.
 - Removed the Optimize Logs settings and removed log deletions.
+- Fixed a bug that prevented local objects from being able to be deleted.
 
 ### API Changes
 

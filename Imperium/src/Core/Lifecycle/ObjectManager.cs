@@ -505,7 +505,7 @@ internal class ObjectManager : ImpLifecycleObject
                     case DoorLock doorLock:
                         currentLevelDoors.Add(doorLock);
                         break;
-                    case TerminalAccessibleObject securityDoor:
+                    case TerminalAccessibleObject { isBigDoor: true } securityDoor:
                         currentLevelSecurityDoors.Add(securityDoor);
                         break;
                     case Turret turret:
@@ -745,7 +745,7 @@ internal class ObjectManager : ImpLifecycleObject
     }
 
     [ImpAttributes.LocalMethod]
-    private static void DespawnLocalObject(LocalObjectType type, Vector3 position, GameObject obj)
+    private void DespawnLocalObject(LocalObjectType type, Vector3 position, GameObject obj)
     {
         if (!obj)
         {
@@ -756,6 +756,7 @@ internal class ObjectManager : ImpLifecycleObject
         }
 
         Destroy(obj);
+        RefreshLevelObjects();
     }
 
     [ImpAttributes.LocalMethod]
@@ -1204,9 +1205,10 @@ internal class ObjectManager : ImpLifecycleObject
         switch (request.Type)
         {
             case LocalObjectType.OutsideObject:
-                DespawnLocalObject(request.Type, request.Position, CurrentLevelOutsideObjects.Value.FirstOrDefault(
-                    obj => obj.transform.position == request.Position
-                ));
+                DespawnLocalObject(request.Type, request.Position, CurrentLevelOutsideObjects.Value
+                    .Where(obj => obj)
+                    .FirstOrDefault(obj => obj.transform.position == request.Position)
+                );
                 break;
             default:
                 Imperium.IO.LogError($"[NET] Despawn request has invalid outside object type '{request.Type}'");

@@ -52,6 +52,7 @@ internal class ObjectEntryEngine
         AddType(Imperium.ObjectManager.CurrentLevelVents, ObjectType.Vent, ObjectCategory.Vents);
         AddType(Imperium.ObjectManager.CurrentLevelBreakerBoxes, ObjectType.BreakerBox, ObjectCategory.Other);
         AddType(Imperium.ObjectManager.CurrentLevelSteamValves, ObjectType.SteamValve, ObjectCategory.Other);
+        AddType(Imperium.ObjectManager.CurrentLevelSecurityDoors, ObjectType.SecurityDoor, ObjectCategory.Other);
         // As the entry requires a component to function and these object's don't use a script, we use their transform.
         AddType(
             Imperium.ObjectManager.CurrentLevelOutsideObjects,

@@ -97,6 +97,7 @@ public enum ObjectType
     SpiderWeb,
     SpikeTrap,
     SteamValve,
+    SecurityDoor,
     OutsideObject,
     Turret,
     Vent
