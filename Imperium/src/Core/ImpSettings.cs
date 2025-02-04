@@ -291,13 +291,6 @@ public class ImpSettings(ConfigFile config)
             true
         );
 
-        internal readonly ImpConfig<bool> RealtimeUpdates = new(
-            config,
-            "Visualization.Visualizers",
-            "RealtimeUpdates",
-            false
-        );
-
         internal readonly ImpConfig<bool> SSAlwaysOnTop = new(
             config,
             "Visualization.Insights",

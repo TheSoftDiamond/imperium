@@ -2,6 +2,10 @@
 
 ## Imperium v1.0 - The Release
 
+We've come a long way since the release of the first Imperium prototype in early April 2024 to where we are today. Imperium was my first modding project for any game and it was just meant to be a fun little tool to explore the wonderful mechanics of this amazing game. I guess I could not have been more wrong ;)
+
+Thanks to the continuous support from so many of you loyal employees, mod devs and content creators, which were able to use Imperium for a much wide variety of tasks, I was able to expand this initial idea into a fully fledged swiss-army knife for debugging Lethal Company.
+
 ### General Changes
 
 - Removed support for vain shrouds since they are no longer used in the base game.
@@ -13,6 +17,7 @@
 - Made it so entities without prefabs are not showing up in the spawn menu.
 - Made it so the map camera's near and far clip can't overlap anymore.
 - Fixed notification settings not applying without restarting.
+- Fixed a bug that caused the UI reload button to not work.
 
 ### API Changes
 
@@ -22,7 +27,8 @@
 
 - Improved tooltip experience with new smooth transitions and delays.
 - Various UI layout fixes and adjustments to improve usability.
-- Made UI sounds more consistent and toggleable. 
+- Made UI sounds more consistent and toggleable.
+- Increased shown items in spawn UI from 6 to 8.
 
 ## Imperium v0.2.8 [Beta] - V66 Compatibility Patch
 

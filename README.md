@@ -25,7 +25,7 @@ Imperium works on the client-side and server-side, meaning it works in singlepla
 - Event log that logs in-game events related to entity spawning, targeting and more.
 - Entity, scrap and map hazard; spawning, de-spawning and teleportation.
 - Instant ship landing and takeoff and various other animation skips.
-- Ability to kill and revive players including the yourself.
+- Ability to kill and revive players including yourself.
 - Entity spawn prediction powered by the Oracle Prediction Algorithm.
 - Easy adjustment of game variables such as credits, quota deadline, spawn rates and many more.
 - Player tweaks such as god mode, infinite sprint, infinite battery, night vision, invisibility, custom movement speed, custom jump height, and many more.
