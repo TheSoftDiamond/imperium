@@ -62,6 +62,7 @@ internal static class ObjectEntryGenerator
         ObjectType.Item => false,
         ObjectType.SpiderWeb => false,
         ObjectType.SpikeTrap => false,
+        ObjectType.Vent => false,
         ObjectType.OutsideObject => false,
         _ => true
     };
@@ -274,7 +275,6 @@ internal static class ObjectEntryGenerator
                 }
 
                 break;
-            case ObjectType.Vent:
             case ObjectType.Entity:
                 var entity = (EnemyAI)entry.component;
                 entity.enabled = isActive;
@@ -292,6 +292,7 @@ internal static class ObjectEntryGenerator
             case ObjectType.Player:
             case ObjectType.Cruiser:
             case ObjectType.Item:
+            case ObjectType.Vent:
             case ObjectType.OutsideObject:
                 break;
             default:
