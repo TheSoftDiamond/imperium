@@ -7,10 +7,14 @@ using System.Reflection.Emit;
 using GameNetcodeStuff;
 using HarmonyLib;
 using Imperium.Core;
+using Imperium.Util.Binding;
 using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
+using Cursor = UnityEngine.Cursor;
+using Image = UnityEngine.UI.Image;
 using Random = System.Random;
 
 #endregion
@@ -222,6 +226,56 @@ public abstract class ImpUtils
 
     internal abstract class Interface
     {
+        /**
+         * Binds a dropdown's interactability to a binding. Includes title, label and arrow image, if present.
+         */
+        internal static void BindDropdownInteractable(IBinding<bool> binding, Transform parent)
+        {
+            var dropdown = parent.Find("Dropdown").GetComponent<TMP_Dropdown>();
+            dropdown.interactable = binding.Value;
+
+            var title = parent.Find("Title")?.GetComponent<TMP_Text>();
+            if (title) ToggleTextActive(title, binding.Value);
+
+            var label = parent.Find("Dropdown/Label")?.GetComponent<TMP_Text>();
+            if (label) ToggleTextActive(label, binding.Value);
+
+            var arrow = parent.Find("Dropdown/Arrow")?.GetComponent<Image>();
+            if (arrow) ToggleImageActive(arrow, binding.Value);
+
+            binding.onUpdate += isActive =>
+            {
+                dropdown.interactable = isActive;
+
+                if (title) ToggleTextActive(title, isActive);
+                if (label) ToggleTextActive(label, isActive);
+                if (arrow) ToggleImageActive(arrow, isActive);
+            };
+        }
+
+        /**
+         * Binds an inputs' interactability to a binding. Includes title and text, if present.
+         */
+        internal static void BindInputInteractable(IBinding<bool> binding, Transform parent)
+        {
+            var input = parent.Find("Input").GetComponent<TMP_InputField>();
+            input.interactable = binding.Value;
+
+            var title = parent.Find("Title")?.GetComponent<TMP_Text>();
+            if (title) ToggleTextActive(title, binding.Value);
+
+            var text = parent.Find("Input/Text Area/Text")?.GetComponent<TMP_Text>();
+            if (text) ToggleTextActive(text, binding.Value);
+
+            binding.onUpdate += isActive =>
+            {
+                input.interactable = isActive;
+
+                if (title) ToggleTextActive(title, isActive);
+                if (text) ToggleTextActive(text, isActive);
+            };
+        }
+
         internal static void ToggleImageActive(Image image, bool isOn)
         {
             image.color = ChangeAlpha(

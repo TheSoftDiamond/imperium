@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using BepInEx.Configuration;
 using Imperium.Core.Lifecycle;
+using Imperium.Interface.ImperiumUI.Windows.Preferences;
 using Imperium.Patches.Objects;
 using Imperium.Types;
 using Imperium.Util;
@@ -927,7 +928,6 @@ public class ImpSettings(ConfigFile config)
         internal readonly ImpConfig<bool> GeneralLogging = new(config, "Preferences.General", "GeneralLogging", true);
         internal readonly ImpConfig<bool> OracleLogging = new(config, "Preferences.General", "OracleLogging", false);
         internal readonly ImpConfig<bool> LeftHandedMode = new(config, "Preferences.General", "LeftHandedMode", false);
-        internal readonly ImpConfig<bool> OptimizeLogs = new(config, "Preferences.General", "OptimizeLogsToggle", true);
         internal readonly ImpConfig<bool> CustomWelcome = new(config, "Preferences.General", "CustomWelcome", true);
         internal readonly ImpConfig<bool> ShowTooltips = new(config, "Preferences.General", "Tooltips", true);
         internal readonly ImpConfig<bool> PlaySounds = new(config, "Preferences.General", "Sounds", true);
@@ -1024,18 +1024,53 @@ public class ImpSettings(ConfigFile config)
             true
         );
 
-        internal readonly ImpConfig<bool> QuickloadSkipStart = new(
+        internal readonly ImpConfig<bool> QuickloadSkipSplash = new(
             config,
             "Preferences.Quickload",
-            "SkipStart",
+            "SkipSplash",
             false,
             allowWhenDisabled: true
         );
 
-        internal readonly ImpConfig<bool> QuickloadSkipMenu = new(config, "Preferences.Quickload", "SkipMenu", false);
-        internal readonly ImpConfig<bool> QuickloadOnQuit = new(config, "Preferences.Quickload", "OnQuit", false);
-        internal readonly ImpConfig<bool> QuickloadCleanFile = new(config, "Preferences.Quickload", "CleanFile", false);
-        internal readonly ImpConfig<int> QuickloadSaveNumber = new(config, "Preferences.Quickload", "SaveFileNumber", 4);
+        internal readonly ImpConfig<bool> QuickloadAutoLaunch = new(
+            config,
+            "Preferences.Quickload",
+            "AutoLaunch",
+            false,
+            allowWhenDisabled: true
+        );
+
+        internal readonly ImpConfig<bool> QuickloadAutoLoad = new(
+            config,
+            "Preferences.Quickload",
+            "AutoLoad",
+            false,
+            allowWhenDisabled: true
+        );
+
+        internal readonly ImpConfig<bool> QuickloadCleanSave = new(
+            config,
+            "Preferences.Quickload",
+            "CleanSave",
+            false,
+            allowWhenDisabled: true
+        );
+
+        internal readonly ImpConfig<int> QuickloadSaveNumber = new(
+            config,
+            "Preferences.Quickload",
+            "SaveNumber",
+            4,
+            allowWhenDisabled: true
+        );
+
+        internal readonly ImpConfig<LaunchMode> QuickloadLaunchMode = new(
+            config,
+            "Preferences.Quickload",
+            "LaunchMode",
+            LaunchMode.Online,
+            allowWhenDisabled: true
+        );
 
         internal readonly ImpConfig<bool> DisableLeFunni = new(
             config,

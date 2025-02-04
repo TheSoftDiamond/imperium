@@ -13,7 +13,7 @@ public abstract class ImpConstants
     internal abstract class Opacity
     {
         internal const float Enabled = 1;
-        internal const float TextDisabled = 0.1f;
+        internal const float TextDisabled = 0.2f;
         internal const float ImageDisabled = 0.3f;
     }
 

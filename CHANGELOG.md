@@ -9,6 +9,7 @@ Thanks to the continuous support from so many of you loyal employees, mod devs a
 ### General Changes
 
 - Removed support for vain shrouds since they are no longer used in the base game.
+- Rewrote Quickload logic and cleaned up preferences.
 
 ### Internal Fixes
 
@@ -18,6 +19,7 @@ Thanks to the continuous support from so many of you loyal employees, mod devs a
 - Made it so the map camera's near and far clip can't overlap anymore.
 - Fixed notification settings not applying without restarting.
 - Fixed a bug that caused the UI reload button to not work.
+- Removed the Optimize Logs settings and removed log deletions.
 
 ### API Changes
 
@@ -26,6 +28,7 @@ Thanks to the continuous support from so many of you loyal employees, mod devs a
 ### QoL Improvements
 
 - Improved tooltip experience with new smooth transitions and delays.
+- Added and updated various tooltips to increase the overall UI usability. 
 - Various UI layout fixes and adjustments to improve usability.
 - Made UI sounds more consistent and toggleable.
 - Increased shown items in spawn UI from 6 to 8.

@@ -60,7 +60,11 @@ public abstract class ImpToggle
         toggle.isOn = valueBinding.Value;
 
         var interactable = toggleObject.gameObject.AddComponent<ImpInteractable>();
-        interactable.onClick += () => valueBinding.Set(!valueBinding.Value);
+        interactable.onClick += () =>
+        {
+            if (!toggle.interactable) return;
+            valueBinding.Set(!valueBinding.Value);
+        };
         valueBinding.onUpdate += value => toggle.isOn = value;
 
         // Only play the click sound when the update was invoked by the local client

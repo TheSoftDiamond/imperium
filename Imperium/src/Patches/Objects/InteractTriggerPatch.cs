@@ -47,18 +47,4 @@ internal static class InteractTriggerPatch
             playerController.playerBodyAnimator.ResetTrigger(__instance.animationString);
         }
     }
-
-    [HarmonyPrefix]
-    [HarmonyPatch("HoldInteractNotFilled")]
-    internal static void HoldInteractNotFilledPrefixPatch(InteractTrigger __instance)
-    {
-        if (Imperium.Settings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = false;
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch("HoldInteractNotFilled")]
-    internal static void HoldInteractNotFilledPostfixPatch(InteractTrigger __instance)
-    {
-        if (Imperium.Settings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = true;
-    }
 }

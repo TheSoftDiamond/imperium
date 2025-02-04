@@ -26,6 +26,7 @@ using Imperium.Visualizers.Objects.NoiseOverlay;
 using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering.HighDefinition;
 
 #endregion
 
@@ -66,6 +67,7 @@ public class Imperium : BaseUnityPlugin
     internal static ImpSettings Settings { get; private set; }
     internal static ImpOutput IO { get; private set; }
     internal static ImpNetworking Networking { get; set; }
+    internal static StartupManager StartupManager { get; private set; }
 
     /*
      * Lifecycle systems. Instantiated when Imperium is launched.
@@ -129,6 +131,7 @@ public class Imperium : BaseUnityPlugin
          */
         Settings = new ImpSettings(Config);
         IO = new ImpOutput(Log);
+        StartupManager = new StartupManager();
 
         InputBindings = new ImpInputBindings();
         InputBindings.BaseMap.Disable();
@@ -280,8 +283,6 @@ public class Imperium : BaseUnityPlugin
     internal static void Unload()
     {
         if (!IsImperiumLaunched) return;
-
-        PreInitPatches.ReturnedFromGame = true;
 
         Harmony.UnpatchSelf();
 

@@ -217,34 +217,6 @@ internal static class EnemyAIPatch
         }
     }
 
-    [HarmonyPrefix]
-    [HarmonyPatch("MeetsStandardPlayerCollisionConditions")]
-    private static void MeetsStandardPlayerCollisionConditionsPrefix()
-    {
-        if (Imperium.Settings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = false;
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch("MeetsStandardPlayerCollisionConditions")]
-    private static void MeetsStandardPlayerCollisionConditionsPostfix()
-    {
-        if (Imperium.Settings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = true;
-    }
-
-    [HarmonyPrefix]
-    [HarmonyPatch("Update")]
-    private static void UpdatePrefixPatch(EnemyAI __instance)
-    {
-        if (Imperium.Settings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = false;
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch("Update")]
-    private static void UpdatePostfixPatch()
-    {
-        if (Imperium.Settings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = true;
-    }
-
     /*
      * Player Invisibility Patches
      */
