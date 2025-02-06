@@ -6,6 +6,7 @@ using Imperium.Interface.Common;
 using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
+using JetBrains.Annotations;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
@@ -139,8 +140,10 @@ internal class ObjectEntry : MonoBehaviour
         rect.anchoredPosition = new Vector2(0, -positionY);
     }
 
-    internal void SetItem(Component entryComponent, ObjectType type, ImpTooltip tooltipObj, float positionY)
+    internal void SetItem([CanBeNull] Component entryComponent, ObjectType type, ImpTooltip tooltipObj, float positionY)
     {
+        if (!entryComponent) return;
+
         Type = type;
         component = entryComponent;
 

@@ -24,20 +24,18 @@ public class SpikeTrapGizmo : MonoBehaviour
 
     private void Update()
     {
-        var slamOnIntervals = Reflection.Get<SpikeRoofTrap, bool>(spikeTrap, "slamOnIntervals");
-        playerRay.gameObject.SetActive(!slamOnIntervals);
+        playerRay.gameObject.SetActive(!spikeTrap.slamOnIntervals);
         sphere.SetActive(true);
 
-        var slamInterval = Reflection.Get<SpikeRoofTrap, float>(spikeTrap, "slamInterval");
         bool isReady;
 
-        if (slamOnIntervals)
+        if (spikeTrap.slamOnIntervals)
         {
             sphere.GetComponent<MeshRenderer>().material =
                 !Physics.CheckSphere(spikeTrap.laserEye.position, 8f, 524288, QueryTriggerInteraction.Collide)
                     ? ImpAssets.WireframeRed
                     : ImpAssets.WireframeGreen;
-            isReady = Time.realtimeSinceStartup - spikeTrap.timeSinceMovingUp > slamInterval;
+            isReady = Time.realtimeSinceStartup - spikeTrap.timeSinceMovingUp > spikeTrap.slamInterval;
         }
         else
         {
@@ -67,7 +65,7 @@ public class SpikeTrapGizmo : MonoBehaviour
         else
         {
             var timeLeft = Mathf.Max(
-                slamInterval
+                spikeTrap.slamInterval
                 - Time.realtimeSinceStartup
                 + spikeTrap.timeSinceMovingUp,
                 0

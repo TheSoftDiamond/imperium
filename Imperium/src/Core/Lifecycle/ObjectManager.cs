@@ -1,5 +1,6 @@
 #region
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -21,43 +22,40 @@ using Random = UnityEngine.Random;
 
 namespace Imperium.Core.Lifecycle;
 
+/// <summary>
+/// Lifecycle object that manages all object-related functionality. Keeps track of loaded and currently active objects.
+/// </summary>
 internal class ObjectManager : ImpLifecycleObject
 {
-    /*
-     * Entity name system.
-     */
-    private readonly List<string> AvailableEntityNames = ImpAssets.EntityNames.Select(name => name).ToList();
-    private readonly Dictionary<int, string> EntityNameMap = [];
-    private bool JohnExists;
-
     /*
      * Lists of globally loaded objects.
      *
      * These lists hold all the entities that can be spawned in Lethal Company, including the ones that are not in any
      * spawn list of any moon (e.g. Red Pill, Lasso Man).
      *
-     * Loaded on Imperium initialization.
+     * Loaded when Imperium initializes (Stage 1).
      */
     internal readonly ImpBinding<IReadOnlyCollection<Item>> LoadedItems = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<Item>> LoadedScrap = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<EnemyType>> LoadedEntities = new([]);
     internal readonly ImpBinding<IReadOnlyDictionary<string, GameObject>> LoadedMapHazards = new();
 
-    // Misc objects with network objects (e.g. clipboard, body, company cruiser)
+    // Lists of bjects with network behaviours (e.g. clipboard, body, company cruiser)
     internal readonly ImpBinding<IReadOnlyDictionary<string, GameObject>> LoadedStaticPrefabs = new();
     internal readonly ImpBinding<IReadOnlyDictionary<string, SpawnableOutsideObject>> LoadedOutsideObjects = new();
 
-    // Misc objects without network objects (e.g. trees, vain shrouds, rocks)
+    // Lists of bjects without network behaviours (e.g. trees, vain shrouds, rocks)
     internal readonly ImpBinding<IReadOnlyDictionary<string, GameObject>> LoadedLocalStaticPrefabs = new();
 
     /*
      * Lists of objects loaded in the current scene.
      *
-     * These lists hold the currently existing objects on the map
+     * These lists hold the currently existing objects in the scene.
      * These are used by the object list in Imperium UI and is always up-to-date but
      * CAN CONTAIN NULL elements that have been marked for but not yet deleted during the last refresh.
+     * Always ensure to check for null values before using the values in these lists.
      *
-     * Loaded on Imperium initialization. Refreshed when the ship is landing / taking off.
+     * Loaded when Imperium launches (Stage 2).
      */
     internal readonly ImpBinding<IReadOnlyCollection<Turret>> CurrentLevelTurrets = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<DoorLock>> CurrentLevelDoors = new([]);
@@ -73,11 +71,13 @@ internal class ObjectManager : ImpLifecycleObject
     internal readonly ImpBinding<IReadOnlyCollection<SandSpiderWebTrap>> CurrentLevelSpiderWebs = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<TerminalAccessibleObject>> CurrentLevelSecurityDoors = new([]);
 
-    // Local objects without a network object or script to reference
+    /*
+     * Lists of local objects that don't have a network object or script to reference
+     */
     internal readonly ImpBinding<IReadOnlyCollection<GameObject>> CurrentLevelOutsideObjects = new([]);
 
-    // Event that is fired when multiple types of objects have been changed
-    internal readonly ImpEvent CurrentLevelObjectsChanged = new();
+    // Event that signalizes a change in any of the object lists
+    internal event Action CurrentLevelObjectsChanged;
 
     /*
      * Misc scene objects.
@@ -161,6 +161,13 @@ internal class ObjectManager : ImpLifecycleObject
         "treeLeafless.002_LOD0(Clone)",
         "treeLeafless.003_LOD0(Clone)"
     ];
+
+    /*
+     * Collections for the entity name system.
+     */
+    private readonly List<string> AvailableEntityNames = ImpAssets.EntityNames.Select(entityName => entityName).ToList();
+    private readonly Dictionary<int, string> EntityNameMap = [];
+    private bool JohnExists;
 
     protected override void Init()
     {
@@ -464,7 +471,7 @@ internal class ObjectManager : ImpLifecycleObject
         }
 
         CurrentLevelEntities.Set(currentLevelEntities);
-        CurrentLevelObjectsChanged.Trigger();
+        CurrentLevelObjectsChanged?.Invoke();
     }
 
     private readonly LayerMask terrainMask = LayerMask.NameToLayer("Terrain");
@@ -566,7 +573,7 @@ internal class ObjectManager : ImpLifecycleObject
         stopwatch.Stop();
         Imperium.IO.LogInfo($"REFRESH : {stopwatch.ElapsedMilliseconds}");
 
-        CurrentLevelObjectsChanged.Trigger();
+        CurrentLevelObjectsChanged?.Invoke();
 
         stopwatch2.Stop();
         Imperium.IO.LogInfo($"TOTAL REFRESH : {stopwatch2.ElapsedMilliseconds}");
@@ -818,7 +825,7 @@ internal class ObjectManager : ImpLifecycleObject
             if (request.SpawnInInventory)
             {
                 var invokingPlayer = Imperium.StartOfRound.allPlayerScripts[clientId];
-                var firstItemSlot = Reflection.Invoke<PlayerControllerB, int>(invokingPlayer, "FirstEmptyItemSlot");
+                var firstItemSlot = invokingPlayer.FirstEmptyItemSlot();
                 if (firstItemSlot != -1 && grabbableItem.grabbable)
                 {
                     grabbableItem.InteractItem();

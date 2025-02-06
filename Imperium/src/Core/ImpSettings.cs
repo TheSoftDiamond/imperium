@@ -53,7 +53,7 @@ public class ImpSettings(ConfigFile config)
             "Player",
             "EnableFlying",
             false,
-            onUpdate: value =>
+            primaryUpdate: value =>
             {
                 if (!value) Imperium.PlayerManager.IsFlying.SetFalse();
             }
@@ -219,7 +219,7 @@ public class ImpSettings(ConfigFile config)
             "Game.Cruiser",
             "InstantIgnite",
             false,
-            onUpdate: value =>
+            primaryUpdate: value =>
             {
                 if (value)
                 {

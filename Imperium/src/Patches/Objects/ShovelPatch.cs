@@ -40,11 +40,10 @@ internal static class ShovelPatch
             __instance.playerHeldBy.playerBodyAnimator.speed = 3;
             __instance.reelingUp = true;
 
-            Reflection.Set(__instance, "previousPlayerHeldBy", __instance.playerHeldBy);
+            __instance.previousPlayerHeldBy = __instance.playerHeldBy;
 
-            var coroutine = Reflection.Get<Shovel, Coroutine>(__instance, "reelingUpCoroutine");
-            if (coroutine != null) __instance.StopCoroutine(coroutine);
-            Reflection.Set(__instance, "reelingUpCorpoutine", __instance.StartCoroutine(reelUpShovelPatch(__instance)));
+            if (__instance.reelingUpCoroutine != null) __instance.StopCoroutine(__instance.reelingUpCoroutine);
+            __instance.reelingUpCoroutine = __instance.StartCoroutine(reelUpShovelPatch(__instance));
         }
 
         return false;
@@ -66,7 +65,7 @@ internal static class ShovelPatch
         yield return new WaitForEndOfFrame();
         shovel.HitShovel(!shovel.isHeld);
         shovel.reelingUp = false;
-        Reflection.Set<Shovel, Coroutine>(shovel, "reelingUpCoroutine", null);
+        shovel.reelingUpCoroutine = null;
 
         yield return null;
     }

@@ -14,10 +14,13 @@ namespace Imperium.Util.Binding;
 public class ImpBinding<T> : IBinding<T>
 {
     public event Action<T> onUpdate;
-    public event Action<T> onUpdateFromLocal;
+    public event Action<T> onUpdateSecondary;
     public event Action onTrigger;
-    public event Action onTriggerFromLocal;
+    public event Action onTriggerSecondary;
 
+    /// <summary>
+    /// If this is set to true, calls to <see cref="Refresh"/> won't invoke any events.
+    /// </summary>
     private readonly bool ignoreRefresh;
 
     public T DefaultValue { get; }
@@ -30,8 +33,8 @@ public class ImpBinding<T> : IBinding<T>
     public ImpBinding(
         T currentValue = default,
         T defaultValue = default,
-        Action<T> onUpdate = null,
-        Action<T> onUpdateFromLocal = null,
+        Action<T> primaryUpdate = null,
+        Action<T> onUpdateSecondary = null,
         bool ignoreRefresh = false
     )
     {
@@ -42,8 +45,26 @@ public class ImpBinding<T> : IBinding<T>
 
         this.ignoreRefresh = ignoreRefresh;
 
-        this.onUpdate += onUpdate;
-        this.onUpdateFromLocal += onUpdateFromLocal;
+        this.onUpdate += primaryUpdate;
+        this.onUpdateSecondary += onUpdateSecondary;
+    }
+
+    public virtual void Set(T updatedValue, bool invokePrimary = true, bool invokeSecondary = true)
+    {
+        var isSame = EqualityComparer<T>.Default.Equals(updatedValue, Value);
+        Value = updatedValue;
+
+        if (invokePrimary)
+        {
+            onUpdate?.Invoke(Value);
+            onTrigger?.Invoke();
+        }
+
+        if (invokeSecondary && !isSame)
+        {
+            onUpdateSecondary?.Invoke(updatedValue);
+            onTriggerSecondary?.Invoke();
+        }
     }
 
     public virtual void Refresh()
@@ -51,23 +72,8 @@ public class ImpBinding<T> : IBinding<T>
         if (!ignoreRefresh) Set(Value);
     }
 
-    public void Reset(bool invokeUpdate = true) => Set(DefaultValue, invokeUpdate);
-
-    public virtual void Set(T updatedValue, bool invokeUpdate = true, bool invokeLocal = true)
+    public void Reset(bool invokePrimary = true, bool invokeSecondary = true)
     {
-        var isSame = EqualityComparer<T>.Default.Equals(updatedValue, Value);
-        Value = updatedValue;
-
-        if (invokeUpdate)
-        {
-            onUpdate?.Invoke(Value);
-            onTrigger?.Invoke();
-        }
-
-        if (invokeLocal && !isSame)
-        {
-            onUpdateFromLocal?.Invoke(updatedValue);
-            onTriggerFromLocal?.Invoke();
-        }
+        Set(DefaultValue, invokePrimary, invokeSecondary);
     }
 }

@@ -95,7 +95,7 @@ internal class PlayerManager : ImpLifecycleObject
         NetworkObjectReference networkObject = grabbableItem.NetworkObject;
 
         player.carryWeight += Mathf.Clamp(grabbableItem.itemProperties.weight - 1f, 0f, 10f);
-        Reflection.Invoke(player, "GrabObjectServerRpc", networkObject);
+        player.GrabObjectServerRpc(networkObject);
 
         grabbableItem.parentObject = player.localItemHolder;
         grabbableItem.GrabItemOnClient();
@@ -220,9 +220,9 @@ internal class PlayerManager : ImpLifecycleObject
         var previousSlot = player.currentItemSlot;
 
         // Switch to item slot, discard item and switch back
-        Reflection.Invoke(player, "SwitchToItemSlot", request.ItemIndex, null);
+        player.SwitchToItemSlot(request.ItemIndex);
         player.DiscardHeldObject();
-        Reflection.Invoke(player, "SwitchToItemSlot", previousSlot, null);
+        player.SwitchToItemSlot(previousSlot);
     }
 
     [ImpAttributes.HostOnly]
@@ -345,7 +345,7 @@ internal class PlayerManager : ImpLifecycleObject
 
         Imperium.StartOfRound.allPlayersDead = false;
         Imperium.StartOfRound.UpdatePlayerVoiceEffects();
-        Reflection.Invoke(Imperium.StartOfRound, "ResetMiscValues");
+        Imperium.StartOfRound.ResetMiscValues();
 
         // Respawn UI because for some reason this is not happening already
         Imperium.Settings.Rendering.PlayerHUD.Set(false);

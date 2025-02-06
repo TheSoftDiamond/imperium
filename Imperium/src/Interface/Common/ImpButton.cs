@@ -7,6 +7,7 @@ using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using JetBrains.Annotations;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -56,18 +57,20 @@ public abstract class ImpButton
         });
 
         var icon = buttonObject.Find("Icon")?.GetComponent<Image>();
+        var text = buttonObject.Find("Text")?.GetComponent<TMP_Text>() ??
+                   buttonObject.Find("Text (TMP)")?.GetComponent<TMP_Text>();
 
         if (interactableBindings.Length > 0)
         {
             ToggleInteractable(
-                button, icon,
+                button, icon, text,
                 interactableBindings.All(entry => entry.Value),
                 interactableInvert
             );
             foreach (var interactableBinding in interactableBindings)
             {
                 interactableBinding.onUpdate += _ => ToggleInteractable(
-                    button, icon,
+                    button, icon, text,
                     interactableBindings.All(entry => entry.Value),
                     interactableInvert
                 );
@@ -122,18 +125,20 @@ public abstract class ImpButton
         });
 
         var icon = buttonObject.Find("Icon")?.GetComponent<Image>();
+        var text = buttonObject.Find("Text")?.GetComponent<TMP_Text>() ??
+                   buttonObject.Find("Text (TMP)")?.GetComponent<TMP_Text>();
 
         if (interactableBindings.Length > 0)
         {
             ToggleInteractable(
-                button, icon,
+                button, icon, text,
                 interactableBindings.All(entry => entry.Value),
                 interactableInvert
             );
             foreach (var interactableBinding in interactableBindings)
             {
-                interactableBinding.onUpdate += value => ToggleInteractable(
-                    button, icon,
+                interactableBinding.onTrigger += () => ToggleInteractable(
+                    button, icon, text,
                     interactableBindings.All(entry => entry.Value),
                     interactableInvert
                 );
@@ -199,10 +204,10 @@ public abstract class ImpButton
 
         if (interactableBindings.Length > 0)
         {
-            ToggleInteractable(button, null, interactableBindings.All(entry => entry.Value), interactableInvert);
+            ToggleInteractable(button, null, null, interactableBindings.All(entry => entry.Value), interactableInvert);
             foreach (var interactableBinding in interactableBindings)
             {
-                interactableBinding.onUpdate += value => ToggleInteractable(button, null, value, interactableInvert);
+                interactableBinding.onUpdate += value => ToggleInteractable(button, null, null, value, interactableInvert);
             }
         }
 
@@ -213,10 +218,17 @@ public abstract class ImpButton
         }
     }
 
-    private static void ToggleInteractable(Selectable button, [CanBeNull] Image icon, bool isOn, bool inverted)
+    private static void ToggleInteractable(
+        Selectable button,
+        [CanBeNull] Image icon,
+        [CanBeNull] TMP_Text text,
+        bool isOn,
+        bool inverted
+    )
     {
         button.interactable = inverted ? !isOn : isOn;
         if (icon) ImpUtils.Interface.ToggleImageActive(icon, inverted ? !isOn : isOn);
+        if (text) ImpUtils.Interface.ToggleTextActive(text, inverted ? !isOn : isOn);
     }
 
     private static void OnThemeUpdate(ImpTheme theme, Transform container, bool isIconButton)

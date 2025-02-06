@@ -12,10 +12,10 @@ public static class Events
     /// <summary>
     ///     Is called when the moon scene is either loaded or unloaded.
     /// </summary>
-    public static ReadOnlyBinding<bool> IsSceneLoaded => ReadOnlyBinding<bool>.Wrap(Imperium.IsSceneLoaded);
+    public static ImpImmutableBinding<bool> IsSceneLoaded => ImpImmutableBinding<bool>.Wrap(Imperium.IsSceneLoaded);
 
     /// <summary>
     ///     The amount of players, including the host, that are currently connected to the game.
     /// </summary>
-    public static ReadOnlyBinding<int> ConnectedPlayers => ReadOnlyBinding<int>.Wrap(ImpNetworking.ConnectedPlayers);
+    public static ImpImmutableBinding<int> ConnectedPlayers => ImpImmutableBinding<int>.Wrap(ImpNetworking.ConnectedPlayers);
 }

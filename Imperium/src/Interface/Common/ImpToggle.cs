@@ -68,7 +68,7 @@ public abstract class ImpToggle
         valueBinding.onUpdate += value => toggle.isOn = value;
 
         // Only play the click sound when the update was invoked by the local client
-        valueBinding.onUpdateFromLocal += _ =>
+        valueBinding.onUpdateSecondary += _ =>
         {
             if (Imperium.Settings.Preferences.PlaySounds.Value && playClickSound)
             {

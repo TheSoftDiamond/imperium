@@ -116,7 +116,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
         OutsideObjectsCollapsed.onTrigger += RefreshEntries;
         VainsCollapsed.onTrigger += RefreshEntries;
 
-        Imperium.ObjectManager.CurrentLevelObjectsChanged.onTrigger += RefreshEntries;
+        Imperium.ObjectManager.CurrentLevelObjectsChanged += RefreshEntries;
 
         objectCategories = new Dictionary<ObjectCategory, CategoryDefinition>
         {
@@ -227,7 +227,7 @@ internal class ObjectExplorerWindow : ImperiumWindow
 
         // Calculate title positions based on the amount of entries in each category
         var titlePositions = new List<float>();
-        for (var i = 0; i < categoryOrder.Count; i++)
+        for (var i = 0; i < categoryCounts.Count; i++)
         {
             var titlePosition = incrementalCategoryCounts[i] * entryHeight + i * entryHeight;
             objectCategories[categoryOrder[i]].TitleRect.anchoredPosition = new Vector2(0, -titlePosition);

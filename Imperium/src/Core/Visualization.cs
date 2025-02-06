@@ -96,8 +96,8 @@ internal class Visualization
 
         ObjectInsights = new ObjectInsights(config);
         Imperium.IsSceneLoaded.onTrigger += ObjectInsights.Refresh;
-        Imperium.ObjectManager.CurrentLevelObjectsChanged.onTrigger += ObjectInsights.Refresh;
-        Imperium.ObjectManager.CurrentLevelObjectsChanged.onTrigger += RefreshOverlays;
+        Imperium.ObjectManager.CurrentLevelObjectsChanged += ObjectInsights.Refresh;
+        Imperium.ObjectManager.CurrentLevelObjectsChanged += RefreshOverlays;
     }
 
     /// <summary>

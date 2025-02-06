@@ -8,7 +8,8 @@ using BepInEx.Configuration;
 namespace Imperium.Util.Binding;
 
 /// <summary>
-///     Imperium binding that is linked to a BepInEx config file.
+///     An ImpBingind that is linked to a BepInEx config.
+///
 ///     It is recommended to set the ignoreBroadcasts flag when multiple configs have the same expensive update function
 ///     e.g. PlayerManager.UpdateCameras()
 /// </summary>
@@ -16,9 +17,14 @@ public sealed class ImpConfig<T> : ImpBinding<T>
 {
     private readonly ConfigEntry<T> config;
 
+    /// <summary>
+    /// If set to true, this config will be active even if Imperium is not currently enabled.
+    ///
+    /// This allows to selectively activate / deactivate certain configs when Imperium is currently not
+    /// enabled (e.g. Night Vision, God Mode).
+    /// </summary>
     private readonly bool allowWhenDisabled;
 
-    // Always return the default value in configs if Imperium is not enabled.
     public new T Value => Imperium.IsImperiumEnabled || allowWhenDisabled ? base.Value : DefaultValue;
 
     public ImpConfig(
@@ -26,12 +32,12 @@ public sealed class ImpConfig<T> : ImpBinding<T>
         string section,
         string key,
         T defaultValue,
-        Action<T> onUpdate = null,
-        Action<T> fromLocalUpdate = null,
+        Action<T> primaryUpdate = null,
+        Action<T> secondaryUpdate = null,
         bool ignoreRefresh = false,
         bool allowWhenDisabled = false,
         string description = null
-    ) : base(defaultValue, default, onUpdate, fromLocalUpdate, ignoreRefresh)
+    ) : base(defaultValue, default, primaryUpdate, secondaryUpdate, ignoreRefresh)
     {
         this.allowWhenDisabled = allowWhenDisabled;
 
@@ -43,10 +49,10 @@ public sealed class ImpConfig<T> : ImpBinding<T>
         base.Value = config.Value;
     }
 
-    public override void Set(T updatedValue, bool invokeUpdate = true, bool invokeLocal = true)
+    public override void Set(T updatedValue, bool invokePrimary = true, bool invokeSecondary = true)
     {
         config.Value = updatedValue;
-        base.Set(updatedValue, invokeUpdate, invokeLocal);
+        base.Set(updatedValue, invokePrimary, invokeSecondary);
     }
 
     /// <summary>

@@ -113,11 +113,8 @@ public abstract class ImpUtils
 
     public static string GetPlayerLocationText(PlayerControllerB player, bool locationOnly)
     {
-        var isNearOtherPlayers =
-            Reflection.Invoke<PlayerControllerB, bool>(player, "NearOtherPlayers", Imperium.Player, 17f);
-        var isHearingOthers = Reflection.Invoke<PlayerControllerB, bool>(
-            player, "PlayerIsHearingOthersThroughWalkieTalkie", Imperium.Player
-        );
+        var isNearOtherPlayers = player.NearOtherPlayers(Imperium.Player, 17f);
+        var isHearingOthers = player.PlayerIsHearingOthersThroughWalkieTalkie(Imperium.Player);
 
         var isAlone = !locationOnly && !isNearOtherPlayers && !isHearingOthers ? " (Alone)" : "";
         if (Imperium.Player.isInHangarShipRoom) return "Ship" + isAlone;
@@ -150,7 +147,7 @@ public abstract class ImpUtils
     /// <param name="exception"></param>
     /// <param name="logTitle"></param>
     /// <returns></returns>
-    public static bool RunSafe(Action action, out Exception exception, string logTitle = null)
+    private static bool RunSafe(Action action, out Exception exception, string logTitle = null)
     {
         try
         {
@@ -275,20 +272,20 @@ public abstract class ImpUtils
                 if (text) ToggleTextActive(text, inverted ? !isActive : isActive);
             };
         }
-
-        internal static void ToggleImageActive(Image image, bool isOn)
+        
+        internal static void ToggleImageActive(Image image, bool isActive)
         {
             image.color = ChangeAlpha(
                 image.color,
-                isOn ? ImpConstants.Opacity.Enabled : ImpConstants.Opacity.ImageDisabled
+                isActive ? ImpConstants.Opacity.Enabled : ImpConstants.Opacity.ImageDisabled
             );
         }
 
-        internal static void ToggleTextActive(TMP_Text text, bool isOn)
+        internal static void ToggleTextActive(TMP_Text text, bool isActive)
         {
             text.color = ChangeAlpha(
                 text.color,
-                isOn ? ImpConstants.Opacity.Enabled : ImpConstants.Opacity.TextDisabled
+                isActive ? ImpConstants.Opacity.Enabled : ImpConstants.Opacity.TextDisabled
             );
         }
 

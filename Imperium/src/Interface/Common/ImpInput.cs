@@ -68,7 +68,7 @@ public abstract class ImpInput
                 if (string.IsNullOrEmpty(value) || !int.TryParse(value, out var parsed))
                 {
                     valueBinding.Set(valueBinding.DefaultValue);
-                    input.text = valueBinding.DefaultValue.ToString();
+                    input.text = negativeIsEmpty ? "" : valueBinding.DefaultValue.ToString();
                 }
                 else
                 {
@@ -149,7 +149,7 @@ public abstract class ImpInput
                 if (string.IsNullOrEmpty(value) || !float.TryParse(value, out var parsed))
                 {
                     valueBinding.Set(valueBinding.DefaultValue);
-                    input.text = valueBinding.DefaultValue.ToString(CultureInfo.InvariantCulture);
+                    input.text = negativeIsEmpty ? "" : valueBinding.DefaultValue.ToString(CultureInfo.InvariantCulture);
                 }
                 else
                 {

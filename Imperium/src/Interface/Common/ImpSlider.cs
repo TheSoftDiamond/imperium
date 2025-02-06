@@ -133,12 +133,17 @@ public class ImpSlider : MonoBehaviour
             else
             {
                 valueBinding.Set(bindingValue);
-                if (Imperium.Settings.Preferences.PlaySounds.Value && playClickSound)
-                {
-                    GameUtils.PlayClip(clickAudio);
-                }
             }
         });
+
+        // This has to be in local, so we can manually skip the click sound by disabling send local
+        valueBinding.onTriggerSecondary += () =>
+        {
+            if (Imperium.Settings.Preferences.PlaySounds.Value && playClickSound)
+            {
+                GameUtils.PlayClip(clickAudio);
+            }
+        };
 
         valueBinding.onUpdate += newValue =>
         {

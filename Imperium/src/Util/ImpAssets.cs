@@ -99,13 +99,13 @@ internal abstract class ImpAssets
     {
         if (!LoadEntityNames())
         {
-            Imperium.IO.LogError("[PRELOAD] Failed to load entity names from assembly, aborting!");
+            Imperium.IO.LogError("[INIT] Failed to load entity names from assembly, aborting!");
             return false;
         }
 
         if (!LoadAssets())
         {
-            Imperium.IO.LogInfo("[PRELOAD] Failed to load one or more assets from assembly, aborting!");
+            Imperium.IO.LogInfo("[INIT] Failed to load one or more assets from assembly, aborting!");
             return false;
         }
 
@@ -131,7 +131,7 @@ internal abstract class ImpAssets
 
         if (ImperiumAssets == null)
         {
-            Imperium.IO.LogError("[PRELOAD] Failed to load assets from assembly, aborting!");
+            Imperium.IO.LogError("[INIT] Failed to load assets from assembly, aborting!");
             return false;
         }
 
@@ -238,7 +238,7 @@ internal abstract class ImpAssets
         loadedObject = assets.LoadAsset<T>(path);
         if (!loadedObject)
         {
-            Imperium.IO.LogError($"[PRELOAD] Failed to load '{path}' from ./imperium_assets");
+            Imperium.IO.LogError($"[INIT] Object '{path}' missing from the embedded Imperium asset bundle.");
             return false;
         }
 

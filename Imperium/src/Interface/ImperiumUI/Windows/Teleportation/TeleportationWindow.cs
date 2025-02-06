@@ -60,9 +60,9 @@ internal class TeleportationWindow : ImperiumWindow
         // We need to set the teleport function as sync callback as the game might teleport the player to different
         // coordinates due to OOB restrictions. That way, the input field would be out of sync with the actual position,
         // so we have to re-set the coords without invoking another teleport that would lead to a stack overflow.
-        coordinateX = new ImpBinding<float>(onUpdateFromLocal: _ => TeleportToCoords());
-        coordinateY = new ImpBinding<float>(onUpdateFromLocal: _ => TeleportToCoords());
-        coordinateZ = new ImpBinding<float>(onUpdateFromLocal: _ => TeleportToCoords());
+        coordinateX = new ImpBinding<float>(onUpdateSecondary: _ => TeleportToCoords());
+        coordinateY = new ImpBinding<float>(onUpdateSecondary: _ => TeleportToCoords());
+        coordinateZ = new ImpBinding<float>(onUpdateSecondary: _ => TeleportToCoords());
 
         ImpInput.Bind("Coords/CoordsX", content, coordinateX, theme, max: 10000f, min: -10000f);
         ImpInput.Bind("Coords/CoordsY", content, coordinateY, theme, max: 999f, min: -999f);
@@ -88,9 +88,9 @@ internal class TeleportationWindow : ImperiumWindow
                                    && Imperium.IsSceneLoaded.Value;
 
         var position = Imperium.Player.transform.position;
-        coordinateX.Set(MathF.Round(position.x, 2), invokeLocal: false);
-        coordinateY.Set(MathF.Round(position.y, 2), invokeLocal: false);
-        coordinateZ.Set(MathF.Round(position.z, 2), invokeLocal: false);
+        coordinateX.Set(MathF.Round(position.x, 2), invokeSecondary: false);
+        coordinateY.Set(MathF.Round(position.y, 2), invokeSecondary: false);
+        coordinateZ.Set(MathF.Round(position.z, 2), invokeSecondary: false);
 
         InitFireExits();
     }

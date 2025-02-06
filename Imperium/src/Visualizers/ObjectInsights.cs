@@ -258,14 +258,8 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
             .SetNameGenerator(bridge => $"Bridge #{bridge.GetInstanceID()}")
             .SetIsDeadGenerator(bridge => bridge.hasBridgeFallen)
             .RegisterInsight("Durability", trigger => $"{trigger.bridgeDurability}")
-            .RegisterInsight(
-                "Has Fallen",
-                bridge => Reflection.Get<BridgeTrigger, bool>(bridge, "hasBridgeFallen") ? "Yes" : "No"
-            )
-            .RegisterInsight(
-                "Giant On Bridge",
-                bridge => Reflection.Get<BridgeTrigger, bool>(bridge, "giantOnBridge") ? "Yes" : "No"
-            )
+            .RegisterInsight("Has Fallen", bridge => bridge.hasBridgeFallen ? "Yes" : "No")
+            .RegisterInsight("Giant On Bridge", bridge => bridge.giantOnBridge ? "Yes" : "No")
             .SetPositionOverride(DefaultPositionOverride)
             .SetConfigKey("Bridges");
     }

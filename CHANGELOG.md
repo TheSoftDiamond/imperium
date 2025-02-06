@@ -34,6 +34,10 @@ Thanks to the continuous support from so many of you loyal employees, mod devs a
 - Made UI sounds more consistent and toggleable.
 - Increased shown items in spawn UI from 6 to 8.
 
+### Compatibility
+
+This version is compatible with the [v50](https://steamdb.info/changelist/23181066/) update of Lethal Company.
+
 ## Imperium v0.2.8 [Beta] - V66 Compatibility Patch
 
 **Note:** *This version of Imperium is compatible with the [Version 66](<https://steamdb.info/changelist/25889392/>) of Lethal Company.*
@@ -413,6 +417,7 @@ This version is compatible with the [v50](https://steamdb.info/changelist/231810
 - Items, scrap and spider webs can now be teleported from the Object Explorer.
 - Added indoor spawning vents to the Object Explorer.
 - Added breaker boxes to the Object Explorer.
+- Added a slider to set the time of the day.
 
 ### Internal Fixes
 
@@ -421,6 +426,7 @@ This version is compatible with the [v50](https://steamdb.info/changelist/231810
 - Fixed a bug that caused freecam inputs to go through when the UI was open.
 - Fixed the BepInEx dependency.
 - Fixed a bug that caused problems when spawning entities with a space in their name.
+- Removed most of the reflection to improve performance.
 
 ### QOL Changes
 
@@ -463,4 +469,5 @@ This version is compatible with the [v50 rev.3](https://steamdb.info/changelist/
 ### Buxfixes
 
 - Adjusted Oracle predictions as the daytime entity bug was fixed.
-- Updated README with new images. 
+- Updated README with new images. k
+- 

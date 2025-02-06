@@ -15,9 +15,10 @@ namespace Imperium.Netcode;
 public sealed class ImpNetworkBinding<T> : IBinding<T>, INetworkSubscribable
 {
     public event Action<T> onUpdate;
-    public event Action<T> onUpdateFromLocal;
+    public event Action<T> onUpdateSecondary;
+    
     public event Action onTrigger;
-    public event Action onTriggerFromLocal;
+    public event Action onTriggerSecondary;
 
     private readonly Action<T> onUpdateServer;
 
@@ -91,9 +92,9 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>, INetworkSubscribable
 
     public void Sync(T updatedValue) => Set(updatedValue, false, false);
 
-    public void Set(T updatedValue, bool invokeUpdate = true, bool invokeLocal = true)
+    public void Set(T updatedValue, bool invokePrimary = true, bool invokeSecondary = true)
     {
-        SyncedSet(updatedValue, invokeUpdate, true);
+        SyncedSet(updatedValue, invokePrimary, true);
     }
 
     private void SyncedSet(T updatedValue, bool invokeUpdate, bool invokeServerUpdate)
@@ -103,8 +104,8 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>, INetworkSubscribable
 
         if (invokeUpdate)
         {
-            onUpdateFromLocal?.Invoke(updatedValue);
-            onTriggerFromLocal?.Invoke();
+            onUpdateSecondary?.Invoke(updatedValue);
+            onTriggerSecondary?.Invoke();
         }
 
         networkMessage.SendServer(new BindingUpdateRequest<T>
@@ -119,7 +120,10 @@ public sealed class ImpNetworkBinding<T> : IBinding<T>, INetworkSubscribable
     {
     }
 
-    public void Reset(bool invokeUpdate = true) => Set(DefaultValue, invokeUpdate);
+    public void Reset(bool invokePrimary = true, bool invokeSecondary = true)
+    {
+        Set(DefaultValue, invokePrimary, invokeSecondary);
+    }
 
     public void Clear()
     {

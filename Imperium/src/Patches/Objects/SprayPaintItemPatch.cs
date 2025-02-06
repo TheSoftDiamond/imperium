@@ -16,8 +16,8 @@ internal static class SprayPaintItemPatch
     {
         if (Imperium.Settings.Player.InfiniteBattery.Value)
         {
-            Reflection.Set(__instance, "sprayCanTank", 1);
-            Reflection.Set(__instance, "sprayCanShakeMeter", 1);
+            __instance.sprayCanTank = 1;
+            __instance.sprayCanShakeMeter = 1;
         }
     }
 }

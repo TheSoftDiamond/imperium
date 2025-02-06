@@ -30,10 +30,10 @@ public class LevelGeneration : ImpWidget
 
     protected override void InitWidget()
     {
-        var disabledBinding = ImpBinaryBinding.CreateOr(
-            Imperium.IsSceneLoaded,
-            new ImpBinding<bool>(!NetworkManager.Singleton.IsHost)
-        );
+        var disabledBinding = ImpBinaryBinding.CreateOr([
+            (Imperium.IsSceneLoaded, false),
+            (new ImpBinding<bool>(!NetworkManager.Singleton.IsHost), false)
+        ]);
 
         levelSeedInput = ImpInput.Bind(
             "Seed/Input",

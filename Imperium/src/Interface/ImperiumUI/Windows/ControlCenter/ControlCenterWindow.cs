@@ -89,19 +89,37 @@ internal class ControlCenterWindow : ImperiumWindow
             "Right/AnimationSettings/PlayerSpawn",
             content,
             Imperium.Settings.AnimationSkipping.PlayerSpawn,
-            theme: theme
+            theme: theme,
+            tooltipDefinition: new TooltipDefinition
+            {
+                Title = "Skip Player Spawn",
+                Description = "Skips the player spawning animation.",
+                Tooltip = tooltip
+            }
         );
         ImpToggle.Bind(
             "Right/AnimationSettings/InteractHold",
             content,
             Imperium.Settings.AnimationSkipping.InteractHold,
-            theme: theme
+            theme: theme,
+            tooltipDefinition: new TooltipDefinition
+            {
+                Title = "Skip Interact Hold",
+                Description = "Skips the hold animation when interacting\nwith a hold trigger.",
+                Tooltip = tooltip
+            }
         );
         ImpToggle.Bind(
             "Right/AnimationSettings/Interact",
             content,
             Imperium.Settings.AnimationSkipping.Interact,
-            theme: theme
+            theme: theme,
+            tooltipDefinition: new TooltipDefinition
+            {
+                Title = "Skip Interact",
+                Description = "Skips the interact animation when interacting a trigger.",
+                Tooltip = tooltip
+            }
         );
         ImpToggle.Bind(
             "Right/AnimationSettings/DisableLocking",
@@ -202,8 +220,8 @@ internal class ControlCenterWindow : ImperiumWindow
             theme,
             tooltipDefinition: new TooltipDefinition
             {
-                Title = "Disables OOB",
-                Description = "Stops the game from teleporting the local player back when going out-of-bounds.",
+                Title = "Disable OOB",
+                Description = "Stops the game from teleporting the local player\nback when going out-of-bounds.",
                 Tooltip = tooltip
             }
         );
@@ -257,8 +275,7 @@ internal class ControlCenterWindow : ImperiumWindow
             path: "Right/FlyingSpeed",
             container: content,
             theme: theme,
-            valueBinding: Imperium.Settings.Player.FlyingSpeed,
-            interactableBindings: Imperium.Settings.Player.EnableFlying
+            valueBinding: Imperium.Settings.Player.FlyingSpeed
         );
 
         ImpSlider.Bind(

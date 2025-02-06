@@ -45,7 +45,7 @@ internal static class PreInitPatches
                 __instance.lobbyNameInputField.text = "Imperium Test Environment";
 
                 var saveNum = Imperium.Settings.Preferences.QuickloadSaveNumber.Value;
-                Imperium.IO.LogInfo($"[SYS] Quickload is auto loading level #{saveNum}...");
+                Imperium.IO.LogInfo($"[SYS] Quickload is auto loading save #{saveNum}...");
 
                 var fileName = $"LCSaveFile{saveNum}";
 
@@ -61,36 +61,6 @@ internal static class PreInitPatches
                 HasLoaded = true;
             }
         }
-
-        // [HarmonyPostfix]
-        // [HarmonyPatch("Start")]
-        // private static void StartPatch(MenuManager __instance)
-        // {
-        //     if (Imperium.Settings.Preferences.QuickloadSkipMenu.Value && !ReturnedFromGame)
-        //     {
-        //         var saveNum = Imperium.Settings.Preferences.QuickloadSaveNumber.Value;
-        //         Imperium.IO.LogInfo($"[SYS] Quickload is loading level #{saveNum}...");
-        //
-        //         var fileName = $"LCSaveFile{saveNum}";
-        //
-        //         if (Imperium.Settings.Preferences.QuickloadCleanFile.Value && ES3.FileExists(fileName))
-        //             ES3.DeleteFile(fileName);
-        //
-        //         GameNetworkManager.Instance.currentSaveFileName = fileName;
-        //         GameNetworkManager.Instance.saveFileNum = Imperium.Settings.Preferences.QuickloadSaveNumber.Value;
-        //         GameNetworkManager.Instance.lobbyHostSettings =
-        //             new HostSettings("Imperium Test Environment", false);
-        //
-        //         GameNetworkManager.Instance.StartHost();
-        //     }
-        // }
-
-        // [HarmonyPrefix]
-        // [HarmonyPatch("SetLoadingScreen")]
-        // private static bool SetLoadingScreenPatch(MenuManager __instance)
-        // {
-        //     return !Imperium.Settings.Preferences.QuickloadSkipMenu.Value || ReturnedFromGame;
-        // }
 
         [HarmonyPostfix]
         [HarmonyPatch("Awake")]

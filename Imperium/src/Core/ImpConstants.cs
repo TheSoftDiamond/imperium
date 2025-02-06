@@ -8,13 +8,13 @@ using UnityEngine;
 
 namespace Imperium.Core;
 
-public abstract class ImpConstants
+public struct ImpConstants
 {
-    internal abstract class Opacity
+    internal struct Opacity
     {
         internal const float Enabled = 1;
         internal const float TextDisabled = 0.2f;
-        internal const float ImageDisabled = 0.3f;
+        internal const float ImageDisabled = 0.5f;
     }
 
     public const int DefaultFOV = 66;

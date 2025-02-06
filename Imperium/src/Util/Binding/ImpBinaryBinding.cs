@@ -1,7 +1,7 @@
 #region
 
 using System;
-using UnityEngine.UIElements;
+using System.Linq;
 
 #endregion
 
@@ -40,26 +40,45 @@ public class ImpBinaryBinding : ImpBinding<bool>
         }
     }
 
-    public static ImpBinaryBinding CreateOr(
-        IBinding<bool> binding1,
-        IBinding<bool> binding2,
-        bool invertBinding1 = false,
-        bool invertBinding2 = false
-    )
+    /// <summary>
+    /// Creates a combined binary binding from two or more provided bindings.
+    ///
+    /// The new binding's value is true if any of the source bindings' values is true.
+    /// </summary>
+    /// <param name="bindingPairs">A list of bindings to combine</param>
+    public static ImpBinaryBinding CreateAnd((IBinding<bool>, bool)[] bindingPairs)
     {
-        var binaryBinding = new ImpBinaryBinding(
-            invertBinding1 ? !binding1.Value : binding1.Value || invertBinding2 ? !binding2.Value : binding2.Value
+        var combinedBinding = new ImpBinaryBinding(GetCombinedAndValue(bindingPairs));
+        foreach (var bindingPair in bindingPairs)
+        {
+            bindingPair.Item1.onTrigger += () => combinedBinding.Set(GetCombinedAndValue(bindingPairs));
+        }
+
+        return combinedBinding;
+
+        bool GetCombinedAndValue((IBinding<bool>, bool)[] pairs) => pairs.Aggregate(
+            true, (combined, current) => combined && current.Item2 ^ current.Item1.Value
         );
+    }
 
-        binding1.onUpdate += value =>
+    /// <summary>
+    /// Creates a combined binary binding from two or more provided bindings.
+    ///
+    /// The new binding's value is true if all the source bindings' values are true.
+    /// </summary>
+    /// <param name="bindingPairs">A list of bindings to combine</param>
+    public static ImpBinaryBinding CreateOr((IBinding<bool>, bool)[] bindingPairs)
+    {
+        var combinedBinding = new ImpBinaryBinding(GetCombinedOrValue(bindingPairs));
+        foreach (var bindingPair in bindingPairs)
         {
-            binaryBinding.Set(invertBinding1 ? !value : value || invertBinding2 ? !binding2.Value : binding2.Value);
-        };
-        binding2.onUpdate += value =>
-        {
-            binaryBinding.Set(invertBinding2 ? !value : value || invertBinding1 ? !binding1.Value : binding1.Value);
-        };
+            bindingPair.Item1.onTrigger += () => combinedBinding.Set(GetCombinedOrValue(bindingPairs));
+        }
 
-        return binaryBinding;
+        return combinedBinding;
+
+        bool GetCombinedOrValue((IBinding<bool>, bool)[] pairs) => pairs.Aggregate(
+            false, (combined, current) => combined || current.Item2 ^ current.Item1.Value
+        );
     }
 }

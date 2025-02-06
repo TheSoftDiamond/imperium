@@ -24,7 +24,6 @@ using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using Vector2 = System.Numerics.Vector2;
 
 #endregion
 
@@ -266,7 +265,7 @@ public record WindowDefinition
 {
     internal ImperiumWindow Controller { get; init; }
     public Type WindowType { get; init; }
-    public Vector2 Position { get; set; }
+    public System.Numerics.Vector2 Position { get; set; }
     public float ScaleFactor { get; set; } = 1;
     public bool IsOpen { get; set; }
 }

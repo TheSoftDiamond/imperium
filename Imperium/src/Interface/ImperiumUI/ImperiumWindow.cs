@@ -1,6 +1,7 @@
 #region
 
 using System;
+using System.Collections;
 using Imperium.Core;
 using Imperium.Interface.Common;
 using Imperium.Types;
@@ -9,7 +10,6 @@ using Imperium.Util.Binding;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using Vector2 = System.Numerics.Vector2;
 
 #endregion
 
@@ -22,11 +22,15 @@ internal abstract class ImperiumWindow : MonoBehaviour, IDragHandler, IBeginDrag
 
     protected ImpTooltip tooltip;
 
+    private CanvasGroup windowGroup;
+    private Coroutine fadeAnimation;
+
     internal event Action onOpen;
     internal event Action onClose;
     internal event Action onFocus;
 
     protected Transform titleBox;
+    protected RectTransform rect;
 
     private WindowDefinition windowDefinition;
 
@@ -44,9 +48,24 @@ internal abstract class ImperiumWindow : MonoBehaviour, IDragHandler, IBeginDrag
         tooltip = impTootip;
 
         titleBox = transform.Find("TitleBox");
+        windowGroup = GetComponent<CanvasGroup>();
+        rect = GetComponent<RectTransform>();
         if (titleBox) ImpButton.Bind("Close", titleBox, Close, theme: theme, isIconButton: true);
 
         onOpen += OnOpen;
+        onOpen += SetWindowAnchors;
+
+        onOpen += () =>
+        {
+            if (fadeAnimation != null) StopCoroutine(fadeAnimation);
+            fadeAnimation = StartCoroutine(animateOpacityTo(0.05f, 1));
+        };
+
+        onClose += () =>
+        {
+            if (fadeAnimation != null) StopCoroutine(fadeAnimation);
+            fadeAnimation = StartCoroutine(animateOpacityTo(0.05f, 0, false));
+        };
 
         theme.onUpdate += OnThemeUpdate;
         theme.onUpdate += value =>
@@ -80,7 +99,27 @@ internal abstract class ImperiumWindow : MonoBehaviour, IDragHandler, IBeginDrag
         // Style UI with the current theme
         OnThemeUpdate(theme.Value);
 
-        transform.gameObject.SetActive(false);
+        windowGroup.alpha = 0;
+        windowGroup.interactable = false;
+        windowGroup.blocksRaycasts = false;
+    }
+
+    private IEnumerator animateOpacityTo(float duration, float targetAlpha, bool setInteractable = true)
+    {
+        var startAlpha = windowGroup.alpha;
+        var elapsedTime = 0f;
+
+        while (elapsedTime < duration)
+        {
+            windowGroup.alpha = Mathf.Lerp(startAlpha, targetAlpha, elapsedTime / duration);
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        windowGroup.alpha = targetAlpha;
+        windowGroup.interactable = setInteractable;
+        windowGroup.blocksRaycasts = setInteractable;
     }
 
     private void OnDestroy()
@@ -103,9 +142,9 @@ internal abstract class ImperiumWindow : MonoBehaviour, IDragHandler, IBeginDrag
         }
     }
 
-    internal void PlaceWindow(Vector2 position, float scale, bool isOpen)
+    internal void PlaceWindow(System.Numerics.Vector2 position, float scale, bool isOpen)
     {
-        transform.position = new UnityEngine.Vector2(position.X, position.Y);
+        transform.position = new Vector2(position.X, position.Y);
         transform.localScale = new Vector3(scale * 1, scale * 1, 1);
         scaleFactor = scale;
 
@@ -134,7 +173,9 @@ internal abstract class ImperiumWindow : MonoBehaviour, IDragHandler, IBeginDrag
     /// </summary>
     public void Close()
     {
-        transform.gameObject.SetActive(false);
+        // transform.gameObject.SetActive(false);
+        // if (fadeAnimation != null) StopCoroutine(fadeAnimation);
+        // fadeAnimation = StartCoroutine(animateOpacityTo(0.05f, 0, false));
 
         windowDefinition.IsOpen = false;
 
@@ -146,12 +187,14 @@ internal abstract class ImperiumWindow : MonoBehaviour, IDragHandler, IBeginDrag
     /// </summary>
     public void Open()
     {
-        transform.gameObject.SetActive(true);
+        // transform.gameObject.SetActive(true);
+        // if (fadeAnimation != null) StopCoroutine(fadeAnimation);
+        // fadeAnimation = StartCoroutine(animateOpacityTo(0.05f, 1));
 
         FocusWindow();
 
         // Set position if is opened the first time
-        windowDefinition.Position = new Vector2(transform.position.x, transform.position.y);
+        windowDefinition.Position = new System.Numerics.Vector2(transform.position.x, transform.position.y);
         windowDefinition.IsOpen = true;
 
         onOpen?.Invoke();
@@ -187,14 +230,14 @@ internal abstract class ImperiumWindow : MonoBehaviour, IDragHandler, IBeginDrag
     }
 
     private float scaleFactor = 1f;
-    private UnityEngine.Vector2 dragOrigin;
+    private Vector2 dragOrigin;
 
     public void OnDrag(PointerEventData eventData)
     {
         if (Imperium.InputBindings.StaticMap["Alt"].IsPressed())
         {
             var delta = eventData.delta.magnitude * 0.002f;
-            var windowOrigin = new UnityEngine.Vector2(transform.position.x, transform.position.y);
+            var windowOrigin = new Vector2(transform.position.x, transform.position.y);
             if ((windowOrigin - eventData.position).magnitude <
                 (windowOrigin - eventData.position + eventData.delta).magnitude) delta *= -1;
             scaleFactor = Math.Clamp(scaleFactor + delta, 0.5f, 1f);
@@ -206,8 +249,8 @@ internal abstract class ImperiumWindow : MonoBehaviour, IDragHandler, IBeginDrag
         }
         else
         {
-            transform.position = (UnityEngine.Vector2)transform.position + eventData.delta;
-            windowDefinition.Position = new Vector2(transform.position.x, transform.position.y);
+            transform.position = (Vector2)transform.position + eventData.delta;
+            windowDefinition.Position = new System.Numerics.Vector2(transform.position.x, transform.position.y);
         }
     }
 
@@ -215,11 +258,50 @@ internal abstract class ImperiumWindow : MonoBehaviour, IDragHandler, IBeginDrag
     {
         FocusWindow();
         Cursor.lockState = CursorLockMode.Confined;
+
+        if (windowGroup)
+        {
+            if (fadeAnimation != null) StopCoroutine(fadeAnimation);
+            fadeAnimation = StartCoroutine(animateOpacityTo(0.15f, 0.9f));
+        }
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
         Cursor.lockState = CursorLockMode.None;
+
+        if (windowGroup)
+        {
+            if (fadeAnimation != null) StopCoroutine(fadeAnimation);
+            fadeAnimation = StartCoroutine(animateOpacityTo(0.15f, 1f));
+        }
+
+        SetWindowAnchors();
+    }
+
+    /// <summary>
+    /// Sets the window's anchors based on the screen side the window is currently placed.
+    /// </summary>
+    private void SetWindowAnchors()
+    {
+        var windowWorldPosition = transform.position;
+        var posX = transform.position.x;
+
+        if (posX < Screen.width / 2f)
+        {
+            Imperium.IO.LogInfo($"SET ANCHORS OF WINDOW '{parent.gameObject.name}': LEFT");
+            rect.anchorMin = new Vector2(0, 0.5f);
+            rect.anchorMax = new Vector2(0, 0.5f);
+        }
+        else
+        {
+            Imperium.IO.LogInfo($"SET ANCHORS OF WINDOW '{parent.gameObject.name}': RIGHT");
+            rect.anchorMin = new Vector2(1, 0.5f);
+            rect.anchorMax = new Vector2(1, 0.5f);
+        }
+
+        // Restore original window position
+        transform.position = windowWorldPosition;
     }
 
     public void OnPointerDown(PointerEventData eventData)

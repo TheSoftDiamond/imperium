@@ -32,12 +32,12 @@ using UnityEngine.Rendering.HighDefinition;
 
 namespace Imperium;
 
-[BepInDependency("com.sinai.unityexplorer", BepInDependency.DependencyFlags.SoftDependency)]
-[BepInDependency("com.sinai.universelib", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("evaisa.lethallib", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("mrov.WeatherRegistry", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("mrov.WeatherRegistry", BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency("com.sinai.universelib", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("com.fumiko.CullFactory", BepInDependency.DependencyFlags.SoftDependency)]
+[BepInDependency("com.sinai.unityexplorer", BepInDependency.DependencyFlags.SoftDependency)]
 [BepInDependency("com.rune580.LethalCompanyInputUtils")]
 [BepInDependency("LethalNetworkAPI")]
 [BepInPlugin(PLUGIN_GUID, PLUGIN_NAME, PLUGIN_VERSION)]
@@ -47,9 +47,9 @@ public class Imperium : BaseUnityPlugin
     public const string PLUGIN_NAME = "Imperium";
     public const string PLUGIN_VERSION = "0.2.8";
 
-    private static ConfigFile configFile;
     private static Harmony Harmony;
     private static ManualLogSource Log;
+    private static ConfigFile configFile;
 
     /*
      * Relays to vanilla singletons. This makes tracking Imperium singleton access easier.
@@ -64,7 +64,7 @@ public class Imperium : BaseUnityPlugin
     internal static ShipBuildModeManager ShipBuildModeManager => ShipBuildModeManager.Instance;
 
     /*
-     * Preload systems. Instantiated when Imperium is loaded by BepInEx.
+     * Preload systems. Instantiated when Imperium is initialized (Stage 1).
      */
     internal static ImpSettings Settings { get; private set; }
     internal static ImpOutput IO { get; private set; }
@@ -72,7 +72,7 @@ public class Imperium : BaseUnityPlugin
     internal static StartupManager StartupManager { get; private set; }
 
     /*
-     * Lifecycle systems. Instantiated when Imperium is launched.
+     * Lifecycle systems. Instantiated when Imperium is launched (Stage 2).
      */
     internal static GameManager GameManager { get; private set; }
     internal static ObjectManager ObjectManager { get; private set; }
@@ -85,35 +85,30 @@ public class Imperium : BaseUnityPlugin
     internal static ImpEventLog EventLog { get; private set; }
 
     /*
-     * GameObjects and world-space managers. Instantiated when Imperium is launched.
+     * Imperium game objects and world-space managers. Instantiated when Imperium is launched (Stage 2).
      */
     internal static ImpMap Map { get; private set; }
     internal static ImpFreecam Freecam { get; private set; }
     internal static ImpNightVision NightVision { get; private set; }
     internal static ImpNoiseListener NoiseListener { get; private set; }
     internal static ImpTapeMeasure ImpTapeMeasure { get; private set; }
-    internal static ImpLevelEditor ImpLevelEditor { get; private set;  }
+    internal static ImpLevelEditor ImpLevelEditor { get; private set; }
     internal static ImpInputBindings InputBindings { get; private set; }
     internal static ImpPositionIndicator ImpPositionIndicator { get; private set; }
     internal static ImpInterfaceManager Interface { get; private set; }
 
     /// <summary>
-    ///     Set to true, then Imperium is initally loaded by BepInEx.
+    ///     Set to true, then Imperium is initialized (Stage 1).
     /// </summary>
-    internal static bool IsImperiumLoaded { get; private set; }
+    internal static bool IsImperiumInitialized { get; private set; }
 
     /// <summary>
-    ///     Set to true, then Imperium is launched and ready to be used and serve API calls.
+    ///     Set to true, then Imperium is launched (Stage 2) and ready to serve API calls.
     /// </summary>
     internal static bool IsImperiumLaunched { get; private set; }
 
     /// <summary>
-    ///     Set to true, when Imperium access is first granted. Always set to true on the host.
-    /// </summary>
-    internal static bool WasImperiumAccessGranted { get; private set; }
-
-    /// <summary>
-    ///     Set to true, when Imperium is loaded and imperium access is currently granted.
+    ///     Set to true, when Imperium is launched and imperium access is currently granted.
     /// </summary>
     internal static bool IsImperiumEnabled { get; private set; }
 
@@ -122,16 +117,22 @@ public class Imperium : BaseUnityPlugin
     /// </summary>
     internal static ImpBinaryBinding IsSceneLoaded { get; private set; }
 
+    /// <summary>
+    /// Imperium initialization (Stage 1)
+    ///
+    /// This happens as soon as BepInEx loads the Imperium plugin.
+    /// </summary>
     private void Awake()
     {
         configFile = Config;
         Log = Logger;
 
         /*
-         * Instantiate settings temporarily for startup.
-         * This object will be replaced once Imperium launches, meaning all listeners will be removed!
+         * Temporary settings instance for startup functionality.
+         * This object will be re-instantiated once Imperium launches, meaning all listeners will be removed!
          */
         Settings = new ImpSettings(Config);
+
         IO = new ImpOutput(Log);
         StartupManager = new StartupManager();
 
@@ -144,16 +145,17 @@ public class Imperium : BaseUnityPlugin
         if (!ImpAssets.Load()) return;
 
         Harmony = new Harmony(PLUGIN_GUID);
-        PreLaunchPatch();
+        PreLaunchPatches();
 
-        IO.LogInfo("[OK] Imperium is ready!");
+        IO.LogInfo("[INIT] Imperium has been successfully initialized \\o/");
 
-        IsImperiumLoaded = true;
+        IsImperiumInitialized = true;
     }
 
     internal static void DisableImperium()
     {
         IsImperiumEnabled = false;
+
         Interface.Destroy();
         PlayerManager.IsFlying.SetFalse();
         Freecam.IsFreecamEnabled.SetFalse();
@@ -173,20 +175,21 @@ public class Imperium : BaseUnityPlugin
         InputBindings.FreecamMap.Enable();
         InputBindings.InterfaceMap.Enable();
 
-        Interface = BuildInterfaces();
+        IsImperiumEnabled = true;
 
         Settings.LoadAll();
-
-        IsImperiumEnabled = true;
+        RegisterInterfaces();
+        PlayerManager.UpdateCameras();
     }
 
+    /// <summary>
+    /// Imperium launch (Stage 2)
+    ///
+    /// This is executed after Imperium access has been granted by the host.
+    /// </summary>
     internal static void Launch()
     {
-        if (!IsImperiumLoaded)
-        {
-            IO.Send("Imperium failed to launch \u2299︿\u2299");
-            return;
-        }
+        if (!IsImperiumInitialized) return;
 
         // Re-instantiate settings to get rid of existing bindings
         Settings = new ImpSettings(configFile);
@@ -234,42 +237,27 @@ public class Imperium : BaseUnityPlugin
         Harmony.PatchAll();
         UnityExplorerIntegration.PatchFunctions(Harmony);
 
+        IsImperiumLaunched = true;
+
+        InputBindings.BaseMap.ToggleHUD.performed += ToggleHUD;
+
         // Enable Imperium frontend if Imperium is enabled in the config
         if (Settings.Preferences.EnableImperium.Value)
         {
-            InputBindings.BaseMap.ToggleHUD.performed += ToggleHUD;
+            EnableImperium();
 
-            InputBindings.BaseMap.Enable();
-            InputBindings.StaticMap.Enable();
-            InputBindings.FreecamMap.Enable();
-            InputBindings.InterfaceMap.Enable();
-
-            IsImperiumEnabled = true;
-
-            Settings.LoadAll();
-
-            BuildInterfaces();
-
-// #if DEBUG
-//             // This needs to be here as it depends on the UI
-             // ImpLevelEditor = ImpLevelEditor.Create();
-// #endif
+            // #if DEBUG
+            // This needs to be here as it depends on the UI
+            // ImpLevelEditor = ImpLevelEditor.Create();
+            // #endif
 
             // Send scene update to ensure consistency in the UIs
             IsSceneLoaded.SetFalse();
-
-            PlayerManager.UpdateCameras();
         }
         else
         {
-            InputBindings.BaseMap.Disable();
-            InputBindings.StaticMap.Disable();
-            InputBindings.FreecamMap.Disable();
-            InputBindings.InterfaceMap.Disable();
+            DisableImperium();
         }
-
-        WasImperiumAccessGranted = true;
-        IsImperiumLaunched = true;
     }
 
     private static void ToggleHUD(InputAction.CallbackContext callbackContext)
@@ -279,7 +267,7 @@ public class Imperium : BaseUnityPlugin
             Player.isTypingChat ||
             ShipBuildModeManager.InBuildMode) return;
 
-        HUDManager.HideHUD(!Reflection.Get<HUDManager, bool>(HUDManager, "hudHidden"));
+        HUDManager.HideHUD(!HUDManager.hudHidden);
     }
 
     internal static void Unload()
@@ -292,10 +280,9 @@ public class Imperium : BaseUnityPlugin
 
         Networking.Unsubscribe();
 
-        WasImperiumAccessGranted = false;
         IsImperiumLaunched = false;
 
-        PreLaunchPatch();
+        PreLaunchPatches();
     }
 
     internal static void Reload()
@@ -303,10 +290,10 @@ public class Imperium : BaseUnityPlugin
         Unload();
         Launch();
 
-        IO.Send("Successfully reloaded Imperium.");
+        IO.Send("[SYS] Successfully reloaded Imperium.");
     }
 
-    private static ImpInterfaceManager BuildInterfaces()
+    private static void RegisterInterfaces()
     {
         Interface.OpenInterface.onUpdate += openInterface =>
         {
@@ -347,12 +334,10 @@ public class Imperium : BaseUnityPlugin
 
         Interface.RefreshTheme();
 
-        IO.LogInfo("[OK] Imperium UIs have been registered! \\o/");
-
-        return Interface;
+        IO.LogInfo("[SYS] Imperium interfaces have been registered! \\o/");
     }
 
-    private static void PreLaunchPatch()
+    private static void PreLaunchPatches()
     {
         Harmony.PatchAll(typeof(PlayerControllerPatch.PreloadPatches));
         Harmony.PatchAll(typeof(TerminalPatch.PreloadPatches));
