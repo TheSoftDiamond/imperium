@@ -1,6 +1,7 @@
 #region
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Imperium.Interface.Common;
 using Imperium.Interface.ImperiumUI.Windows.Teleportation.Widgets;
@@ -64,9 +65,9 @@ internal class TeleportationWindow : ImperiumWindow
         coordinateY = new ImpBinding<float>(onUpdateSecondary: _ => TeleportToCoords());
         coordinateZ = new ImpBinding<float>(onUpdateSecondary: _ => TeleportToCoords());
 
-        ImpInput.Bind("Coords/CoordsX", content, coordinateX, theme, max: 10000f, min: -10000f);
-        ImpInput.Bind("Coords/CoordsY", content, coordinateY, theme, max: 999f, min: -999f);
-        ImpInput.Bind("Coords/CoordsZ", content, coordinateZ, theme, max: 10000f, min: -10000f);
+        ImpInput.Bind("Coords/CoordsX", content, coordinateX, theme);
+        ImpInput.Bind("Coords/CoordsY", content, coordinateY, theme);
+        ImpInput.Bind("Coords/CoordsZ", content, coordinateZ, theme);
 
         ImpButton.Bind("Buttons/Interactive", content, OnInteractive, theme);
 
@@ -108,13 +109,26 @@ internal class TeleportationWindow : ImperiumWindow
         CloseParent();
     }
 
-    private void TeleportToCoords()
+    private void TeleportToCoords() => StartCoroutine(teleportToCoordsAndUpdate());
+
+    private IEnumerator teleportToCoordsAndUpdate()
     {
         Imperium.PlayerManager.TeleportLocalPlayer(new Vector3(
             coordinateX.Value,
             coordinateY.Value,
             coordinateZ.Value
         ));
+
+        /*
+         * Account for waiting for approximate round-trip to server before updating coords.
+         *
+         * This is for the case the game restricts the player to teleport to the desired coords (e.g. OOB)
+         */
+        yield return new WaitForSeconds(0.2f);
+        
+        coordinateX.Set(MathF.Round(Imperium.Player.transform.position.x, 2), invokeSecondary: false);
+        coordinateY.Set(MathF.Round(Imperium.Player.transform.position.y, 2), invokeSecondary: false);
+        coordinateZ.Set(MathF.Round(Imperium.Player.transform.position.z, 2), invokeSecondary: false);
     }
 
     private void InitFireExits()

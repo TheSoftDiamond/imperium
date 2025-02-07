@@ -164,10 +164,6 @@ internal abstract class ImperiumWindow : MonoBehaviour, IDragHandler, IBeginDrag
         container.Find(path).gameObject.AddComponent<T>().Init(theme, tooltip, ref onOpen, ref onClose);
     }
 
-    protected abstract void InitWindow();
-
-    protected void CloseParent() => parent.Close();
-
     /// <summary>
     ///     Hides the window.
     /// </summary>
@@ -206,31 +202,36 @@ internal abstract class ImperiumWindow : MonoBehaviour, IDragHandler, IBeginDrag
     /// </summary>
     public void InvokeOnOpen() => onOpen?.Invoke();
 
-    protected virtual void OnThemeUpdate(ImpTheme themeUpdated)
-    {
-    }
-
-    protected virtual void OnClose()
-    {
-    }
-
-    protected virtual void OnOpen()
-    {
-    }
-
     private void FocusWindow()
     {
         transform.SetAsLastSibling();
         onFocus?.Invoke();
     }
 
-    public virtual bool CanOpen()
-    {
-        return true;
-    }
-
     private float scaleFactor = 1f;
-    private Vector2 dragOrigin;
+
+    /// <summary>
+    /// Sets the window's anchors based on the screen side the window is currently placed without moving the window.
+    /// </summary>
+    private void SetWindowAnchors()
+    {
+        var windowWorldPosition = transform.position;
+        var posX = transform.position.x;
+
+        if (posX < Screen.width / 2f)
+        {
+            rect.anchorMin = new Vector2(0, 0.5f);
+            rect.anchorMax = new Vector2(0, 0.5f);
+        }
+        else
+        {
+            rect.anchorMin = new Vector2(1, 0.5f);
+            rect.anchorMax = new Vector2(1, 0.5f);
+        }
+
+        // Restore original window position
+        transform.position = windowWorldPosition;
+    }
 
     public void OnDrag(PointerEventData eventData)
     {
@@ -243,7 +244,6 @@ internal abstract class ImperiumWindow : MonoBehaviour, IDragHandler, IBeginDrag
             scaleFactor = Math.Clamp(scaleFactor + delta, 0.5f, 1f);
 
             transform.localScale = Vector3.one * scaleFactor + new Vector3(0, 0, 1);
-            dragOrigin = eventData.position;
 
             windowDefinition.ScaleFactor = scaleFactor;
         }
@@ -279,34 +279,26 @@ internal abstract class ImperiumWindow : MonoBehaviour, IDragHandler, IBeginDrag
         SetWindowAnchors();
     }
 
-    /// <summary>
-    /// Sets the window's anchors based on the screen side the window is currently placed.
-    /// </summary>
-    private void SetWindowAnchors()
+    public void OnPointerDown(PointerEventData eventData) => FocusWindow();
+
+    protected abstract void InitWindow();
+
+    protected void CloseParent() => parent.Close();
+
+    protected virtual void OnThemeUpdate(ImpTheme themeUpdated)
     {
-        var windowWorldPosition = transform.position;
-        var posX = transform.position.x;
-
-        if (posX < Screen.width / 2f)
-        {
-            Imperium.IO.LogInfo($"SET ANCHORS OF WINDOW '{parent.gameObject.name}': LEFT");
-            rect.anchorMin = new Vector2(0, 0.5f);
-            rect.anchorMax = new Vector2(0, 0.5f);
-        }
-        else
-        {
-            Imperium.IO.LogInfo($"SET ANCHORS OF WINDOW '{parent.gameObject.name}': RIGHT");
-            rect.anchorMin = new Vector2(1, 0.5f);
-            rect.anchorMax = new Vector2(1, 0.5f);
-        }
-
-        // Restore original window position
-        transform.position = windowWorldPosition;
     }
 
-    public void OnPointerDown(PointerEventData eventData)
+    protected virtual void OnClose()
     {
-        FocusWindow();
-        dragOrigin = eventData.position;
+    }
+
+    protected virtual void OnOpen()
+    {
+    }
+
+    public virtual bool CanOpen()
+    {
+        return true;
     }
 }

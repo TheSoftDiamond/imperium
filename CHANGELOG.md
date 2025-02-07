@@ -16,7 +16,7 @@ Thanks to the continuous support from so many of you loyal employees, mod devs a
 - Added a collider visualizer for objects on the LineOfSight layer.
 - Added and updated various tooltips to increase the overall UI usability. 
 
-### Internal Fixes
+### Bug Fixes
 
 - Moved all network logging to the DEBUG level to decrease log volume.
 - Fixed an issue where faulty UI config would break the Imperium startup sequence.
@@ -26,6 +26,7 @@ Thanks to the continuous support from so many of you loyal employees, mod devs a
 - Fixed a bug that caused the UI reload button to not work.
 - Removed the Optimize Logs settings and removed log deletions.
 - Fixed a bug that prevented local objects from being able to be deleted.
+- Fixed a bug that made it very glitchy to enter coordinates in the teleport window.
 
 ### API Changes
 
@@ -37,6 +38,10 @@ Thanks to the continuous support from so many of you loyal employees, mod devs a
 - Various UI layout fixes and adjustments to improve usability.
 - Made UI sounds more consistent and toggleable.
 - Increased shown items in spawn UI from 6 to 8.
+- Made it so windows won't disappear when resizing the game window.
+- Fixed a bug where changing the FoV would result in weird camera behaviour.
+- Made it so teleport coordinates will automatically update if the player teleports out-of-bounds.
+- Removed the min and max constraints on teleport coordinates.
 
 ### Compatibility
 
