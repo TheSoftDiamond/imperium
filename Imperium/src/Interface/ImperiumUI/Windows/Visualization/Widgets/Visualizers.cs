@@ -89,6 +89,12 @@ internal class Visualizers : ImpWidget
             theme
         );
         ImpToggle.Bind(
+            "Colliders/LineOfSight",
+            transform,
+            Imperium.Settings.Visualization.LineOfSight,
+            theme
+        );
+        ImpToggle.Bind(
             "Colliders/RoomLight",
             transform,
             Imperium.Settings.Visualization.RoomLight,

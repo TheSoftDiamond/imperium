@@ -11,6 +11,11 @@ Thanks to the continuous support from so many of you loyal employees, mod devs a
 - Removed support for vain shrouds since they are no longer used in the base game.
 - Rewrote Quickload logic and cleaned up preferences.
 
+### Added Stuff
+
+- Added a collider visualizer for objects on the LineOfSight layer.
+- Added and updated various tooltips to increase the overall UI usability. 
+
 ### Internal Fixes
 
 - Moved all network logging to the DEBUG level to decrease log volume.
@@ -29,7 +34,6 @@ Thanks to the continuous support from so many of you loyal employees, mod devs a
 ### QoL Improvements
 
 - Improved tooltip experience with new smooth transitions and delays.
-- Added and updated various tooltips to increase the overall UI usability. 
 - Various UI layout fixes and adjustments to improve usability.
 - Made UI sounds more consistent and toggleable.
 - Increased shown items in spawn UI from 6 to 8.
@@ -470,4 +474,4 @@ This version is compatible with the [v50 rev.3](https://steamdb.info/changelist/
 
 - Adjusted Oracle predictions as the daytime entity bug was fixed.
 - Updated README with new images. k
-- 
+-  la

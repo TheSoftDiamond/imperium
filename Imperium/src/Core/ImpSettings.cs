@@ -387,6 +387,14 @@ public class ImpSettings(ConfigFile config)
             value => Imperium.Visualization.Point(value, "MoldAttractionPoint", IdentifierType.TAG)
         );
 
+        internal readonly ImpConfig<bool> LineOfSight = new(
+            config,
+            "Visualization.Colliders",
+            "LineOfSight",
+            false,
+            value => Imperium.Visualization.Collider(value, "LineOfSight", IdentifierType.LAYER)
+        );
+
         internal readonly ImpConfig<bool> TileBorders = new(
             config,
             "Visualization.Colliders",
