@@ -24,6 +24,8 @@ public class ImpTooltip : ImpWidget
     private GameObject accessIcon;
     private GameObject accessText;
 
+    private CanvasScaler canvasScaler;
+
     private Coroutine showAnimationCoroutine;
 
     private void Awake()
@@ -35,6 +37,7 @@ public class ImpTooltip : ImpWidget
         accessIcon = panel.Find("Header/Locked").gameObject;
         bodyText = panel.Find("Text").GetComponent<TMP_Text>();
         accessText = panel.Find("Access").gameObject;
+        canvasScaler = transform.GetComponent<CanvasScaler>();
 
         panelGroup.alpha = 0;
 
@@ -56,7 +59,19 @@ public class ImpTooltip : ImpWidget
         }
         else
         {
-            panel.transform.position = new Vector2(cursorPosition.x + 15, cursorPosition.y - 20);
+            /*
+             * Adjust pivot and cursor offset based on if the tooltip would go outside the screen
+             *
+             * Idk why, but we have to use m_PrevScaleFactor here, scaleFactor is just 1 for some reason.
+             */
+            var invertX = cursorPosition.x + 20 + panelRect.rect.width * canvasScaler.m_PrevScaleFactor > Screen.width;
+            var invertY = cursorPosition.y - 20 - panelRect.rect.height * canvasScaler.m_PrevScaleFactor < 0;
+
+            var positionX = invertX ? cursorPosition.x : cursorPosition.x + 15;
+            var positionY = invertY ? cursorPosition.y : cursorPosition.y - 20;
+
+            panel.transform.position = new Vector2(positionX, positionY);
+            panelRect.pivot = new Vector2(invertX ? 1 : 0, invertY ? 0 : 1);
         }
     }
 

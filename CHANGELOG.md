@@ -15,7 +15,8 @@ Thanks to the continuous support from so many of you loyal employees, mod devs a
 ### Added Stuff
 
 - Added a collider visualizer for objects on the LineOfSight layer.
-- Added and updated various tooltips to increase the overall UI usability. 
+- Added and updated various tooltips to increase the overall UI usability.
+- Added a slam type toggle for spike traps in the object explorer.
 
 ### Bug Fixes
 
@@ -36,6 +37,7 @@ Thanks to the continuous support from so many of you loyal employees, mod devs a
 ### QoL Improvements
 
 - Improved tooltip experience with new smooth transitions and delays.
+- Made it so tooltips can no longer extend past the screen.
 - Various UI layout fixes and adjustments to improve usability.
 - Made UI sounds more consistent and toggleable.
 - Increased shown items in spawn UI from 6 to 8.

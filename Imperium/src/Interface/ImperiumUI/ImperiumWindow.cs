@@ -158,7 +158,6 @@ internal abstract class ImperiumWindow : MonoBehaviour, IDragHandler, IBeginDrag
         }
     }
 
-
     protected void RegisterWidget<T>(Transform container, string path) where T : ImpWidget
     {
         container.Find(path).gameObject.AddComponent<T>().Init(theme, tooltip, ref onOpen, ref onClose);

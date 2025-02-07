@@ -4,6 +4,7 @@ using System;
 using GameNetcodeStuff;
 using Imperium.API.Types.Networking;
 using Imperium.Core.Lifecycle;
+using Imperium.Interface.Common;
 using Imperium.Util;
 using JetBrains.Annotations;
 using Unity.Netcode;
@@ -64,7 +65,6 @@ internal static class ObjectEntryGenerator
         ObjectType.Player => false,
         ObjectType.Item => false,
         ObjectType.SpiderWeb => false,
-        ObjectType.SpikeTrap => false,
         ObjectType.Vent => false,
         ObjectType.OutsideObject => false,
         _ => true
@@ -291,6 +291,8 @@ internal static class ObjectEntryGenerator
                 ((TerminalAccessibleObject)entry.component).SetDoorToggleLocalClient();
                 break;
             case ObjectType.SpikeTrap:
+                ((SpikeRoofTrap)entry.component).slamOnIntervals = isActive;
+                break;
             case ObjectType.SpiderWeb:
             case ObjectType.Player:
             case ObjectType.Cruiser:
@@ -409,13 +411,21 @@ internal static class ObjectEntryGenerator
     {
         switch (entry.Type)
         {
+            case ObjectType.SpikeTrap:
+                entry.activeToggle.Set(((SpikeRoofTrap)entry.component).slamOnIntervals);
+                entry.activeToggle.gameObject.AddComponent<ImpTooltipTrigger>().Init(new TooltipDefinition
+                {
+                    Title = "Spike Trap Toggle",
+                    Description = "On - Slam on Intervals\nOff - Slam on Motion",
+                    Tooltip = entry.tooltip
+                });
+                break;
             case ObjectType.SteamValve:
             case ObjectType.Landmine:
             case ObjectType.Turret:
             case ObjectType.Vent:
             case ObjectType.Entity:
             case ObjectType.BreakerBox:
-            case ObjectType.SpikeTrap:
             case ObjectType.SpiderWeb:
             case ObjectType.Player:
             case ObjectType.Cruiser:
@@ -430,17 +440,17 @@ internal static class ObjectEntryGenerator
 
     internal static string GetObjectName(ObjectEntry entry) => entry.Type switch
     {
-        ObjectType.BreakerBox => $"Breaker Box (<i>ID: {entry.component.GetInstanceID()})</i>",
-        ObjectType.Cruiser => $"Cruiser (<i>ID: {entry.component.GetInstanceID()})</i>",
+        ObjectType.BreakerBox => GetObjectGenericName("Breaker Box", entry.component),
+        ObjectType.Cruiser => GetObjectGenericName("Cruiser", entry.component),
         ObjectType.Entity => GetEntityName((EnemyAI)entry.component),
         ObjectType.Item => ((GrabbableObject)entry.component).itemProperties.itemName,
-        ObjectType.Landmine => $"Landmine (<i>ID: {entry.component.GetInstanceID()})</i>",
+        ObjectType.Landmine => GetObjectGenericName("Landmine", entry.component),
         ObjectType.Player => GetPlayerName((PlayerControllerB)entry.component),
-        ObjectType.SpiderWeb => $"Spider Web (<i>ID: {entry.component.GetInstanceID()})</i>",
-        ObjectType.SpikeTrap => $"Spike Trap (<i>ID: {entry.component.GetInstanceID()})</i>",
-        ObjectType.SteamValve => $"Steam Valve (<i>ID: {entry.component.GetInstanceID()})</i>",
-        ObjectType.Turret => $"Turret (<i>ID: {entry.component.GetInstanceID()})</i>",
-        ObjectType.SecurityDoor => $"Security Door (<i>ID: {entry.component.GetInstanceID()})</i>",
+        ObjectType.SpiderWeb => GetObjectGenericName("Spider Web", entry.component),
+        ObjectType.SpikeTrap => GetObjectGenericName("Spike Trap", entry.component),
+        ObjectType.SteamValve => GetObjectGenericName("Steam Valve", entry.component),
+        ObjectType.Turret => GetObjectGenericName("Turret", entry.component),
+        ObjectType.SecurityDoor => GetObjectGenericName("Security Door", entry.component),
         ObjectType.OutsideObject => GetOutsideObjectName(entry.component.gameObject),
         ObjectType.Vent => GetVentName((EnemyVent)entry.component),
         _ => throw new ArgumentOutOfRangeException()
@@ -460,10 +470,15 @@ internal static class ObjectEntryGenerator
         _ => entry.component.gameObject
     };
 
+    private static string GetObjectGenericName(string name, Component obj)
+    {
+        return $"{name} (ID: {RichText.Size(obj.GetInstanceID().ToString(), 10)})";
+    }
+
     private static string GetOutsideObjectName(GameObject obj)
     {
         var displayName = Imperium.ObjectManager.GetOverrideDisplayName(obj.name) ?? obj.name;
-        return $"{displayName} (ID: {obj.GetInstanceID()})";
+        return $"{displayName} (ID: {RichText.Size(obj.GetInstanceID().ToString(), 10)})";
     }
 
     private static string GetVentName(EnemyVent vent)
