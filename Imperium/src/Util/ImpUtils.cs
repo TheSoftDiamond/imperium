@@ -305,6 +305,29 @@ public abstract class ImpUtils
         }
     }
 
+    internal abstract class Bindings
+    {
+        /// <summary>
+        /// Adds or removes a value to / from a set in a binding and updates the binding.
+        /// </summary>
+        /// <param name="binding"></param>
+        /// <param name="key">The key of the object to add to or remove from the set.</param>
+        /// <param name="isOn">Whether the value should be present in the updated set.</param>
+        internal static void ToggleSet<T>(IBinding<HashSet<T>> binding, T key, bool isOn)
+        {
+            if (isOn)
+            {
+                binding.Value.Add(key);
+            }
+            else
+            {
+                binding.Value.Remove(key);
+            }
+
+            binding.Set(binding.Value);
+        }
+    }
+
     internal abstract class Transpiling
     {
         internal static IEnumerable<CodeInstruction> SkipWaitingForSeconds(IEnumerable<CodeInstruction> instructions)

@@ -15,18 +15,6 @@ namespace Imperium.Patches.Objects;
 internal static class EnemyAIPatch
 {
     [HarmonyPostfix]
-    [HarmonyPatch("PlayerIsTargetable")]
-    private static void PlayerIsTargetablePatch(
-        EnemyAI __instance, PlayerControllerB playerScript, ref bool __result
-    )
-    {
-        if (Imperium.Settings.Player.Untargetable.Value && playerScript == Imperium.Player)
-        {
-            __result = false;
-        }
-    }
-
-    [HarmonyPostfix]
     [HarmonyPatch("KillEnemy")]
     private static void KillEnemyPatch(EnemyAI __instance)
     {
@@ -59,11 +47,30 @@ internal static class EnemyAIPatch
     }
 
     [HarmonyPostfix]
-    [HarmonyPatch("GetAllPlayersInLineOfSight")]
-    private static void GetAllPlayersInLineOfSightPostfixPatch(
-        EnemyAI __instance, float width, int range, Transform eyeObject, float proximityCheck, PlayerControllerB[] __result
+    [HarmonyPatch("PlayerIsTargetable")]
+    private static void PlayerIsTargetablePatch(
+        EnemyAI __instance, PlayerControllerB playerScript, ref bool __result
     )
     {
+        if (Imperium.PlayerManager.untargetablePlayers.Value.Contains(playerScript.actualClientId))
+        {
+            __result = false;
+        }
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("GetAllPlayersInLineOfSight")]
+    private static void GetAllPlayersInLineOfSightPostfixPatch(
+        EnemyAI __instance, float width, int range, Transform eyeObject, float proximityCheck,
+        ref PlayerControllerB[] __result
+    )
+    {
+        // Remove all invisible players from result list
+        __result = __result?
+            .Where(player => !Imperium.PlayerManager.invisiblePlayers.Value.Contains(player.actualClientId))
+            .ToArray();
+
+        // Line of sight visualization
         var coneSize = range;
 
         if (__instance.isOutside
@@ -120,12 +127,21 @@ internal static class EnemyAIPatch
         }
     }
 
-    [HarmonyPrefix]
+    [HarmonyPostfix]
     [HarmonyPatch("CheckLineOfSightForPlayer")]
     private static void CheckLineOfSightForPlayerPrefixPatch(
-        EnemyAI __instance, float width, int range, int proximityAwareness
+        EnemyAI __instance, float width, int range, int proximityAwareness, ref PlayerControllerB __result
     )
     {
+        // If target player is invisible, set to null and skip LOS visualization
+        if (__result && Imperium.PlayerManager.invisiblePlayers.Value.Contains(__result.playerClientId))
+        {
+            __result = null;
+            return;
+        }
+
+        if (__result != null) Imperium.EventLog.EntityEvents.CheckLineOfSightForPlayer(__instance, __result);
+
         var coneSize = range;
 
         if (__instance.isOutside
@@ -154,7 +170,7 @@ internal static class EnemyAIPatch
         }
     }
 
-    [HarmonyPrefix]
+    [HarmonyPostfix]
     [HarmonyPatch("CheckLineOfSightForPosition")]
     private static void CheckLineOfSightForPositionPrefixPatch(
         EnemyAI __instance, Vector3 objectPosition, float width, int range,
@@ -180,15 +196,21 @@ internal static class EnemyAIPatch
         }
     }
 
-    /// <summary>
-    ///     Temporarily removes invisible player from allPlayerScripts
-    /// </summary>
-    [HarmonyPrefix]
+    [HarmonyPostfix]
     [HarmonyPatch("CheckLineOfSightForClosestPlayer")]
     private static void CheckLineOfSightForClosestPlayerPrefixPatch(
-        EnemyAI __instance, float width, int range, int proximityAwareness
+        EnemyAI __instance, float width, int range, int proximityAwareness, ref PlayerControllerB __result
     )
     {
+        // If target player is invisible, set to null and skip LOS visualization
+        if (__result && Imperium.PlayerManager.invisiblePlayers.Value.Contains(__result.playerClientId))
+        {
+            __result = null;
+            return;
+        }
+
+        if (__result != null) Imperium.EventLog.EntityEvents.CheckLineOfSightForClosestPlayer(__instance, __result);
+
         var coneSize = range * 2;
 
         if (__instance.isOutside
@@ -215,53 +237,5 @@ internal static class EnemyAIPatch
                 material: ImpAssets.WireframeAmaranth
             );
         }
-    }
-
-    /*
-     * Player Invisibility Patches
-     */
-    [HarmonyPostfix]
-    [HarmonyPatch("GetAllPlayersInLineOfSight")]
-    private static void GetAllPlayersInLineOfSightPostfixPatch(EnemyAI __instance, ref PlayerControllerB[] __result)
-    {
-        if (Imperium.Settings.Player.Invisibility.Value && __result != null && __result.Contains(Imperium.Player))
-        {
-            __result = __result.Where(player => player != Imperium.Player).ToArray();
-        }
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch("CheckLineOfSightForPlayer")]
-    private static void CheckLineOfSightForPlayerPostfixPatch(EnemyAI __instance, ref PlayerControllerB __result)
-    {
-        if (Imperium.Settings.Player.Invisibility.Value && __result == Imperium.Player) __result = null;
-
-        if (__result != null) Imperium.EventLog.EntityEvents.CheckLineOfSightForPlayer(__instance, __result);
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch("CheckLineOfSightForClosestPlayer")]
-    private static void CheckLineOfSightForClosestPlayerPostfixPatch(EnemyAI __instance, ref PlayerControllerB __result)
-    {
-        if (Imperium.Settings.Player.Invisibility.Value && __result == Imperium.Player) __result = null;
-
-        if (__result != null) Imperium.EventLog.EntityEvents.CheckLineOfSightForClosestPlayer(__instance, __result);
-    }
-
-    [HarmonyPostfix]
-    [HarmonyPatch("CheckLineOfSightForPosition")]
-    private static void CheckLineOfSightForPositionPostfixPatch(
-        EnemyAI __instance, Vector3 objectPosition, ref bool __result
-    )
-    {
-        if (
-            Imperium.Settings.Player.Invisibility.Value &&
-            objectPosition == Imperium.Player.gameplayCamera.transform.position
-        )
-        {
-            __result = false;
-        }
-
-        if (__result) Imperium.EventLog.EntityEvents.CheckLineOfSightForPosition(__instance, objectPosition);
     }
 }

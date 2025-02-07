@@ -12,7 +12,7 @@ using Unity.Netcode;
 
 namespace Imperium.Netcode;
 
-public sealed class ImpNetworkBinding<T> : IBinding<T>, INetworkSubscribable
+public class ImpNetworkBinding<T> : IBinding<T>, INetworkSubscribable
 {
     public event Action<T> onUpdate;
     public event Action<T> onUpdateSecondary;

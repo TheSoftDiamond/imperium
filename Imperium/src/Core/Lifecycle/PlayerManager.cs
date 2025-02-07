@@ -19,6 +19,14 @@ internal class PlayerManager : ImpLifecycleObject
 {
     internal readonly ImpBinaryBinding IsFlying = new(false);
 
+    internal readonly ImpNetworkBinding<HashSet<ulong>> untargetablePlayers = new(
+        "UntargetablePlayers", Imperium.Networking, []
+    );
+
+    internal readonly ImpNetworkBinding<HashSet<ulong>> invisiblePlayers = new(
+        "InvisiblePlayers", Imperium.Networking, []
+    );
+
     private readonly ImpNetMessage<ulong> killPlayerMessage = new("KillPlayer", Imperium.Networking);
     private readonly ImpNetMessage<ulong> revivePlayerMessage = new("RevivePlayer", Imperium.Networking);
     private readonly ImpNetMessage<DropItemRequest> dropItemMessage = new("Dropitem", Imperium.Networking);
@@ -61,6 +69,16 @@ internal class PlayerManager : ImpLifecycleObject
             revivePlayerMessage.OnServerReceive += OnRevivePlayerServer;
             teleportPlayerMessage.OnServerReceive += OnTeleportPlayerServer;
         }
+
+        Imperium.Settings.Player.Invisibility.onUpdate += isInvisible =>
+        {
+            ImpUtils.Bindings.ToggleSet(invisiblePlayers, Imperium.Player.actualClientId, isInvisible);
+        };
+
+        Imperium.Settings.Player.Untargetable.onUpdate += isUntargetable =>
+        {
+            ImpUtils.Bindings.ToggleSet(untargetablePlayers, Imperium.Player.actualClientId, isUntargetable);
+        };
     }
 
     protected override void OnSceneLoad()

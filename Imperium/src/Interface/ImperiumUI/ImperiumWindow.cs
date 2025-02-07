@@ -183,10 +183,6 @@ internal abstract class ImperiumWindow : MonoBehaviour, IDragHandler, IBeginDrag
     /// </summary>
     public void Open()
     {
-        // transform.gameObject.SetActive(true);
-        // if (fadeAnimation != null) StopCoroutine(fadeAnimation);
-        // fadeAnimation = StartCoroutine(animateOpacityTo(0.05f, 1));
-
         FocusWindow();
 
         // Set position if is opened the first time
