@@ -15,7 +15,7 @@ using Imperium.Interface.ImperiumUI.Windows.Preferences;
 using Imperium.Interface.ImperiumUI.Windows.Rendering;
 using Imperium.Interface.ImperiumUI.Windows.SaveEditor;
 using Imperium.Interface.ImperiumUI.Windows.ShipControl;
-using Imperium.Interface.ImperiumUI.Windows.Teleportation;
+using Imperium.Interface.ImperiumUI.Windows.Teleport;
 using Imperium.Interface.ImperiumUI.Windows.Visualization;
 using Imperium.Types;
 using Imperium.Util;
@@ -54,7 +54,7 @@ public class ImperiumUI : BaseUI
             "Center/Visualization",
             "Visualization"
         );
-        RegisterImperiumWindow<TeleportationWindow>(
+        RegisterImperiumWindow<TeleportWindow>(
             ImpAssets.TeleportationWindowObject,
             "Center/Teleportation",
             "Teleportation",

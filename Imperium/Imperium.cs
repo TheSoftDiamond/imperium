@@ -96,6 +96,7 @@ public class Imperium : BaseUnityPlugin
     internal static ImpInputBindings InputBindings { get; private set; }
     internal static ImpPositionIndicator ImpPositionIndicator { get; private set; }
     internal static ImpInterfaceManager Interface { get; private set; }
+    internal static WaypointManager WaypointManager { get; private set; }
 
     /// <summary>
     ///     Set to true, then Imperium is initialized (Stage 1).
@@ -212,6 +213,7 @@ public class Imperium : BaseUnityPlugin
         CruiserManager = ImpLifecycleObject.Create<CruiserManager>(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
         ObjectManager = ImpLifecycleObject.Create<ObjectManager>(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
         PlayerManager = ImpLifecycleObject.Create<PlayerManager>(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
+        WaypointManager = ImpLifecycleObject.Create<WaypointManager>(IsSceneLoaded, ImpNetworking.ConnectedPlayers);
         Visualization = new Visualization(Oracle.State, ObjectManager, configFile);
 
         Map = ImpMap.Create();

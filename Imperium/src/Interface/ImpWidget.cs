@@ -16,6 +16,8 @@ public abstract class ImpWidget : MonoBehaviour
     protected event Action onClose;
     protected ImpTooltip tooltip { get; private set; }
 
+    private ImperiumUI.ImperiumUI parent;
+
     internal void Init(IBinding<ImpTheme> themeBinding, ImpTooltip tooltipReference)
     {
         theme = themeBinding;
@@ -29,9 +31,12 @@ public abstract class ImpWidget : MonoBehaviour
         IBinding<ImpTheme> themeBinding,
         ImpTooltip tooltipReference,
         ref Action onOpenAction,
-        ref Action onCloseAction
+        ref Action onCloseAction,
+        ImperiumUI.ImperiumUI widgetParent
     )
     {
+        parent = widgetParent;
+
         onOpenAction += () => onOpen?.Invoke();
         onCloseAction += () => onClose?.Invoke();
 
@@ -40,6 +45,8 @@ public abstract class ImpWidget : MonoBehaviour
 
         Init(themeBinding, tooltipReference);
     }
+
+    protected void CloseParent() => parent?.Close();
 
     protected virtual void OnOpen()
     {

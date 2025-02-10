@@ -2,14 +2,17 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using GameNetcodeStuff;
 using Imperium.API.Types.Networking;
 using Imperium.Netcode;
 using Imperium.Util;
 using Imperium.Util.Binding;
+using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
+using UnityEngine.UIElements;
 
 #endregion
 
@@ -26,6 +29,8 @@ internal class PlayerManager : ImpLifecycleObject
     internal readonly ImpNetworkBinding<HashSet<ulong>> invisiblePlayers = new(
         "InvisiblePlayers", Imperium.Networking, []
     );
+
+    internal readonly IBinding<bool> PlayerInCruiser = new ImpBinding<bool>(false);
 
     private readonly ImpNetMessage<ulong> killPlayerMessage = new("KillPlayer", Imperium.Networking);
     private readonly ImpNetMessage<ulong> revivePlayerMessage = new("RevivePlayer", Imperium.Networking);
@@ -229,12 +234,21 @@ internal class PlayerManager : ImpLifecycleObject
         }
     }
 
+    internal static Camera GetActiveCamera()
+    {
+        return Imperium.Freecam.IsFreecamEnabled.Value
+            ? Imperium.Freecam.FreecamCamera
+            : Imperium.Player.hasBegunSpectating
+                ? Imperium.StartOfRound.spectateCamera
+                : Imperium.Player.gameplayCamera;
+    }
+
     #region RPC Handlers
 
     [ImpAttributes.LocalMethod]
     private static void OnDropitemClient(DropItemRequest request)
     {
-        var player = StartOfRound.Instance.allPlayerScripts[request.PlayerId];
+        var player =  Imperium.StartOfRound.allPlayerScripts.First(player => player.actualClientId == request.PlayerId);
         var previousSlot = player.currentItemSlot;
 
         // Switch to item slot, discard item and switch back
@@ -258,7 +272,7 @@ internal class PlayerManager : ImpLifecycleObject
     [ImpAttributes.LocalMethod]
     private static void OnTeleportPlayerClient(TeleportPlayerRequest request)
     {
-        var player = Imperium.StartOfRound.allPlayerScripts[request.PlayerId];
+        var player = Imperium.StartOfRound.allPlayerScripts.First(player => player.actualClientId == request.PlayerId);
 
         player.TeleportPlayer(request.Destination);
         var isInFactory = request.Destination.y < -100;
@@ -302,7 +316,7 @@ internal class PlayerManager : ImpLifecycleObject
     [ImpAttributes.LocalMethod]
     private static void OnRevivePlayerClient(ulong playerId)
     {
-        var player = Imperium.StartOfRound.allPlayerScripts[playerId];
+        var player =Imperium.StartOfRound.allPlayerScripts.First(player => player.actualClientId == playerId);
 
         Imperium.StartOfRound.livingPlayers++;
 

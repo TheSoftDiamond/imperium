@@ -70,11 +70,13 @@ internal abstract class ImpAssets
     internal static GameObject TapeIndicatorObject;
     internal static GameObject DoorMarkerObject;
     internal static GameObject NoiseOverlay;
+    internal static GameObject WaypointOverlay;
     internal static GameObject SpawnTimerObject;
     internal static GameObject SpikeTrapTimerObject;
     internal static GameObject SpawnIndicator;
     internal static GameObject ObjectInsightPanel;
     internal static GameObject BuildInfoPanel;
+    internal static GameObject WaypointBeacon;
 
     /*
      * Audio Clips
@@ -169,8 +171,10 @@ internal abstract class ImpAssets
             LoadAsset(ImperiumAssets, "Assets/Prefabs/spiketrap_timer.prefab", out SpikeTrapTimerObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/insight_panel.prefab", out ObjectInsightPanel),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/prop_info.prefab", out BuildInfoPanel),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/waypoint_beacon.prefab", out WaypointBeacon),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/spawn_indicator.prefab", out SpawnIndicator),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/noise_overlay.prefab", out NoiseOverlay),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/waypoint_overlay.prefab", out WaypointOverlay),
             LoadAsset(ImperiumAssets, "Assets/Materials/xray.mat", out XRay),
             LoadAsset(ImperiumAssets, "Assets/Materials/hologram_okay.mat", out HologramOkay),
             LoadAsset(ImperiumAssets, "Assets/Materials/hologram_okay_dark.mat", out HologramOkayDark),

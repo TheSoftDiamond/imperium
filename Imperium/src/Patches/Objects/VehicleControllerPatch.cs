@@ -13,6 +13,20 @@ namespace Imperium.Patches.Objects;
 public static class VehicleControllerPatch
 {
     [HarmonyPrefix]
+    [HarmonyPatch("TakeControlOfVehicle")]
+    internal static void TakeControlOfVehiclePostfixPatch()
+    {
+        Imperium.PlayerManager.PlayerInCruiser.Set(true);
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch("LoseControlOfVehicle")]
+    internal static void LoseControlOfVehiclePostfixPatch()
+    {
+        Imperium.PlayerManager.PlayerInCruiser.Set(false);
+    }
+
+    [HarmonyPrefix]
     [HarmonyPatch("PushTruckWithArms")]
     internal static void PushTruckWithArmsPrefixPatch(VehicleController __instance)
     {

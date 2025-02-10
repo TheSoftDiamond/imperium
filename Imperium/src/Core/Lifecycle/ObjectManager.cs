@@ -169,6 +169,11 @@ internal class ObjectManager : ImpLifecycleObject
     private readonly Dictionary<int, string> EntityNameMap = [];
     private bool JohnExists;
 
+    /*
+     * Assets loaded from the game's resources after loading objects
+     */
+    internal AudioClip BeaconDrop;
+
     protected override void Init()
     {
         FetchGlobalSpawnLists();
@@ -365,6 +370,8 @@ internal class ObjectManager : ImpLifecycleObject
         var allItems = Resources.FindObjectsOfTypeAll<Item>()
             .Where(item => item.spawnPrefab && !ImpConstants.ItemBlacklist.Contains(item.itemName))
             .ToHashSet();
+        BeaconDrop = allItems.First(item => item.itemName == "Radar-booster").dropSFX;
+
         var allScrap = allItems.Where(scrap => scrap.isScrap).ToHashSet();
 
         var allMapHazards = new Dictionary<string, GameObject>();
@@ -420,6 +427,7 @@ internal class ObjectManager : ImpLifecycleObject
 
         GenerateDisplayNameMaps();
     }
+
 
     private static EnemyType CreateShiggyType(EnemyType type)
     {
@@ -682,8 +690,10 @@ internal class ObjectManager : ImpLifecycleObject
                     Quaternion.identity
                 )
             };
+            var entity = entityObj.GetComponent<EnemyAI>();
+            Imperium.RoundManager.SpawnedEnemies.Add(entity);
 
-            if (request.Health > 0) entityObj.GetComponent<EnemyAI>().enemyHP = request.Health;
+            if (request.Health > 0) entity.enemyHP = request.Health;
 
             var netObject = entityObj.gameObject.GetComponentInChildren<NetworkObject>();
             netObject.Spawn(destroyWithScene: true);
@@ -824,7 +834,9 @@ internal class ObjectManager : ImpLifecycleObject
             var spawnedInInventory = false;
             if (request.SpawnInInventory)
             {
-                var invokingPlayer = Imperium.StartOfRound.allPlayerScripts[clientId];
+                var invokingPlayer = Imperium.StartOfRound.allPlayerScripts.First(
+                    player => player.actualClientId == clientId
+                );
                 var firstItemSlot = invokingPlayer.FirstEmptyItemSlot();
                 if (firstItemSlot != -1 && grabbableItem.grabbable)
                 {

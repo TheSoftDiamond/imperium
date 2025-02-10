@@ -37,8 +37,35 @@ Imperium works on the client-side and server-side, meaning it works in singlepla
 - Allows bypassing of the loading screen and instantly loading a save file on start-up.
 - Fully compatible with [Unity Explorer](https://github.com/sinai-dev/UnityExplorer) (Including mouse look fix).
 
+## Getting Started
+
+Imperium can be downloaded directly from [Thunderstore](https://thunderstore.io/c/lethal-company/p/giosuel/Imperium/) or installed manually from the [releases page](https://github.com/giosuel/imperium/releases). If you are downloading Imperium through Thunderstore, I highly recommend to use the [Gale](https://thunderstore.io/c/lethal-company/p/Kesomannen/GaleModManager/) mod manager to manage your mods.
+
+### Interface Navigation
+
+Imperium can be navigated using functional keys, or F-Keys. All the default key bindings can be changed through [InputUtil](https://thunderstore.io/c/lethal-company/p/Rune580/LethalCompany_InputUtils/)'s keybind interface in the Lethal Company settings.
+
+Imperium is divided into several main interfaces which can be opened directly with functional keys (e.g. `F1` for the Imperium UI). Alternatively, its possible to switch between these interfaces with the dock on the left.
+
+The main interface, called the "Imperium UI" is further divided into floating windows which contain Imperium's main settings and functionalities. These windows can be toggled on and off through the Imperium dock at the top of the screen. Altenatively, some of them can be opened through functional keys (e.g. `F3` to open the teleportation window).
+
+| Default Keybind | Action                                                      |
+| --------------- | ----------------------------------------------------------- |
+| F1              | Opens the Imperium UI.                                      |
+| F2              | Opens Imperium's spawn UI.                                  |
+| F3              | Opens the teleportation window within the Imperium UI.      |
+| F6              | Opens the Oracle spawn prediction UI.                       |
+| F8              | Opens the full-screen map UI.                               |
+| T               | Toggles interactive teleportation.                          |
+| F               | Opens the Imperium freecam.                                 |
+| M               | Toggles the Imperium minimap.                               |
+| X               | Toggles the freecam's picture-in-picture mode.              |
+| F11             | Toggles the freecam's picture-in-picture mode's fullscreen. |
+| Z               | Toggles the vanilla employee HUD.                           |
+
 ## Imperium's Minimap / Map
-Imperium comes with it's own built-in map and minimap.
+
+Imperium comes with its own minimap and full-screen map. The map can be used to follow yourself or other employees, as well as track entities or even map hazards. By default, the map is set to top-down view but you can adjust the viewing angle in the full-screen map.
 
 ![imperium-map](https://github.com/giosuel/imperium/blob/main/assets/imperium-map.png?raw=true)
 
@@ -46,7 +73,15 @@ Imperium comes with it's own built-in map and minimap.
 
 ## Imperium's Visualizers
 
-The visualizers windows allows access to all the static and dynamic collider visualizers, gizmos and screen-space overlays.
+Imperium comes with a multitude of built-in visualizers for colliders, position trackers, map hazards and more. The visualizers are divided into 5 main categories.
+
+### Overlays and Colliders
+
+Overlays are simple position trackers which highlight certain important coordinates in the game such as spawn locations, AI nodes and more. Collider visualizers highlight box, sphere and capsule colliders of game objects.
+
+### Insights
+
+Insights provide screen-space overlays for any game objects in the scene.
 
 ![imperium-visualizers](https://github.com/giosuel/imperium/blob/main/assets/imperium-visualizers.png?raw=true)
 

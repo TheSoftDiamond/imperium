@@ -11,6 +11,7 @@ Thanks to the continuous support from so many of you loyal employees, mod devs a
 - Removed support for vain shrouds since they are no longer used in the base game.
 - Rewrote Quickload logic and cleaned up preferences.
 - Player untargetability / invisiblity is now communicated to all clients to prevent de-sync.
+- Made it so spawned entities are added to the game's spawned enemy list. 
 
 ### Added Stuff
 

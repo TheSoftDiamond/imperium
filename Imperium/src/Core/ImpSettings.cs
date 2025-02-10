@@ -30,6 +30,7 @@ public class ImpSettings(ConfigFile config)
     internal readonly EventLogSettings EventLog = new(config);
     internal readonly ShipSettings Ship = new(config);
     internal readonly CruiserSettings Cruiser = new(config);
+    internal readonly WaypointSettings Waypoint = new(config);
     internal readonly AnimationSkippingSettings AnimationSkipping = new(config);
     internal readonly VisualizationSettings Visualization = new(config);
     internal readonly RenderSettings Rendering = new(config);
@@ -187,6 +188,23 @@ public class ImpSettings(ConfigFile config)
             "Game.Terminal",
             "UnlockShop",
             false
+        );
+    }
+
+    internal class WaypointSettings(ConfigFile config) : SettingBase(config)
+    {
+        internal readonly ImpConfig<bool> EnableBeacons = new(
+            config,
+            "Waypoints",
+            "EnableBeacons",
+            true
+        );
+
+        internal readonly ImpConfig<bool> EnableOverlay = new(
+            config,
+            "Waypoints",
+            "EnableOverlay",
+            true
         );
     }
 
