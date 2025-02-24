@@ -53,6 +53,7 @@
         <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.1" PrivateAssets="all" ExcludeAssets="runtime" />
 
         <PackageReference Include="fumiko-CullFactory" Version="1.7.0" />
+        <PackageReference Include="IAmBatby-LethalLevelLoader" Version="1.4.11" />
 
         <PackageReference Include="ArmDot.Engine.MSBuildTasks" Version="2023.12.0" />
         <PackageReference Include="rainbowblood.UniverseLib.Mono" Version="2.*" />

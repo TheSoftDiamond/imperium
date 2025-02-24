@@ -2,16 +2,22 @@
 
 ## Imperium v1.0 - The Release
 
-We've come a long way since the release of the first Imperium prototype in early April 2024 to where we are today. Imperium was my first modding project for any game and it was just meant to be a fun little tool to explore the wonderful mechanics of this amazing game. I guess I could not have been more wrong ;)
+> We've come a long way since the release of the first Imperium prototype in early April 2024 to where we are today. Imperium was my first modding project for any game and it was just meant to be a fun little tool to explore the wonderful mechanics of this amazing game.
+>
+> But thanks to the continuous support from so many of you loyal employees, mod devs and content creators, which were eagerly providing feedback and feature ideas, I was able to expand this initial idea into this fully fledged debugging swiss-army knife for Lethal Company!
+>
+> I think Imperium is now finally in a stable state where most of the communies' and my ideas are implemented and the majority of the P1 and P2 bugs are resolved. And while this definitely isn't the end of Imperium support, I do plan on moving on to different modding / game dev projects in the future.
+>
+> ~The Emperor, gio
 
-Thanks to the continuous support from so many of you loyal employees, mod devs and content creators, which were able to use Imperium for a much wide variety of tasks, I was able to expand this initial idea into a fully fledged swiss-army knife for debugging Lethal Company.
+The Imperium release is mostly aimed at fixing all the remaining P1 and P2 bugs as well as implementing the last few features that I had on my list for such a long time now, such as the time slider and the dungeon flow override. I also spent some time polishing the UI and improving the overall usability of Imperium. This includes interface animations and transitions, smoother loading as well as improved global tooltips.
 
 ### General Changes
 
 - Removed support for vain shrouds since they are no longer used in the base game.
 - Rewrote Quickload logic and cleaned up preferences.
 - Player untargetability / invisiblity is now communicated to all clients to prevent de-sync.
-- Made it so spawned entities are added to the game's spawned enemy list. 
+- Made it so spawned entities are added to the game's spawned enemy list.
 
 ### Added Stuff
 
@@ -33,7 +39,7 @@ Thanks to the continuous support from so many of you loyal employees, mod devs a
 
 ### API Changes
 
-- Removed vain shroud related endpoints.
+- Removed all vain shroud related endpoints.
 
 ### QoL Improvements
 
@@ -46,10 +52,11 @@ Thanks to the continuous support from so many of you loyal employees, mod devs a
 - Fixed a bug where changing the FoV would result in weird camera behaviour.
 - Made it so teleport coordinates will automatically update if the player teleports out-of-bounds.
 - Removed the min and max constraints on teleport coordinates.
+- Added a soft dependency for LLL to retrieve custom dungeon flow display names.
 
 ### Compatibility
 
-This version is compatible with the [v50](https://steamdb.info/changelist/23181066/) update of Lethal Company.
+This version is compatible with the [v69](https://steamdb.info/changelist/26845279/) update of Lethal Company. Nice.
 
 ## Imperium v0.2.8 [Beta] - V66 Compatibility Patch
 

@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Imperium.Integration;
 using Imperium.Interface.Common;
 using Imperium.Types;
 using Imperium.Util;
@@ -76,9 +77,7 @@ public class LevelGeneration : ImpWidget
         );
 
         var options = Imperium.RoundManager.dungeonFlowTypes
-            .Select(flow => new TMP_Dropdown.OptionData(
-                dungeonFlowDisplayNames.GetValueOrDefault(flow.dungeonFlow.name, flow.dungeonFlow.name)
-            ))
+            .Select(flow => new TMP_Dropdown.OptionData(GetDungeonFlowDisplayName(flow.dungeonFlow.name)))
             .ToList();
 
         var dungeonFlowDropdown = transform.Find("DungeonFlow/Dropdown").GetComponent<TMP_Dropdown>();
@@ -99,6 +98,13 @@ public class LevelGeneration : ImpWidget
             interactableInvert: true,
             interactableBindings: disabledBinding
         );
+    }
+
+    private string GetDungeonFlowDisplayName(string flowName)
+    {
+        return LethalLevelLoaderIntegration.TryGetFlowDisplayName(flowName, out var lllDisplayName)
+            ? lllDisplayName
+            : dungeonFlowDisplayNames.GetValueOrDefault(flowName, flowName);
     }
 
     protected override void OnThemeUpdate(ImpTheme themeUpdate)
