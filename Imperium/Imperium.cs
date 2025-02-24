@@ -23,10 +23,8 @@ using Imperium.Patches.Systems;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using Imperium.Visualizers.Objects.NoiseOverlay;
-using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Rendering.HighDefinition;
 
 #endregion
 
@@ -241,9 +239,7 @@ public class Imperium : BaseUnityPlugin
         UnityExplorerIntegration.PatchFunctions(Harmony);
 
         IsImperiumLaunched = true;
-
-        InputBindings.BaseMap.ToggleHUD.performed += ToggleHUD;
-
+        
         // Enable Imperium frontend if Imperium is enabled in the config
         if (Settings.Preferences.EnableImperium.Value)
         {
@@ -261,16 +257,6 @@ public class Imperium : BaseUnityPlugin
         {
             DisableImperium();
         }
-    }
-
-    private static void ToggleHUD(InputAction.CallbackContext callbackContext)
-    {
-        if (Player.quickMenuManager.isMenuOpen ||
-            Player.inTerminalMenu ||
-            Player.isTypingChat ||
-            ShipBuildModeManager.InBuildMode) return;
-
-        HUDManager.HideHUD(!HUDManager.hudHidden);
     }
 
     internal static void Unload()

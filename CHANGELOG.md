@@ -53,6 +53,7 @@ The Imperium release is mostly aimed at fixing all the remaining P1 and P2 bugs 
 - Made it so teleport coordinates will automatically update if the player teleports out-of-bounds.
 - Removed the min and max constraints on teleport coordinates.
 - Added a soft dependency for LLL to retrieve custom dungeon flow display names.
+- Made it so the hover tooltip is disabled when the HUD is hidden.
 
 ### Compatibility
 

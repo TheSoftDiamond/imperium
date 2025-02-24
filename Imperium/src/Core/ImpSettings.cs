@@ -897,7 +897,7 @@ public class ImpSettings(ConfigFile config)
             "Rendering.Overlays",
             "PlayerHUD",
             true,
-            value => Imperium.HUDManager.HideHUD(!value)
+            value => PlayerManager.ToggleHUD(!value)
         );
 
         internal readonly ImpConfig<bool> FearFilter = new(

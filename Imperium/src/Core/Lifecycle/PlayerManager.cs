@@ -11,6 +11,7 @@ using Imperium.Util.Binding;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.UIElements;
 
@@ -84,6 +85,8 @@ internal class PlayerManager : ImpLifecycleObject
         {
             ImpUtils.Bindings.ToggleSet(untargetablePlayers, Imperium.Player.actualClientId, isUntargetable);
         };
+
+        Imperium.InputBindings.BaseMap.ToggleHUD.performed += ToggleHUD;
     }
 
     protected override void OnSceneLoad()
@@ -234,6 +237,24 @@ internal class PlayerManager : ImpLifecycleObject
         }
     }
 
+    private static void ToggleHUD(InputAction.CallbackContext callbackContext)
+    {
+        if (Imperium.Player.quickMenuManager.isMenuOpen ||
+            Imperium.Player.inTerminalMenu ||
+            Imperium.Player.isTypingChat ||
+            Imperium.ShipBuildModeManager.InBuildMode) return;
+
+        ToggleHUD(!Imperium.HUDManager.hudHidden);
+    }
+
+    internal static void ToggleHUD(bool isHidden)
+    {
+        Imperium.Player.cursorIcon.gameObject.SetActive(!isHidden);
+        Imperium.Player.cursorTip.gameObject.SetActive(!isHidden);
+
+        Imperium.HUDManager.HideHUD(isHidden);
+    }
+
     internal static Camera GetActiveCamera()
     {
         return Imperium.Freecam.IsFreecamEnabled.Value
@@ -248,7 +269,7 @@ internal class PlayerManager : ImpLifecycleObject
     [ImpAttributes.LocalMethod]
     private static void OnDropitemClient(DropItemRequest request)
     {
-        var player =  Imperium.StartOfRound.allPlayerScripts.First(player => player.actualClientId == request.PlayerId);
+        var player = Imperium.StartOfRound.allPlayerScripts.First(player => player.actualClientId == request.PlayerId);
         var previousSlot = player.currentItemSlot;
 
         // Switch to item slot, discard item and switch back
@@ -316,7 +337,7 @@ internal class PlayerManager : ImpLifecycleObject
     [ImpAttributes.LocalMethod]
     private static void OnRevivePlayerClient(ulong playerId)
     {
-        var player =Imperium.StartOfRound.allPlayerScripts.First(player => player.actualClientId == playerId);
+        var player = Imperium.StartOfRound.allPlayerScripts.First(player => player.actualClientId == playerId);
 
         Imperium.StartOfRound.livingPlayers++;
 
