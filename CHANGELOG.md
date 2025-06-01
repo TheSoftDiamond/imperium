@@ -1,6 +1,65 @@
 # Changelog
 
-## Imperium v0.2.8 [Beta] - V65 Compatibility Patch
+## Imperium v1.0 - The Release
+
+> We've come a long way since the release of the first Imperium prototype in early April 2024 to where we are today. Imperium was my first modding project for any game and it was just meant to be a fun little tool to explore the wonderful mechanics of this amazing game.
+>
+> But thanks to the continuous support from so many of you loyal employees, mod devs and content creators, which were eagerly providing feedback and feature ideas, I was able to expand this initial idea into this fully fledged debugging swiss-army knife for Lethal Company!
+>
+> I think Imperium is now finally in a stable state where most of the community's and my ideas are implemented and the majority of the P1 and P2 bugs are resolved. And while this definitely isn't the end of Imperium support, I do plan on moving on to different modding / game dev projects as well as [Imperium for R.E.P.O](https://github.com/giosuel/imperium-repo) in the future.
+>
+> ~The Emperor, gio
+
+The Imperium release is mostly aimed at fixing all the remaining P1 and P2 bugs as well as implementing the last few features that I had on my list for such a long time now, such as the time slider and the dungeon flow override. I also spent some time polishing the UI and improving the overall usability of Imperium. This includes interface animations and transitions, smoother loading as well as improved global tooltips.
+
+### General Changes
+
+- Removed support for vain shrouds since they are no longer used in the base game.
+- Rewrote Quickload logic and cleaned up preferences.
+- Player untargetability / invisiblity is now communicated to all clients to prevent de-sync.
+- Made it so spawned entities are added to the game's spawned enemy list.
+
+### Added Stuff
+
+- Added a collider visualizer for objects on the LineOfSight layer.
+- Added and updated various tooltips to increase the overall UI usability.
+- Added a slam type toggle for spike traps in the object explorer.
+
+### Bug Fixes
+
+- Moved all network logging to the DEBUG level to decrease log volume.
+- Fixed an issue where faulty UI config would break the Imperium startup sequence.
+- Made it so entities without prefabs are not showing up in the spawn menu.
+- Made it so the map camera's near and far clip can't overlap anymore.
+- Fixed notification settings not applying without restarting.
+- Fixed a bug that caused the UI reload button to not work.
+- Removed the Optimize Logs settings and removed log deletions.
+- Fixed a bug that prevented local objects from being able to be deleted.
+- Fixed a bug that made it very glitchy to enter coordinates in the teleport window.
+
+### API Changes
+
+- Removed all vain shroud related endpoints.
+
+### QoL Improvements
+
+- Improved tooltip experience with new smooth transitions and delays.
+- Made it so tooltips can no longer extend past the screen.
+- Various UI layout fixes and adjustments to improve usability.
+- Made UI sounds more consistent and toggleable.
+- Increased shown items in spawn UI from 6 to 8.
+- Made it so windows won't disappear when resizing the game window.
+- Fixed a bug where changing the FoV would result in weird camera behaviour.
+- Made it so teleport coordinates will automatically update if the player teleports out-of-bounds.
+- Removed the min and max constraints on teleport coordinates.
+- Added a soft dependency for LLL to retrieve custom dungeon flow display names.
+- Made it so the hover tooltip is disabled when the HUD is hidden.
+
+### Compatibility
+
+This version is compatible with the [v70](https://steamdb.info/changelist/29307618/) update of Lethal Company.
+
+## Imperium v0.2.8 [Beta] - V66 Compatibility Patch
 
 **Note:** *This version of Imperium is compatible with the [Version 66](<https://steamdb.info/changelist/25889392/>) of Lethal Company.*
 
@@ -379,6 +438,7 @@ This version is compatible with the [v50](https://steamdb.info/changelist/231810
 - Items, scrap and spider webs can now be teleported from the Object Explorer.
 - Added indoor spawning vents to the Object Explorer.
 - Added breaker boxes to the Object Explorer.
+- Added a slider to set the time of the day.
 
 ### Internal Fixes
 
@@ -387,6 +447,7 @@ This version is compatible with the [v50](https://steamdb.info/changelist/231810
 - Fixed a bug that caused freecam inputs to go through when the UI was open.
 - Fixed the BepInEx dependency.
 - Fixed a bug that caused problems when spawning entities with a space in their name.
+- Removed most of the reflection to improve performance.
 
 ### QOL Changes
 
@@ -429,4 +490,5 @@ This version is compatible with the [v50 rev.3](https://steamdb.info/changelist/
 ### Buxfixes
 
 - Adjusted Oracle predictions as the daytime entity bug was fixed.
-- Updated README with new images. 
+- Updated README with new images. k
+-  la

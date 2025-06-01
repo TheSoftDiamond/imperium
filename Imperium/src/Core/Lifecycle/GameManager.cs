@@ -18,7 +18,9 @@ internal class GameManager : ImpLifecycleObject
         if (NetworkManager.Singleton.IsHost) FulfillQuotaEvent.OnServerReceive += FulfillQuota;
     }
 
-    internal readonly ImpBinding<int> CustomSeed = new(-1);
+    internal readonly ImpNetworkBinding<int> CustomSeed = new("CustomSeed", Imperium.Networking, -1);
+    internal readonly ImpNetworkBinding<int> CustomDungeonFlow = new("CustomDungeonFlow", Imperium.Networking, -1);
+    internal readonly ImpNetworkBinding<float> CustomMapSize = new("CustomMapSize", Imperium.Networking, -1);
 
     internal readonly ImpNetworkBinding<int> GroupCredits = new(
         "GroupCredits",

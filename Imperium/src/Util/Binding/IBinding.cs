@@ -9,48 +9,59 @@ namespace Imperium.Util.Binding;
 public interface IBinding<T> : IResettable, IRefreshable
 {
     /// <summary>
-    ///     Action that is invoked every time the binding state is updated. Provides the updated state.
+    ///     Primary action that is invoked every time the binding state is updated. Provides the updated state.
+    ///
+    ///     The binding's internal
     /// </summary>
     public event Action<T> onUpdate;
 
     /// <summary>
-    ///     Action that is invoked every time the binding state is updated. Does not provide the updated state.
+    ///     Secondary action that is invoked everytime the binding state is updated, except if explicitly skipped.
+    ///
+    ///     Provides the updated state.
+    ///
+    ///     When invoking a binding update via <see cref="Set"/>, the caller can specify to skip the secondary update.
+    ///     This can be useful to avoid circular updates or skip certain callbacks when invoking an update.
+    /// </summary>
+    public event Action<T> onUpdateSecondary;
+
+    /// <summary>
+    ///     Primary action that is invoked every time the binding state is updated. Does not provide the updated state.
     /// </summary>
     public event Action onTrigger;
 
     /// <summary>
-    ///     Action that is invoked everytime the binding state is updated.
-    ///     This action is only executed when the update function was invoked locally. This can be used to avoid
-    ///     circular-updates. It can also be used to only play an SFX if the user changed something manually.
+    ///     Secondary action that is invoked everytime the binding state is updated, except if explicitly skipped.
+    ///
+    ///     Does not provide the updated state.
+    ///
+    ///     When invoking a binding update via <see cref="Set"/>, the caller can specify to skip the secondary update.
+    ///     This can be useful to avoid circular updates or skip certain callbacks when invoking an update.
     /// </summary>
-    public event Action<T> onUpdateFromLocal;
+    public event Action onTriggerSecondary;
 
-    /// <summary>
-    ///     Same thing as <see cref="onUpdateFromLocal" /> but without arguments. Does not provide the updated state.
-    /// </summary>
-    public event Action onTriggerFromLocal;
-
-    public T DefaultValue { get; }
     public T Value { get; }
+    public T DefaultValue { get; }
 
     /// <summary>
-    ///     Sets a new state and invokes the callbacks.
+    ///     Sets a new state and optionally invokes the primary and secondary events.
     /// </summary>
-    /// <param name="updatedValue">The new state</param>
-    /// <param name="invokeUpdate">Whether the update callbacks should be called</param>
-    /// <param name="invokeLocal">Whether the local update callbacks should be called</param>
-    public void Set(T updatedValue, bool invokeUpdate = true, bool invokeLocal = true);
+    /// <param name="updatedValue">The updated state</param>
+    /// <param name="invokePrimary">Whether the primary update events should be invoked</param>
+    /// <param name="invokeSecondary">Whether the secondary update events should be invoked</param>
+    public void Set(T updatedValue, bool invokePrimary = true, bool invokeSecondary = true);
 
     /// <summary>
-    ///     Invokes the callbacks with the current state.
+    ///     Same as calling <see cref="Set"/> with the current state and default arguments.
     /// </summary>
     public new void Refresh();
 
     /// <summary>
     ///     Resets the state to the default value and invokes the callbacks.
     /// </summary>
-    /// <param name="invokeUpdate">Whether the update callbacks should be called</param>
-    public new void Reset(bool invokeUpdate = true);
+    /// <param name="invokePrimary">Whether the primary update events should be invoked</param>
+    /// <param name="invokeSecondary">Whether the secondary update events should be invoked</param>
+    public new void Reset(bool invokePrimary = true, bool invokeSecondary = true);
 }
 
 public interface IRefreshable
@@ -60,5 +71,5 @@ public interface IRefreshable
 
 public interface IResettable
 {
-    public void Reset(bool invokeUpdate = true);
+    public void Reset(bool invokePrimary = true, bool invokeSecondary = true);
 }

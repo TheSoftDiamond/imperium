@@ -1,6 +1,7 @@
 #region
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Imperium.API.Types.Networking;
 using Imperium.Interface.Common;
@@ -28,7 +29,8 @@ public class SpawningObjectEntry : MonoBehaviour
         SpawnObjectType type,
         string objectName,
         Action onClick,
-        Action onHover,
+        Action<Vector2> onHover,
+        Dictionary<SpawnObjectType, string> typeDisplayNameMap,
         ImpBinding<ImpTheme> themeBinding
     )
     {
@@ -36,18 +38,29 @@ public class SpawningObjectEntry : MonoBehaviour
         spawnObjectName = objectName;
 
         var overrideName = Imperium.ObjectManager.GetOverrideDisplayName(objectName);
-        string labelText;
 
-        // If override name exists, use that for full label
+        /*
+         * Primary name is the user defined display name from the display name dictionary
+         * Secondary name is the raw object name from the game, if they are equal, only the primary name is displayed.
+         *
+         * If an override name is defined, the override name will be used as primary name and the secondary name
+         * will be ignored.
+         *
+         * Normalized primary and secondary names will be used for indexing.
+         */
+        string primaryName;
+        var secondaryName = "";
+
         if (overrideName != null)
         {
             displayName = overrideName;
-            labelText = overrideName;
+            primaryName = overrideName;
         }
         else
         {
             displayName = Imperium.ObjectManager.GetDisplayName(objectName);
-            labelText = $"{displayName} ({objectName})";
+            primaryName = displayName;
+            if (displayName != objectName) secondaryName = $"({objectName})";
         }
 
         displayNameNormalized = NormalizeName(displayName);
@@ -57,9 +70,12 @@ public class SpawningObjectEntry : MonoBehaviour
 
         selectedCover = transform.Find("Selected").gameObject;
         selectedCover.SetActive(false);
-        transform.Find("Label").GetComponent<TMP_Text>().text = labelText;
 
-        gameObject.AddComponent<ImpInteractable>().onEnter += onHover;
+        transform.Find("Name/Primary").GetComponent<TMP_Text>().text = primaryName;
+        transform.Find("Name/Secondary").GetComponent<TMP_Text>().text = secondaryName;
+        transform.Find("Type").GetComponent<TMP_Text>().text = typeDisplayNameMap.GetValueOrDefault(type, "");
+
+        gameObject.AddComponent<ImpInteractable>().onOver += onHover;
         themeBinding.onUpdate += OnThemeUpdate;
     }
 
@@ -146,6 +162,12 @@ public class SpawningObjectEntry : MonoBehaviour
         }
     }
 
+    internal void SetShown(bool isShown)
+    {
+        gameObject.SetActive(isShown);
+        SetSelected(false);
+    }
+
     internal void SetSelected(bool isSelected)
     {
         selectedCover.SetActive(isSelected);
@@ -155,27 +177,18 @@ public class SpawningObjectEntry : MonoBehaviour
     {
         inputText = NormalizeName(inputText);
 
-        var isInList = !string.IsNullOrEmpty(inputText) && (
+        var isShown = !string.IsNullOrEmpty(inputText) && (
             objectNameNormalized.Contains(inputText) || displayNameNormalized.Contains(inputText)
         );
 
-        gameObject.SetActive(isInList);
-        return isInList;
+        gameObject.SetActive(isShown);
+        if (!isShown) SetSelected(false);
+
+        return isShown;
     }
 
     private static string NormalizeName(string input)
     {
         return new string(input.Trim().ToLower().Where(char.IsLetterOrDigit).ToArray());
-    }
-
-    internal enum SpawnObjectType
-    {
-        Entity,
-        Item,
-        MapHazard,
-        StaticPrefab,
-        LocalStaticPrefab,
-        OutsideObject,
-        CompanyCruiser
     }
 }

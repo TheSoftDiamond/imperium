@@ -2,14 +2,18 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using GameNetcodeStuff;
 using Imperium.API.Types.Networking;
 using Imperium.Netcode;
 using Imperium.Util;
 using Imperium.Util.Binding;
+using TMPro;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Rendering.HighDefinition;
+using UnityEngine.UIElements;
 
 #endregion
 
@@ -18,6 +22,16 @@ namespace Imperium.Core.Lifecycle;
 internal class PlayerManager : ImpLifecycleObject
 {
     internal readonly ImpBinaryBinding IsFlying = new(false);
+
+    internal readonly ImpNetworkBinding<HashSet<ulong>> untargetablePlayers = new(
+        "UntargetablePlayers", Imperium.Networking, []
+    );
+
+    internal readonly ImpNetworkBinding<HashSet<ulong>> invisiblePlayers = new(
+        "InvisiblePlayers", Imperium.Networking, []
+    );
+
+    internal readonly IBinding<bool> PlayerInCruiser = new ImpBinding<bool>(false);
 
     private readonly ImpNetMessage<ulong> killPlayerMessage = new("KillPlayer", Imperium.Networking);
     private readonly ImpNetMessage<ulong> revivePlayerMessage = new("RevivePlayer", Imperium.Networking);
@@ -61,6 +75,18 @@ internal class PlayerManager : ImpLifecycleObject
             revivePlayerMessage.OnServerReceive += OnRevivePlayerServer;
             teleportPlayerMessage.OnServerReceive += OnTeleportPlayerServer;
         }
+
+        Imperium.Settings.Player.Invisibility.onUpdate += isInvisible =>
+        {
+            ImpUtils.Bindings.ToggleSet(invisiblePlayers, Imperium.Player.actualClientId, isInvisible);
+        };
+
+        Imperium.Settings.Player.Untargetable.onUpdate += isUntargetable =>
+        {
+            ImpUtils.Bindings.ToggleSet(untargetablePlayers, Imperium.Player.actualClientId, isUntargetable);
+        };
+
+        Imperium.InputBindings.BaseMap.ToggleHUD.performed += ToggleHUD;
     }
 
     protected override void OnSceneLoad()
@@ -95,7 +121,7 @@ internal class PlayerManager : ImpLifecycleObject
         NetworkObjectReference networkObject = grabbableItem.NetworkObject;
 
         player.carryWeight += Mathf.Clamp(grabbableItem.itemProperties.weight - 1f, 0f, 10f);
-        Reflection.Invoke(player, "GrabObjectServerRpc", networkObject);
+        player.GrabObjectServerRpc(networkObject);
 
         grabbableItem.parentObject = player.localItemHolder;
         grabbableItem.GrabItemOnClient();
@@ -211,18 +237,45 @@ internal class PlayerManager : ImpLifecycleObject
         }
     }
 
+    private static void ToggleHUD(InputAction.CallbackContext callbackContext)
+    {
+        if (Imperium.Player.quickMenuManager.isMenuOpen ||
+            Imperium.Player.inTerminalMenu ||
+            Imperium.Player.isTypingChat ||
+            Imperium.ShipBuildModeManager.InBuildMode) return;
+
+        ToggleHUD(!Imperium.HUDManager.hudHidden);
+    }
+
+    internal static void ToggleHUD(bool isHidden)
+    {
+        Imperium.Player.cursorIcon.gameObject.SetActive(!isHidden);
+        Imperium.Player.cursorTip.gameObject.SetActive(!isHidden);
+
+        Imperium.HUDManager.HideHUD(isHidden);
+    }
+
+    internal static Camera GetActiveCamera()
+    {
+        return Imperium.Freecam.IsFreecamEnabled.Value
+            ? Imperium.Freecam.FreecamCamera
+            : Imperium.Player.hasBegunSpectating
+                ? Imperium.StartOfRound.spectateCamera
+                : Imperium.Player.gameplayCamera;
+    }
+
     #region RPC Handlers
 
     [ImpAttributes.LocalMethod]
     private static void OnDropitemClient(DropItemRequest request)
     {
-        var player = StartOfRound.Instance.allPlayerScripts[request.PlayerId];
+        var player = Imperium.StartOfRound.allPlayerScripts.First(player => player.actualClientId == request.PlayerId);
         var previousSlot = player.currentItemSlot;
 
         // Switch to item slot, discard item and switch back
-        Reflection.Invoke(player, "SwitchToItemSlot", request.ItemIndex, null);
+        player.SwitchToItemSlot(request.ItemIndex);
         player.DiscardHeldObject();
-        Reflection.Invoke(player, "SwitchToItemSlot", previousSlot, null);
+        player.SwitchToItemSlot(previousSlot);
     }
 
     [ImpAttributes.HostOnly]
@@ -240,7 +293,7 @@ internal class PlayerManager : ImpLifecycleObject
     [ImpAttributes.LocalMethod]
     private static void OnTeleportPlayerClient(TeleportPlayerRequest request)
     {
-        var player = Imperium.StartOfRound.allPlayerScripts[request.PlayerId];
+        var player = Imperium.StartOfRound.allPlayerScripts.First(player => player.actualClientId == request.PlayerId);
 
         player.TeleportPlayer(request.Destination);
         var isInFactory = request.Destination.y < -100;
@@ -284,7 +337,7 @@ internal class PlayerManager : ImpLifecycleObject
     [ImpAttributes.LocalMethod]
     private static void OnRevivePlayerClient(ulong playerId)
     {
-        var player = Imperium.StartOfRound.allPlayerScripts[playerId];
+        var player = Imperium.StartOfRound.allPlayerScripts.First(player => player.actualClientId == playerId);
 
         Imperium.StartOfRound.livingPlayers++;
 
@@ -345,7 +398,7 @@ internal class PlayerManager : ImpLifecycleObject
 
         Imperium.StartOfRound.allPlayersDead = false;
         Imperium.StartOfRound.UpdatePlayerVoiceEffects();
-        Reflection.Invoke(Imperium.StartOfRound, "ResetMiscValues");
+        Imperium.StartOfRound.ResetMiscValues();
 
         // Respawn UI because for some reason this is not happening already
         Imperium.Settings.Rendering.PlayerHUD.Set(false);

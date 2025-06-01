@@ -36,7 +36,7 @@ internal class Oracle : ImpLifecycleObject
     {
         if (!Imperium.IsSceneLoaded.Value) return;
 
-        var currentHour = Reflection.Get<RoundManager, int>(Imperium.RoundManager, "currentHour");
+        var currentHour = Imperium.RoundManager.currentHour;
         if (!initial) currentHour += Imperium.RoundManager.hourTimeBetweenEnemySpawnBatches;
 
         var AnomalySimulator = ImpUtils.CloneRandom(Imperium.RoundManager.AnomalyRandom);
@@ -64,15 +64,9 @@ internal class Oracle : ImpLifecycleObject
             .Distinct()
             .ToDictionary(entity => entity.enemyType, entity => entity.enemyType.numberSpawned);
 
-        var firstTimeSpawningEnemies = Reflection.Get<RoundManager, bool>(
-            roundManager, "firstTimeSpawningEnemies"
-        );
-        var firstTimeSpawningOutsideEnemies = Reflection.Get<RoundManager, bool>(
-            roundManager, "firstTimeSpawningOutsideEnemies"
-        );
-        var firstTimeSpawningDaytimeEnemies = Reflection.Get<RoundManager, bool>(
-            roundManager, "firstTimeSpawningDaytimeEnemies"
-        );
+        var firstTimeSpawningEnemies = roundManager.firstTimeSpawningEnemies;
+        var firstTimeSpawningOutsideEnemies = roundManager.firstTimeSpawningOutsideEnemies;
+        var firstTimeSpawningDaytimeEnemies = roundManager.firstTimeSpawningDaytimeEnemies;
 
         // Cycle Variables
         State.Value.CurrentCycle = Mathf.RoundToInt(

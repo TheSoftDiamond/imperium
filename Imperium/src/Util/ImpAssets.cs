@@ -30,7 +30,7 @@ internal abstract class ImpAssets
 
     internal static GameObject ControlCenterWindowObject;
     internal static GameObject ObjectExplorerWindowObject;
-    internal static GameObject ObjectSettingsWindowObject;
+    internal static GameObject ObjectControlWindowObject;
     internal static GameObject ConfirmationWindowObject;
     internal static GameObject InfoWindowObject;
     internal static GameObject EventLogWindowObject;
@@ -70,17 +70,19 @@ internal abstract class ImpAssets
     internal static GameObject TapeIndicatorObject;
     internal static GameObject DoorMarkerObject;
     internal static GameObject NoiseOverlay;
+    internal static GameObject WaypointOverlay;
     internal static GameObject SpawnTimerObject;
     internal static GameObject SpikeTrapTimerObject;
     internal static GameObject SpawnIndicator;
     internal static GameObject ObjectInsightPanel;
     internal static GameObject BuildInfoPanel;
+    internal static GameObject WaypointBeacon;
 
     /*
      * Audio Clips
      */
-    internal static AudioClip GrassClick;
     internal static AudioClip ButtonClick;
+    internal static AudioClip OpenClick;
 
     /*
      * Materials
@@ -99,13 +101,13 @@ internal abstract class ImpAssets
     {
         if (!LoadEntityNames())
         {
-            Imperium.IO.LogError("[PRELOAD] Failed to load entity names from assembly, aborting!");
+            Imperium.IO.LogError("[INIT] Failed to load entity names from assembly, aborting!");
             return false;
         }
 
         if (!LoadAssets())
         {
-            Imperium.IO.LogInfo("[PRELOAD] Failed to load one or more assets from assembly, aborting!");
+            Imperium.IO.LogInfo("[INIT] Failed to load one or more assets from assembly, aborting!");
             return false;
         }
 
@@ -131,7 +133,7 @@ internal abstract class ImpAssets
 
         if (ImperiumAssets == null)
         {
-            Imperium.IO.LogError("[PRELOAD] Failed to load assets from assembly, aborting!");
+            Imperium.IO.LogError("[INIT] Failed to load assets from assembly, aborting!");
             return false;
         }
 
@@ -154,7 +156,7 @@ internal abstract class ImpAssets
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/event_log.prefab", out EventLogWindowObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/moon_control.prefab", out MoonControlWindowObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/object_explorer.prefab", out ObjectExplorerWindowObject),
-            LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/object_settings.prefab", out ObjectSettingsWindowObject),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/object_control.prefab", out ObjectControlWindowObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/preferences.prefab", out PreferencesWindowObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/rendering.prefab", out RenderingWindowObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/UI/Windows/save_editor.prefab", out SaveEditorWindowObject),
@@ -169,8 +171,10 @@ internal abstract class ImpAssets
             LoadAsset(ImperiumAssets, "Assets/Prefabs/spiketrap_timer.prefab", out SpikeTrapTimerObject),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/insight_panel.prefab", out ObjectInsightPanel),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/prop_info.prefab", out BuildInfoPanel),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/waypoint_beacon.prefab", out WaypointBeacon),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/spawn_indicator.prefab", out SpawnIndicator),
             LoadAsset(ImperiumAssets, "Assets/Prefabs/noise_overlay.prefab", out NoiseOverlay),
+            LoadAsset(ImperiumAssets, "Assets/Prefabs/waypoint_overlay.prefab", out WaypointOverlay),
             LoadAsset(ImperiumAssets, "Assets/Materials/xray.mat", out XRay),
             LoadAsset(ImperiumAssets, "Assets/Materials/hologram_okay.mat", out HologramOkay),
             LoadAsset(ImperiumAssets, "Assets/Materials/hologram_okay_dark.mat", out HologramOkayDark),
@@ -188,8 +192,8 @@ internal abstract class ImpAssets
             LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_green.mat", out WireframeGreen),
             LoadAsset(ImperiumAssets, "Assets/Materials/wireframe_red.mat", out WireframeRed),
             LoadAsset(ImperiumAssets, "Assets/Materials/shig.mat", out ShiggyMaterial),
-            LoadAsset(ImperiumAssets, "Assets/Audio/GrassClick.wav", out GrassClick),
-            LoadAsset(ImperiumAssets, "Assets/Audio/ButtonClick.ogg", out ButtonClick)
+            LoadAsset(ImperiumAssets, "Assets/Audio/ButtonClick.wav", out ButtonClick),
+            LoadAsset(ImperiumAssets, "Assets/Audio/OpenClick.ogg", out OpenClick)
         ];
 
         foreach (var material in Resources.FindObjectsOfTypeAll<Material>())
@@ -238,7 +242,7 @@ internal abstract class ImpAssets
         loadedObject = assets.LoadAsset<T>(path);
         if (!loadedObject)
         {
-            Imperium.IO.LogError($"[PRELOAD] Failed to load '{path}' from ./imperium_assets");
+            Imperium.IO.LogError($"[INIT] Object '{path}' missing from the embedded Imperium asset bundle.");
             return false;
         }
 

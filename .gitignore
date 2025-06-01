@@ -9,8 +9,6 @@ ldeps/
 *.DotSettings*
 giosuel.Imperium.dll
 
-imperium_assets
-
 manifest.json
 
 out/
@@ -18,3 +16,9 @@ out/
 Imperium.props.user
 
 *.zip
+
+Imperium/resources/assets/assets
+
+Imperium/resources/assets/assets.manifest
+
+Imperium/resources/assets/imperium_assets.manifest

@@ -1,5 +1,7 @@
 #region
 
+using Imperium.Core.Lifecycle;
+using Imperium.Integration;
 using Imperium.Interface.LayerSelector;
 using Imperium.Util;
 using Imperium.Util.Binding;
@@ -40,6 +42,7 @@ public class ImpFreecam : MonoBehaviour
         FreecamCamera.cullingMask = Imperium.Settings.Freecam.FreecamLayerMask.Value;
         FreecamCamera.farClipPlane = 2000f;
         FreecamCamera.enabled = false;
+        CullFactoryIntegration.DisableCulling(FreecamCamera);
 
         var hdCameraData = FreecamCamera.gameObject.AddComponent<HDAdditionalCameraData>();
         hdCameraData.renderingPathCustomFrameSettingsOverrideMask.mask[(int)FrameSettingsField.Volumetrics] = true;
@@ -113,7 +116,7 @@ public class ImpFreecam : MonoBehaviour
     {
         if (IsFreecamEnabled.Value) IsFreecamEnabled.SetFalse();
 
-        HUDManager.Instance.HideHUD(true);
+        PlayerManager.ToggleHUD(true);
         FreecamCamera.enabled = true;
         FreecamCamera.rect = minicamRect;
 
@@ -123,7 +126,7 @@ public class ImpFreecam : MonoBehaviour
     private void OnMinicamDisable()
     {
         // Hide UI if view is not switching from minicam to freecam
-        if (!IsFreecamEnabled.Value) HUDManager.Instance.HideHUD(false);
+        if (!IsFreecamEnabled.Value) PlayerManager.ToggleHUD(false);
 
         FreecamCamera.enabled = false;
 
@@ -141,7 +144,7 @@ public class ImpFreecam : MonoBehaviour
 
         if (IsMinicamEnabled.Value) IsMinicamEnabled.SetFalse();
 
-        HUDManager.Instance.HideHUD(true);
+        PlayerManager.ToggleHUD(true);
         Imperium.InputBindings.FreecamMap.Enable();
         FreecamCamera.enabled = true;
         Imperium.StartOfRound.SwitchCamera(FreecamCamera);
@@ -162,7 +165,7 @@ public class ImpFreecam : MonoBehaviour
         layerSelector.OnUIClose();
 
         // Hide UI if view is not switching to minimap state
-        if (!IsMinicamEnabled.Value) HUDManager.Instance.HideHUD(false);
+        if (!IsMinicamEnabled.Value) PlayerManager.ToggleHUD(false);
 
         Imperium.InputBindings.FreecamMap.Disable();
         FreecamCamera.enabled = false;

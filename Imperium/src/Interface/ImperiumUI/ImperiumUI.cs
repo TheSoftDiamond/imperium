@@ -9,13 +9,13 @@ using Imperium.Interface.ImperiumUI.Windows.CruiserControl;
 using Imperium.Interface.ImperiumUI.Windows.EventLog;
 using Imperium.Interface.ImperiumUI.Windows.Info;
 using Imperium.Interface.ImperiumUI.Windows.MoonControl;
+using Imperium.Interface.ImperiumUI.Windows.ObjectControl;
 using Imperium.Interface.ImperiumUI.Windows.ObjectExplorer;
-using Imperium.Interface.ImperiumUI.Windows.ObjectSettings;
 using Imperium.Interface.ImperiumUI.Windows.Preferences;
 using Imperium.Interface.ImperiumUI.Windows.Rendering;
 using Imperium.Interface.ImperiumUI.Windows.SaveEditor;
 using Imperium.Interface.ImperiumUI.Windows.ShipControl;
-using Imperium.Interface.ImperiumUI.Windows.Teleportation;
+using Imperium.Interface.ImperiumUI.Windows.Teleport;
 using Imperium.Interface.ImperiumUI.Windows.Visualization;
 using Imperium.Types;
 using Imperium.Util;
@@ -24,7 +24,6 @@ using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using Vector2 = System.Numerics.Vector2;
 
 #endregion
 
@@ -55,7 +54,7 @@ public class ImperiumUI : BaseUI
             "Center/Visualization",
             "Visualization"
         );
-        RegisterImperiumWindow<TeleportationWindow>(
+        RegisterImperiumWindow<TeleportWindow>(
             ImpAssets.TeleportationWindowObject,
             "Center/Teleportation",
             "Teleportation",
@@ -66,27 +65,22 @@ public class ImperiumUI : BaseUI
             "Center/ShipControl",
             "Ship Control"
         );
-        RegisterImperiumWindow<CruiserControlWindow>(
-            ImpAssets.CruiserControlWindowObject,
-            "Center/CruiserControl",
-            "Cruiser Control"
-        );
         RegisterImperiumWindow<MoonControlWindow>(
             ImpAssets.MoonControlWindowObject,
             "Center/MoonControl",
             "Moon Control"
         );
-        RegisterImperiumWindow<InfoWindow>(
-            ImpAssets.InfoWindowObject,
-            "Center/Info",
-            "Info"
+        RegisterImperiumWindow<CruiserControlWindow>(
+            ImpAssets.CruiserControlWindowObject,
+            "Center/CruiserControl",
+            "Cruiser Control"
+        );
+        RegisterImperiumWindow<ObjectControlWindow>(
+            ImpAssets.ObjectControlWindowObject,
+            "Center/ObjectControl",
+            "Object Control"
         );
 
-        RegisterImperiumWindow<ObjectSettingsWindow>(
-            ImpAssets.ObjectSettingsWindowObject,
-            "Right/ObjectSettings",
-            "Object Settings"
-        );
         RegisterImperiumWindow<RenderingWindow>(
             ImpAssets.RenderingWindowObject,
             "Right/Rendering",
@@ -101,6 +95,11 @@ public class ImperiumUI : BaseUI
             ImpAssets.EventLogWindowObject,
             "Right/EventLog",
             "Event Log"
+        );
+        RegisterImperiumWindow<InfoWindow>(
+            ImpAssets.InfoWindowObject,
+            "Right/Info",
+            "Level Information"
         );
         RegisterImperiumWindow<PreferencesWindow>(
             ImpAssets.PreferencesWindowObject,
@@ -266,7 +265,7 @@ public record WindowDefinition
 {
     internal ImperiumWindow Controller { get; init; }
     public Type WindowType { get; init; }
-    public Vector2 Position { get; set; }
+    public System.Numerics.Vector2 Position { get; set; }
     public float ScaleFactor { get; set; } = 1;
     public bool IsOpen { get; set; }
 }

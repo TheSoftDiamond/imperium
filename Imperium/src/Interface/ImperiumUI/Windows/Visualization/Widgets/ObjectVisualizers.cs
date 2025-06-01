@@ -32,6 +32,14 @@ internal class ObjectVisualizers : ImpWidget
 
     protected override void InitWidget()
     {
+        transform.Find("InsightsHeader").gameObject.AddComponent<ImpTooltipTrigger>().Init(new TooltipDefinition
+        {
+            Title = "Insight Visualizers",
+            Description =
+                "Insights provide specific realtime information about\ngame objects in overlay panels.\nInsights can be dynamically added and\nremoved at runtime.\nFor more information, please refer to the wiki.",
+            Tooltip = tooltip
+        });
+
         insightsList = transform.Find("Insights/Content/Viewport/Content");
         playerList = transform.Find("Players/Content/Viewport/Content");
         entityList = transform.Find("Entities/Content/Viewport/Content");

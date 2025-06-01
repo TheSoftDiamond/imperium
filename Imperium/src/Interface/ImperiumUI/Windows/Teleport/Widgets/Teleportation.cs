@@ -1,9 +1,7 @@
-#region
-
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Imperium.Interface.Common;
-using Imperium.Interface.ImperiumUI.Windows.Teleportation.Widgets;
 using Imperium.Types;
 using Imperium.Util.Binding;
 using TMPro;
@@ -11,11 +9,9 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-#endregion
+namespace Imperium.Interface.ImperiumUI.Windows.Teleport.Widgets;
 
-namespace Imperium.Interface.ImperiumUI.Windows.Teleportation;
-
-internal class TeleportationWindow : ImperiumWindow
+public class Teleportation : ImpWidget
 {
     private Button tpMainEntrance;
     private Button tpShip;
@@ -30,29 +26,25 @@ internal class TeleportationWindow : ImperiumWindow
     private ImpBinding<float> coordinateY;
     private ImpBinding<float> coordinateZ;
 
-    private Transform content;
-
-    protected override void InitWindow()
+    protected override void InitWidget()
     {
-        content = transform.Find("Content");
-
         tpMainEntrance = ImpButton.Bind(
-            "Presets/MainEntrance", content,
+            "Presets/MainEntrance", transform,
             () => TeleportTo(Imperium.PlayerManager.MainEntranceTPAnchor.Value),
             theme
         );
         tpShip = ImpButton.Bind(
-            "Presets/Ship", content,
+            "Presets/Ship", transform,
             () => TeleportTo(Imperium.PlayerManager.ShipTPAnchor.Value),
             theme
         );
         tpApparatus = ImpButton.Bind(
-            "Presets/Apparatus", content,
+            "Presets/Apparatus", transform,
             () => TeleportTo(Imperium.PlayerManager.ApparatusTPAnchor.Value),
             theme
         );
         ImpButton.Bind(
-            "Presets/Freecam", content,
+            "Presets/Freecam", transform,
             () => TeleportTo(Imperium.Freecam.transform.position),
             theme
         );
@@ -60,17 +52,16 @@ internal class TeleportationWindow : ImperiumWindow
         // We need to set the teleport function as sync callback as the game might teleport the player to different
         // coordinates due to OOB restrictions. That way, the input field would be out of sync with the actual position,
         // so we have to re-set the coords without invoking another teleport that would lead to a stack overflow.
-        coordinateX = new ImpBinding<float>(onUpdateFromLocal: _ => TeleportToCoords());
-        coordinateY = new ImpBinding<float>(onUpdateFromLocal: _ => TeleportToCoords());
-        coordinateZ = new ImpBinding<float>(onUpdateFromLocal: _ => TeleportToCoords());
+        coordinateX = new ImpBinding<float>(onUpdateSecondary: _ => TeleportToCoords());
+        coordinateY = new ImpBinding<float>(onUpdateSecondary: _ => TeleportToCoords());
+        coordinateZ = new ImpBinding<float>(onUpdateSecondary: _ => TeleportToCoords());
 
-        ImpInput.Bind("Coords/CoordsX", content, coordinateX, theme, max: 10000f, min: -10000f);
-        ImpInput.Bind("Coords/CoordsY", content, coordinateY, theme, max: 999f, min: -999f);
-        ImpInput.Bind("Coords/CoordsZ", content, coordinateZ, theme, max: 10000f, min: -10000f);
+        ImpInput.Bind("Coords/CoordsX", transform, coordinateX, theme);
+        ImpInput.Bind("Coords/CoordsY", transform, coordinateY, theme);
+        ImpInput.Bind("Coords/CoordsZ", transform, coordinateZ, theme);
 
-        ImpButton.Bind("Buttons/Interactive", content, OnInteractive, theme);
+        ImpButton.Bind("Buttons/Interactive", transform, OnInteractive, theme);
 
-        RegisterWidget<Waypoints>(content, "Waypoints");
 
         Imperium.InputBindings.BaseMap.Teleport.performed += OnInteractiveTeleport;
 
@@ -88,9 +79,9 @@ internal class TeleportationWindow : ImperiumWindow
                                    && Imperium.IsSceneLoaded.Value;
 
         var position = Imperium.Player.transform.position;
-        coordinateX.Set(MathF.Round(position.x, 2), invokeLocal: false);
-        coordinateY.Set(MathF.Round(position.y, 2), invokeLocal: false);
-        coordinateZ.Set(MathF.Round(position.z, 2), invokeLocal: false);
+        coordinateX.Set(MathF.Round(position.x, 2), invokeSecondary: false);
+        coordinateY.Set(MathF.Round(position.y, 2), invokeSecondary: false);
+        coordinateZ.Set(MathF.Round(position.z, 2), invokeSecondary: false);
 
         InitFireExits();
     }
@@ -108,19 +99,32 @@ internal class TeleportationWindow : ImperiumWindow
         CloseParent();
     }
 
-    private void TeleportToCoords()
+    private void TeleportToCoords() => StartCoroutine(teleportToCoordsAndUpdate());
+
+    private IEnumerator teleportToCoordsAndUpdate()
     {
         Imperium.PlayerManager.TeleportLocalPlayer(new Vector3(
             coordinateX.Value,
             coordinateY.Value,
             coordinateZ.Value
         ));
+
+        /*
+         * Account for waiting for approximate round-trip to server before updating coords.
+         *
+         * This is for the case the game restricts the player to teleport to the desired coords (e.g. OOB)
+         */
+        yield return new WaitForSeconds(0.2f);
+
+        coordinateX.Set(MathF.Round(Imperium.Player.transform.position.x, 2), invokeSecondary: false);
+        coordinateY.Set(MathF.Round(Imperium.Player.transform.position.y, 2), invokeSecondary: false);
+        coordinateZ.Set(MathF.Round(Imperium.Player.transform.position.z, 2), invokeSecondary: false);
     }
 
     private void InitFireExits()
     {
-        fireExitContainer = content.Find("FireExits/ScrollView/Viewport/Content");
-        fireExitsPlaceholder = content.Find("FireExits/Placeholder").GetComponent<TMP_Text>();
+        fireExitContainer = transform.Find("FireExits/ScrollView/Viewport/Content");
+        fireExitsPlaceholder = transform.Find("FireExits/Placeholder").GetComponent<TMP_Text>();
         fireExitTemplate = fireExitContainer.Find("Template").gameObject;
         fireExitTemplate.gameObject.SetActive(false);
 
@@ -132,7 +136,7 @@ internal class TeleportationWindow : ImperiumWindow
     {
         ImpThemeManager.Style(
             themeUpdated,
-            content,
+            transform,
             new StyleOverride("FireExits", Variant.DARKER)
         );
 

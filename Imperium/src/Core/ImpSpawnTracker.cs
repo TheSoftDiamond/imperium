@@ -21,7 +21,7 @@ public static class ImpSpawnTracker
 
     private static void PrintSpawnReport(bool initial = false)
     {
-        var currentHour = Reflection.Get<RoundManager, int>(Imperium.RoundManager, "currentHour");
+        var currentHour = Imperium.RoundManager.currentHour;
         var num = Imperium.TimeOfDay.lengthOfHours * currentHour / Imperium.TimeOfDay.totalTime;
 
         var output = GetSpawnedEntitiesThisCycle();

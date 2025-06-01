@@ -56,4 +56,10 @@ internal sealed class ImpInputBaseMap : LcInputActions
 
     [InputAction("<Keyboard>/return", Name = "Select Item")]
     internal InputAction SelectItem { get; set; }
+
+    [InputAction("<Mouse>/middleButton", Name = "Teleport to Waypoint")]
+    internal InputAction TeleportWaypoint { get; set; }
+
+    [InputAction("<Keyboard>/delete", Name = "Delete Waypoint")]
+    internal InputAction DeleteWaypoint { get; set; }
 }

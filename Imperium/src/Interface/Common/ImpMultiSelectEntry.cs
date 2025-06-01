@@ -1,7 +1,9 @@
 #region
 
 using System.Collections.Generic;
+using Imperium.Core;
 using Imperium.Types;
+using Imperium.Util;
 using Imperium.Util.Binding;
 using TMPro;
 using UnityEngine;
@@ -28,6 +30,7 @@ internal abstract class ImpMultiSelectEntry : MonoBehaviour
     /// <param name="selectionBinding">The binding that controls the group's currently selected item.</param>
     /// <param name="hoverBinding">The binding that controls which item in the group is currently being hovered.</param>
     /// <param name="theme">The theme the multi-select entry will use</param>
+    /// <param name="playClickSound">Whether the click sound playes when the button is clicked.</param>
     /// <param name="label">The label of the current entry.</param>
     internal static void Bind<T>(
         T value,
@@ -35,6 +38,7 @@ internal abstract class ImpMultiSelectEntry : MonoBehaviour
         IBinding<T> selectionBinding,
         IBinding<T> hoverBinding,
         IBinding<ImpTheme> theme = null,
+        bool playClickSound = true,
         string label = null
     )
     {
@@ -48,9 +52,14 @@ internal abstract class ImpMultiSelectEntry : MonoBehaviour
         var hoverOverlay = entryObj.transform.Find("Hover").gameObject;
         hoverOverlay.SetActive(EqualityComparer<T>.Default.Equals(value, selectionBinding.Value));
 
-        entryInteractable.onEnter += () => hoverBinding.Set(value);
+        entryInteractable.onEnter += _ => hoverBinding.Set(value);
         entryInteractable.onExit += () => hoverBinding.Set(default);
-        entryInteractable.onDown += () => selectionBinding.Set(value);
+        entryInteractable.onDown += () =>
+        {
+            selectionBinding.Set(value);
+
+            if (Imperium.Settings.Preferences.PlaySounds.Value && playClickSound) GameUtils.PlayClip(ImpAssets.ButtonClick);
+        };
 
         selectionBinding.onUpdate += selectedValue =>
         {

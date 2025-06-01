@@ -9,6 +9,5 @@ internal enum ObjectCategory
     Items,
     Vents,
     Other,
-    OutsideObjects,
-    Vains
+    OutsideObjects
 }

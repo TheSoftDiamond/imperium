@@ -1,12 +1,7 @@
-#region
-
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using BepInEx.Bootstrap;
 using WeatherRegistry;
-
-#endregion
 
 namespace Imperium.Integration;
 
@@ -20,8 +15,13 @@ public static class WeatherRegistryIntegration
         if (!IsEnabled)
             return null;
 
-        return WeatherManager.Weathers.Select(weather => weather.VanillaWeatherType)
-            .ToList();
+        List<LevelWeatherType> weatherTypes = [];
+        foreach (Weather weather in WeatherRegistry.WeatherManager.Weathers)
+        {
+            weatherTypes.Add(weather.VanillaWeatherType);
+        }
+
+        return weatherTypes;
     }
 
     [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
@@ -30,6 +30,6 @@ public static class WeatherRegistryIntegration
         if (!IsEnabled)
             return;
 
-        WeatherController.ChangeWeather(level, weather);
+        WeatherRegistry.WeatherController.ChangeWeather(level, weather);
     }
 }

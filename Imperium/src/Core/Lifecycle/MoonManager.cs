@@ -189,7 +189,7 @@ internal class MoonManager : ImpLifecycleObject
     {
         if (!Imperium.IsSceneLoaded.Value) return;
 
-        Reflection.Invoke(Imperium.RoundManager, "SetToCurrentLevelWeather");
+        Imperium.RoundManager.SetToCurrentLevelWeather();
         Imperium.TimeOfDay.SetWeatherBasedOnVariables();
         for (var i = 0; i < Imperium.TimeOfDay.effects.Length; i++)
         {
@@ -243,7 +243,7 @@ internal class MoonManager : ImpLifecycleObject
     [ImpAttributes.RemoteMethod]
     internal static void ToggleDoor(DoorLock door, bool isOpen)
     {
-        if (Reflection.Get<DoorLock, bool>(door, "isDoorOpened") != isOpen)
+        if (door.isDoorOpened != isOpen)
         {
             door.gameObject.GetComponent<AnimatedObjectTrigger>().TriggerAnimation(Imperium.Player);
         }

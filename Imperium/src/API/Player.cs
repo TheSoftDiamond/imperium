@@ -61,13 +61,13 @@ public static class Player
     /// <summary>
     ///     Whether the player can pick up items in orbit.
     /// </summary>
-    public static IBinding<bool> PickupOverwrite
+    public static IBinding<bool> PickupOverride
     {
         get
         {
             APIHelpers.AssertImperiumReady();
 
-            return Imperium.Settings.Player.PickupOverwrite;
+            return Imperium.Settings.Player.PickupOverride;
         }
     }
 

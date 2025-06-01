@@ -138,16 +138,9 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
          * Players
          */
         InsightsFor<PlayerControllerB>()
-            .SetNameGenerator(player => player.playerUsername ?? player.GetInstanceID().ToString())
-            .SetIsDeadGenerator(player => player.isPlayerDead)
-            .RegisterInsight("Health", player => $"{player.health} HP")
-            .RegisterInsight("Stamina", player => $"{player.sprintTime:0.0}s")
-            .RegisterInsight("Visibility", player => $"{((IVisibleThreat)player).GetVisibility():0.0}")
-            .RegisterInsight("Interest Level", player => $"{((IVisibleThreat)player).GetInterestLevel():0.0}")
-            .RegisterInsight("Insanity", player => $"{player.insanityLevel:0.0}")
-            .RegisterInsight("Fear Level", player => $"{Imperium.StartOfRound.fearLevel:0.0}")
-            .RegisterInsight("Location", ImpUtils.GetPlayerLocationText)
-            .SetPositionOverride(DefaultPositionOverride)
+            .RegisterInsight("Fall Value", player => $"{player.fallValue}")
+            .RegisterInsight("Fall Value Uncapped", player => $"{player.fallValueUncapped}")
+            .RegisterInsight("Slope", player => $"{player.slopeModifier}")
             .SetConfigKey("Players");
 
         /*
@@ -265,14 +258,8 @@ internal class ObjectInsights : BaseVisualizer<HashSet<Component>, ObjectInsight
             .SetNameGenerator(bridge => $"Bridge #{bridge.GetInstanceID()}")
             .SetIsDeadGenerator(bridge => bridge.hasBridgeFallen)
             .RegisterInsight("Durability", trigger => $"{trigger.bridgeDurability}")
-            .RegisterInsight(
-                "Has Fallen",
-                bridge => Reflection.Get<BridgeTrigger, bool>(bridge, "hasBridgeFallen") ? "Yes" : "No"
-            )
-            .RegisterInsight(
-                "Giant On Bridge",
-                bridge => Reflection.Get<BridgeTrigger, bool>(bridge, "giantOnBridge") ? "Yes" : "No"
-            )
+            .RegisterInsight("Has Fallen", bridge => bridge.hasBridgeFallen ? "Yes" : "No")
+            .RegisterInsight("Giant On Bridge", bridge => bridge.giantOnBridge ? "Yes" : "No")
             .SetPositionOverride(DefaultPositionOverride)
             .SetConfigKey("Bridges");
     }

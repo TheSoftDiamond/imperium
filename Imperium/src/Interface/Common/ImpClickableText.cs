@@ -28,7 +28,7 @@ internal class ImpClickableText : ImpInteractable
         onHoverEffect = hoverEffect ?? RichText.Underlined;
         textComponent.text = text;
 
-        onEnter += () => textComponent.text = onHoverEffect(text);
+        onEnter += _ => textComponent.text = onHoverEffect(text);
         onExit += () => textComponent.text = text;
         onClick += () =>
         {

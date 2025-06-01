@@ -13,6 +13,8 @@ namespace Imperium.Interface.SpawningUI;
 
 internal class SpawningUI : BaseUI
 {
+    private const int MaxItemsShown = 8;
+
     private TMP_InputField input;
 
     private GameObject moreItems;
@@ -27,6 +29,17 @@ internal class SpawningUI : BaseUI
     private int previouslySpawnedValue;
 
     private int selectedIndex = -1;
+
+    private readonly Dictionary<SpawnObjectType, string> typeDisplayNames = new()
+    {
+        { SpawnObjectType.Entity, "Entity" },
+        { SpawnObjectType.Item, "Item" },
+        { SpawnObjectType.MapHazard, "Map Hazard" },
+        { SpawnObjectType.StaticPrefab, "Static Prefab" },
+        { SpawnObjectType.LocalStaticPrefab, "Static Prefab (Local)" },
+        { SpawnObjectType.OutsideObject, "Outdoor Object" },
+        { SpawnObjectType.CompanyCruiser, "Cruiser" },
+    };
 
     protected override void InitUI()
     {
@@ -49,20 +62,6 @@ internal class SpawningUI : BaseUI
         GenerateItems();
     }
 
-    protected override void OnThemeUpdate(ImpTheme themeUpdate)
-    {
-        ImpThemeManager.Style(
-            themeUpdate,
-            container,
-            new StyleOverride("Input", Variant.BACKGROUND),
-            new StyleOverride("Input/Border", Variant.DARKER),
-            new StyleOverride("Results/MoreItems", Variant.DARKEST),
-            new StyleOverride("Results/Template", Variant.DARKER)
-        );
-
-        base.OnThemeUpdate(themeUpdate);
-    }
-
     private void GenerateItems()
     {
         foreach (var entity in Imperium.ObjectManager.LoadedEntities.Value)
@@ -71,12 +70,13 @@ internal class SpawningUI : BaseUI
             var spawningEntryObject = Instantiate(template, entryContainer);
             var spawningEntry = spawningEntryObject.AddComponent<SpawningObjectEntry>();
             spawningEntry.Init(
-                SpawningObjectEntry.SpawnObjectType.Entity,
+                SpawnObjectType.Entity,
                 entity.enemyName,
                 () => Spawn(spawningEntry, 1, -1),
-                () => SelectItemAndDeselectOthers(currentIndex),
+                _ => SelectItemAndDeselectOthers(currentIndex),
+                typeDisplayNames,
                 theme
-            );
+                );
             entries.Add(spawningEntry);
         }
 
@@ -86,10 +86,11 @@ internal class SpawningUI : BaseUI
             var spawningEntryObject = Instantiate(template, entryContainer);
             var spawningEntry = spawningEntryObject.AddComponent<SpawningObjectEntry>();
             spawningEntry.Init(
-                SpawningObjectEntry.SpawnObjectType.Item,
+                SpawnObjectType.Item,
                 item.itemName,
                 () => Spawn(spawningEntry, 1, -1),
-                () => SelectItemAndDeselectOthers(currentIndex),
+                _ => SelectItemAndDeselectOthers(currentIndex),
+                typeDisplayNames,
                 theme
             );
             entries.Add(spawningEntry);
@@ -101,10 +102,11 @@ internal class SpawningUI : BaseUI
             var spawningEntryObject = Instantiate(template, entryContainer);
             var spawningEntry = spawningEntryObject.AddComponent<SpawningObjectEntry>();
             spawningEntry.Init(
-                SpawningObjectEntry.SpawnObjectType.MapHazard,
+                SpawnObjectType.MapHazard,
                 hazardName,
                 () => Spawn(spawningEntry, 1, -1),
-                () => SelectItemAndDeselectOthers(currentIndex),
+                _ => SelectItemAndDeselectOthers(currentIndex),
+                typeDisplayNames,
                 theme
             );
             entries.Add(spawningEntry);
@@ -117,13 +119,14 @@ internal class SpawningUI : BaseUI
             var spawningEntry = spawningEntryObject.AddComponent<SpawningObjectEntry>();
             // Since the company cruiser requires a different spawn function, we have to assign it its own type
             var spawnType = prefabName == "CompanyCruiser"
-                ? SpawningObjectEntry.SpawnObjectType.CompanyCruiser
-                : SpawningObjectEntry.SpawnObjectType.StaticPrefab;
+                ? SpawnObjectType.CompanyCruiser
+                : SpawnObjectType.StaticPrefab;
             spawningEntry.Init(
                 spawnType,
                 prefabName,
                 () => Spawn(spawningEntry, 1, -1),
-                () => SelectItemAndDeselectOthers(currentIndex),
+                _ => SelectItemAndDeselectOthers(currentIndex),
+                typeDisplayNames,
                 theme
             );
             entries.Add(spawningEntry);
@@ -135,10 +138,11 @@ internal class SpawningUI : BaseUI
             var spawningEntryObject = Instantiate(template, entryContainer);
             var spawningEntry = spawningEntryObject.AddComponent<SpawningObjectEntry>();
             spawningEntry.Init(
-                SpawningObjectEntry.SpawnObjectType.LocalStaticPrefab,
+                SpawnObjectType.LocalStaticPrefab,
                 prefabName,
                 () => Spawn(spawningEntry, 1, -1),
-                () => SelectItemAndDeselectOthers(currentIndex),
+                _ => SelectItemAndDeselectOthers(currentIndex),
+                typeDisplayNames,
                 theme
             );
             entries.Add(spawningEntry);
@@ -150,10 +154,11 @@ internal class SpawningUI : BaseUI
             var spawningEntryObject = Instantiate(template, entryContainer);
             var spawningEntry = spawningEntryObject.AddComponent<SpawningObjectEntry>();
             spawningEntry.Init(
-                SpawningObjectEntry.SpawnObjectType.OutsideObject,
+                SpawnObjectType.OutsideObject,
                 prefabName,
                 () => Spawn(spawningEntry, 1, -1),
-                () => SelectItemAndDeselectOthers(currentIndex),
+                _ => SelectItemAndDeselectOthers(currentIndex),
+                typeDisplayNames,
                 theme
             );
             entries.Add(spawningEntry);
@@ -169,23 +174,6 @@ internal class SpawningUI : BaseUI
     private void SelectItemAndDeselectOthers()
     {
         for (var i = 0; i < entries.Count; i++) entries[i].SetSelected(i == selectedIndex);
-    }
-
-    private void SelectFirst()
-    {
-        selectedIndex = 0;
-        while (!entries[selectedIndex].gameObject.activeSelf)
-        {
-            selectedIndex++;
-
-            if (selectedIndex == entries.Count)
-            {
-                selectedIndex = -1;
-                break;
-            }
-        }
-
-        if (selectedIndex > -1) SelectItemAndDeselectOthers();
     }
 
     private void OnSelectNext(InputAction.CallbackContext callbackContext)
@@ -270,11 +258,11 @@ internal class SpawningUI : BaseUI
     private void Spawn(SpawningObjectEntry spawningObjectEntry, int amount, int value)
     {
         var useIndicator = spawningObjectEntry.SpawnType is
-            SpawningObjectEntry.SpawnObjectType.MapHazard or
-            SpawningObjectEntry.SpawnObjectType.StaticPrefab or
-            SpawningObjectEntry.SpawnObjectType.CompanyCruiser or
-            SpawningObjectEntry.SpawnObjectType.LocalStaticPrefab or
-            SpawningObjectEntry.SpawnObjectType.OutsideObject;
+            SpawnObjectType.MapHazard or
+            SpawnObjectType.StaticPrefab or
+            SpawnObjectType.CompanyCruiser or
+            SpawnObjectType.LocalStaticPrefab or
+            SpawnObjectType.OutsideObject;
 
         if (Imperium.Freecam.IsFreecamEnabled.Value || Imperium.PlayerManager.IsFlying.Value || useIndicator)
         {
@@ -312,23 +300,39 @@ internal class SpawningUI : BaseUI
 
     private void OnInput(string text)
     {
-        var (inputText, _, _) = GetInputParameters(text.Trim());
-        var resultCount = entries.Count(entry => entry.OnInput(inputText));
+        var inputParams = GetInputParameters(text.Trim());
 
-        SelectFirst();
+        foreach (var entry in entries) entry.OnInput(inputParams.Text);
+
+        var hasSelected = false;
 
         var shownItems = 0;
         var hiddenItems = 0;
-        foreach (var entry in entries.Where(entry => entry.gameObject.activeSelf))
+        for (var i = 0; i < entries.Count; i++)
         {
-            if (shownItems < 6)
+            var entry = entries[i];
+            if (shownItems > MaxItemsShown)
             {
-                shownItems++;
+                hiddenItems++;
+                entry.SetShown(false);
             }
             else
             {
-                hiddenItems++;
-                entry.gameObject.SetActive(false);
+                var isShown = entry.OnInput(inputParams.Text);
+                if (isShown)
+                {
+                    shownItems++;
+                    if (!hasSelected)
+                    {
+                        entry.SetSelected(true);
+                        hasSelected = true;
+                        selectedIndex = i;
+                    }
+                    else
+                    {
+                        entry.SetSelected(false);
+                    }
+                }
             }
         }
 
@@ -337,15 +341,15 @@ internal class SpawningUI : BaseUI
 
     private void OnSubmit()
     {
-        var (_, amount, value) = GetInputParameters(input.text.Trim());
+        var inputParams = GetInputParameters(input.text.Trim());
 
         if (selectedIndex > -1)
         {
-            Spawn(entries[selectedIndex], amount, value);
+            Spawn(entries[selectedIndex], inputParams.Amount, inputParams.Value);
 
             previouslySpawnedObject = entries[selectedIndex];
-            previouslySpawnedAmount = amount;
-            previouslySpawnedValue = value;
+            previouslySpawnedAmount = inputParams.Amount;
+            previouslySpawnedValue = inputParams.Value;
 
             Close();
         }
@@ -356,7 +360,7 @@ internal class SpawningUI : BaseUI
         }
     }
 
-    private static (string, int, int) GetInputParameters(string text)
+    private static SpawnInputParameters GetInputParameters(string text)
     {
         var amount = 1;
         var value = -1;
@@ -373,7 +377,12 @@ internal class SpawningUI : BaseUI
                 break;
         }
 
-        return (split[0], amount, value);
+        return new SpawnInputParameters
+        {
+            Text = split[0],
+            Amount = amount,
+            Value = value
+        };
     }
 
     protected override void OnOpen()
@@ -381,4 +390,34 @@ internal class SpawningUI : BaseUI
         input.text = "";
         input.ActivateInputField();
     }
+
+    protected override void OnThemeUpdate(ImpTheme themeUpdate)
+    {
+        ImpThemeManager.Style(
+            themeUpdate,
+            container,
+            new StyleOverride("Input", Variant.BACKGROUND),
+            new StyleOverride("Input/Border", Variant.DARKER),
+            new StyleOverride("Results/MoreItems", Variant.DARKEST),
+            new StyleOverride("Results/Template", Variant.DARKER)
+        );
+    }
+}
+
+internal enum SpawnObjectType
+{
+    Entity,
+    Item,
+    MapHazard,
+    StaticPrefab,
+    LocalStaticPrefab,
+    OutsideObject,
+    CompanyCruiser
+}
+
+internal readonly struct SpawnInputParameters
+{
+    internal string Text { get; init; }
+    internal int Amount { get; init; }
+    internal int Value { get; init; }
 }

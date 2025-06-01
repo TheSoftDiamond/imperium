@@ -20,6 +20,11 @@ public class ImpNetworking
 
     internal static readonly ImpBinding<int> ConnectedPlayers = new(1);
 
+    /// <summary>
+    ///     Set to true, when Imperium access is first granted. Always set to true on the host.
+    /// </summary>
+    internal static bool WasImperiumAccessGranted { get; private set; }
+
     private readonly ImpNetEvent authenticateEvent;
     private readonly ImpNetEvent enableImperiumEvent;
     private readonly ImpNetEvent disableImperiumEvent;
@@ -138,6 +143,8 @@ public class ImpNetworking
     [ImpAttributes.LocalMethod]
     private void OnAuthenticateResponse()
     {
+        WasImperiumAccessGranted = true;
+
         Imperium.IO.Send("Imperium access was granted!", type: NotificationType.AccessControl);
         Imperium.IO.LogInfo("[NET] Imperium access was granted! Launching Imperium...");
 
@@ -168,7 +175,7 @@ public class ImpNetworking
 
         Imperium.IO.Send("Imperium access was granted!", type: NotificationType.AccessControl);
         Imperium.IO.LogInfo("[NET] Imperium access was granted! Launching Imperium...");
-        if (Imperium.WasImperiumAccessGranted)
+        if (WasImperiumAccessGranted)
         {
             Imperium.EnableImperium();
         }

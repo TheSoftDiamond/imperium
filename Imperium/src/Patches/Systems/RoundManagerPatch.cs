@@ -107,17 +107,43 @@ internal static class RoundManagerPatch
         Imperium.EventLog.GameEvents.SpawnEnemyFromVent(vent);
     }
 
+    private static float mapSizeMultiplierBackup;
+    private static IntWithRarity[] dungeonFlowTypesBackup = [];
+
     [HarmonyPrefix]
     [HarmonyPatch("GenerateNewFloor")]
     private static void GenerateNewFloorPrefixPatch(RoundManager __instance)
     {
-// #if DEBUG
-         // __instance.mapSizeMultiplier = 12f;
-        // foreach (var flow in __instance.currentLevel.dungeonFlowTypes)
-        // {
-            // flow.rarity = flow.id == 4 ? 10 : 0;
-        // }
-// #endif
+        if (Imperium.GameManager.CustomMapSize.Value > -1)
+        {
+            mapSizeMultiplierBackup = __instance.currentLevel.factorySizeMultiplier;
+            __instance.currentLevel.factorySizeMultiplier = Imperium.GameManager.CustomMapSize.Value;
+        }
+
+        if (Imperium.GameManager.CustomDungeonFlow.Value > -1)
+        {
+            dungeonFlowTypesBackup = Imperium.StartOfRound.currentLevel.dungeonFlowTypes;
+            __instance.currentLevel.dungeonFlowTypes =
+            [
+                new IntWithRarity { id = Imperium.GameManager.CustomDungeonFlow.Value, rarity = 1 }
+            ];
+        }
+    }
+
+    [HarmonyPostfix]
+    [HarmonyPatch("GenerateNewFloor")]
+    private static void GenerateNewFloorPostfixPatch(RoundManager __instance)
+    {
+        // Restore original dungeon flow rarity list and map size multiplier, if previously overridden
+        if (Imperium.GameManager.CustomMapSize.Value > -1)
+        {
+            __instance.currentLevel.factorySizeMultiplier = mapSizeMultiplierBackup;
+        }
+
+        if (Imperium.GameManager.CustomDungeonFlow.Value > -1)
+        {
+            __instance.currentLevel.dungeonFlowTypes = dungeonFlowTypesBackup;
+        }
     }
 
     [HarmonyPostfix]

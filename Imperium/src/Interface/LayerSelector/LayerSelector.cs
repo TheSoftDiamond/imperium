@@ -54,7 +54,7 @@ internal class LayerSelector : BaseUI
             layerToggles[i] = toggleObj.AddComponent<LayerToggle>();
             layerToggles[i].Init(LayerMask.LayerToName(i), i);
             var currentIndex = i;
-            layerToggles[i].gameObject.AddComponent<ImpInteractable>().onEnter += () =>
+            layerToggles[i].gameObject.AddComponent<ImpInteractable>().onEnter += _ =>
             {
                 layerToggles[selectedLayer].SetSelected(false);
                 selectedLayer = currentIndex;
@@ -191,7 +191,8 @@ internal class LayerSelector : BaseUI
 
     private void OnLayerSelect()
     {
-        GameUtils.PlayClip(ImpAssets.GrassClick);
+        if (Imperium.Settings.Preferences.PlaySounds.Value) GameUtils.PlayClip(ImpAssets.ButtonClick);
+
         var newMask = ImpUtils.ToggleLayerInMask(layerMaskBinding.Value, selectedLayer);
         layerMaskBinding.Set(newMask);
         layerToggles[selectedLayer].UpdateIsOn(newMask);

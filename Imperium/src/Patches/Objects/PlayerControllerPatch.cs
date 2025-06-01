@@ -218,11 +218,7 @@ internal static class PlayerControllerPatch
             if (__instance.IsInspectingItem) targetFOV -= 14;
             if (__instance.isSprinting) targetFOV += 2f;
 
-            __instance.gameplayCamera.fieldOfView = Mathf.Lerp(
-                __instance.gameplayCamera.fieldOfView,
-                targetFOV,
-                6f * Time.deltaTime
-            );
+            __instance.gameplayCamera.fieldOfView = targetFOV;
         }
     }
 
@@ -234,7 +230,7 @@ internal static class PlayerControllerPatch
     private static void BeginGrabObjectPrefixPatch(PlayerControllerB __instance)
     {
         gameHasStartedBridge = GameNetworkManager.Instance.gameHasStarted;
-        if (Imperium.Settings.Player.PickupOverwrite.Value && Imperium.IsImperiumEnabled)
+        if (Imperium.Settings.Player.PickupOverride.Value && Imperium.IsImperiumEnabled)
         {
             GameNetworkManager.Instance.gameHasStarted = true;
         }

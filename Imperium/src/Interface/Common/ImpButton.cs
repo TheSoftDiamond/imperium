@@ -7,6 +7,7 @@ using Imperium.Types;
 using Imperium.Util;
 using Imperium.Util.Binding;
 using JetBrains.Annotations;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -48,22 +49,28 @@ public abstract class ImpButton
             return null;
         }
 
-        button.onClick.AddListener(onClick);
-        if (playClickSound) button.onClick.AddListener(() => GameUtils.PlayClip(ImpAssets.GrassClick));
+        button.onClick.AddListener(() =>
+        {
+            onClick();
+
+            if (Imperium.Settings.Preferences.PlaySounds.Value && playClickSound) GameUtils.PlayClip(ImpAssets.ButtonClick);
+        });
 
         var icon = buttonObject.Find("Icon")?.GetComponent<Image>();
+        var text = buttonObject.Find("Text")?.GetComponent<TMP_Text>() ??
+                   buttonObject.Find("Text (TMP)")?.GetComponent<TMP_Text>();
 
         if (interactableBindings.Length > 0)
         {
             ToggleInteractable(
-                button, icon,
+                button, icon, text,
                 interactableBindings.All(entry => entry.Value),
                 interactableInvert
             );
             foreach (var interactableBinding in interactableBindings)
             {
                 interactableBinding.onUpdate += _ => ToggleInteractable(
-                    button, icon,
+                    button, icon, text,
                     interactableBindings.All(entry => entry.Value),
                     interactableInvert
                 );
@@ -73,13 +80,13 @@ public abstract class ImpButton
         if (tooltipDefinition != null)
         {
             var interactable = buttonObject.gameObject.AddComponent<ImpInteractable>();
-            interactable.onEnter += () => tooltipDefinition.Tooltip.Activate(
+            interactable.onOver += position => tooltipDefinition.Tooltip.SetPosition(
                 tooltipDefinition.Title,
                 tooltipDefinition.Description,
+                position,
                 tooltipDefinition.HasAccess
             );
             interactable.onExit += () => tooltipDefinition.Tooltip.Deactivate();
-            interactable.onOver += position => tooltipDefinition.Tooltip.UpdatePosition(position);
         }
 
         if (theme != null)
@@ -110,22 +117,28 @@ public abstract class ImpButton
         }
 
         var button = buttonObject.GetComponent<Button>();
-        button.onClick.AddListener(() => stateBinding.Set(!stateBinding.Value));
-        if (playClickSound) button.onClick.AddListener(() => GameUtils.PlayClip(ImpAssets.GrassClick));
+        button.onClick.AddListener(() =>
+        {
+            stateBinding.Set(!stateBinding.Value);
+
+            if (Imperium.Settings.Preferences.PlaySounds.Value && playClickSound) GameUtils.PlayClip(ImpAssets.ButtonClick);
+        });
 
         var icon = buttonObject.Find("Icon")?.GetComponent<Image>();
+        var text = buttonObject.Find("Text")?.GetComponent<TMP_Text>() ??
+                   buttonObject.Find("Text (TMP)")?.GetComponent<TMP_Text>();
 
         if (interactableBindings.Length > 0)
         {
             ToggleInteractable(
-                button, icon,
+                button, icon, text,
                 interactableBindings.All(entry => entry.Value),
                 interactableInvert
             );
             foreach (var interactableBinding in interactableBindings)
             {
-                interactableBinding.onUpdate += value => ToggleInteractable(
-                    button, icon,
+                interactableBinding.onTrigger += () => ToggleInteractable(
+                    button, icon, text,
                     interactableBindings.All(entry => entry.Value),
                     interactableInvert
                 );
@@ -171,8 +184,9 @@ public abstract class ImpButton
             stateBinding?.Set(!stateBinding.Value);
             if (collapseArea) collapseArea.gameObject.SetActive(!collapseArea.gameObject.activeSelf);
             button.transform.Rotate(0, 0, 180);
-            GameUtils.PlayClip(ImpAssets.GrassClick);
             updateFunction?.Invoke();
+
+            if (Imperium.Settings.Preferences.PlaySounds.Value) GameUtils.PlayClip(ImpAssets.ButtonClick);
         });
 
         if (stateBinding != null && collapseArea)
@@ -190,10 +204,10 @@ public abstract class ImpButton
 
         if (interactableBindings.Length > 0)
         {
-            ToggleInteractable(button, null, interactableBindings.All(entry => entry.Value), interactableInvert);
+            ToggleInteractable(button, null, null, interactableBindings.All(entry => entry.Value), interactableInvert);
             foreach (var interactableBinding in interactableBindings)
             {
-                interactableBinding.onUpdate += value => ToggleInteractable(button, null, value, interactableInvert);
+                interactableBinding.onUpdate += value => ToggleInteractable(button, null, null, value, interactableInvert);
             }
         }
 
@@ -204,10 +218,17 @@ public abstract class ImpButton
         }
     }
 
-    private static void ToggleInteractable(Selectable button, [CanBeNull] Image icon, bool isOn, bool inverted)
+    private static void ToggleInteractable(
+        Selectable button,
+        [CanBeNull] Image icon,
+        [CanBeNull] TMP_Text text,
+        bool isOn,
+        bool inverted
+    )
     {
         button.interactable = inverted ? !isOn : isOn;
         if (icon) ImpUtils.Interface.ToggleImageActive(icon, inverted ? !isOn : isOn);
+        if (text) ImpUtils.Interface.ToggleTextActive(text, inverted ? !isOn : isOn);
     }
 
     private static void OnThemeUpdate(ImpTheme theme, Transform container, bool isIconButton)

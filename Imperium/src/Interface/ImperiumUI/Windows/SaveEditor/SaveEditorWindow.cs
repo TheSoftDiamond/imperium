@@ -6,7 +6,6 @@ using Imperium.Types;
 using Imperium.Util.Binding;
 using TMPro;
 using UnityEngine;
-using ContentType = TMPro.TMP_InputField.ContentType;
 
 #endregion
 
@@ -56,26 +55,31 @@ internal class SaveEditorWindow : ImperiumWindow
     {
         const string generalSave = ImpConstants.GeneralSaveFile;
 
-        BindTextSetting("PlayerXPNum", generalSave, generalSaveContainer, ContentType.IntegerNumber);
-        BindTextSetting("PlayerLevel", generalSave, generalSaveContainer, ContentType.IntegerNumber);
-        BindTextSetting("FinishedShockMinigame", generalSave, generalSaveContainer, ContentType.IntegerNumber);
-        BindTextSetting("SelectedFile", generalSave, generalSaveContainer, ContentType.IntegerNumber);
-        BindTextSetting("TimesLanded", generalSave, generalSaveContainer, ContentType.IntegerNumber);
+        BindTextSetting("PlayerXPNum", generalSave, generalSaveContainer, TMP_InputField.ContentType.IntegerNumber);
+        BindTextSetting("PlayerLevel", generalSave, generalSaveContainer, TMP_InputField.ContentType.IntegerNumber);
+        BindTextSetting(
+            "FinishedShockMinigame",
+            generalSave,
+            generalSaveContainer,
+            TMP_InputField.ContentType.IntegerNumber
+        );
+        BindTextSetting("SelectedFile", generalSave, generalSaveContainer, TMP_InputField.ContentType.IntegerNumber);
+        BindTextSetting("TimesLanded", generalSave, generalSaveContainer, TMP_InputField.ContentType.IntegerNumber);
         BindBooleanSetting("HostSettings_Public", generalSave, generalSaveContainer);
         BindTextSetting("HostSettings_Name", generalSave, generalSaveContainer);
-        BindTextSetting("LastVerPlayed", generalSave, generalSaveContainer, ContentType.IntegerNumber);
+        BindTextSetting("LastVerPlayed", generalSave, generalSaveContainer, TMP_InputField.ContentType.IntegerNumber);
         BindBooleanSetting("SpiderSafeMode", generalSave, generalSaveContainer);
         BindBooleanSetting("InvertYAxis", generalSave, generalSaveContainer);
-        BindTextSetting("ScreenMode", generalSave, generalSaveContainer, ContentType.IntegerNumber);
-        BindTextSetting("FPSCap", generalSave, generalSaveContainer, ContentType.IntegerNumber);
+        BindTextSetting("ScreenMode", generalSave, generalSaveContainer, TMP_InputField.ContentType.IntegerNumber);
+        BindTextSetting("FPSCap", generalSave, generalSaveContainer, TMP_InputField.ContentType.IntegerNumber);
         BindTextSetting("Bindings", generalSave, generalSaveContainer);
         BindTextSetting("CurrentMic", generalSave, generalSaveContainer);
         BindTextSetting("CurrentMic", generalSave, generalSaveContainer);
         BindBooleanSetting("PushToTalk", generalSave, generalSaveContainer);
         BindBooleanSetting("MicEnabled", generalSave, generalSaveContainer);
-        BindTextSetting("LookSens", generalSave, generalSaveContainer, ContentType.IntegerNumber);
-        BindTextSetting("MasterVolume", generalSave, generalSaveContainer, ContentType.DecimalNumber);
-        BindTextSetting("Gamma", generalSave, generalSaveContainer, ContentType.DecimalNumber);
+        BindTextSetting("LookSens", generalSave, generalSaveContainer, TMP_InputField.ContentType.IntegerNumber);
+        BindTextSetting("MasterVolume", generalSave, generalSaveContainer, TMP_InputField.ContentType.DecimalNumber);
+        BindTextSetting("Gamma", generalSave, generalSaveContainer, TMP_InputField.ContentType.DecimalNumber);
         BindBooleanSetting("StartInOnlineMode", generalSave, generalSaveContainer);
         BindBooleanSetting("PlayerFinishedSetup", generalSave, generalSaveContainer);
         BindBooleanSetting("LC_StorageTip", generalSave, generalSaveContainer);
@@ -96,18 +100,23 @@ internal class SaveEditorWindow : ImperiumWindow
     {
         var currentSave = GameNetworkManager.Instance.currentSaveFileName;
 
-        BindTextSetting("GroupCredits", currentSave, currentSaveContainer, ContentType.IntegerNumber);
-        BindTextSetting("CurrentPlanetID", currentSave, currentSaveContainer, ContentType.IntegerNumber);
-        BindTextSetting("ProfitQuota", currentSave, currentSaveContainer, ContentType.IntegerNumber);
-        BindTextSetting("QuotasPassed", currentSave, currentSaveContainer, ContentType.IntegerNumber);
-        BindTextSetting("QuotaFulfilled", currentSave, currentSaveContainer, ContentType.IntegerNumber);
-        BindTextSetting("FileGameVers", currentSave, currentSaveContainer, ContentType.IntegerNumber);
-        BindTextSetting("Stats_StepsTaken", currentSave, currentSaveContainer, ContentType.IntegerNumber);
-        BindTextSetting("Stats_ValueCollected", currentSave, currentSaveContainer, ContentType.IntegerNumber);
-        BindTextSetting("Stats_Deaths", currentSave, currentSaveContainer, ContentType.IntegerNumber);
-        BindTextSetting("Stats_DaysSpent", currentSave, currentSaveContainer, ContentType.IntegerNumber);
-        BindTextSetting("RandomSeed", currentSave, currentSaveContainer, ContentType.IntegerNumber);
-        BindTextSetting("DeadlineTime", currentSave, currentSaveContainer, ContentType.IntegerNumber);
+        BindTextSetting("GroupCredits", currentSave, currentSaveContainer, TMP_InputField.ContentType.IntegerNumber);
+        BindTextSetting("CurrentPlanetID", currentSave, currentSaveContainer, TMP_InputField.ContentType.IntegerNumber);
+        BindTextSetting("ProfitQuota", currentSave, currentSaveContainer, TMP_InputField.ContentType.IntegerNumber);
+        BindTextSetting("QuotasPassed", currentSave, currentSaveContainer, TMP_InputField.ContentType.IntegerNumber);
+        BindTextSetting("QuotaFulfilled", currentSave, currentSaveContainer, TMP_InputField.ContentType.IntegerNumber);
+        BindTextSetting("FileGameVers", currentSave, currentSaveContainer, TMP_InputField.ContentType.IntegerNumber);
+        BindTextSetting("Stats_StepsTaken", currentSave, currentSaveContainer, TMP_InputField.ContentType.IntegerNumber);
+        BindTextSetting(
+            "Stats_ValueCollected",
+            currentSave,
+            currentSaveContainer,
+            TMP_InputField.ContentType.IntegerNumber
+        );
+        BindTextSetting("Stats_Deaths", currentSave, currentSaveContainer, TMP_InputField.ContentType.IntegerNumber);
+        BindTextSetting("Stats_DaysSpent", currentSave, currentSaveContainer, TMP_InputField.ContentType.IntegerNumber);
+        BindTextSetting("RandomSeed", currentSave, currentSaveContainer, TMP_InputField.ContentType.IntegerNumber);
+        BindTextSetting("DeadlineTime", currentSave, currentSaveContainer, TMP_InputField.ContentType.IntegerNumber);
         BindBooleanSetting("ShipUnlockStored_Plushie pajama man", currentSave, CurrentSaveShipContainer);
         BindBooleanSetting("ShipUnlockStored_Goldfish", currentSave, CurrentSaveShipContainer);
         BindBooleanSetting("ShipUnlockStored_Welcome mat", currentSave, CurrentSaveShipContainer);
@@ -135,7 +144,8 @@ internal class SaveEditorWindow : ImperiumWindow
         string settingName,
         string fileName,
         Transform parent,
-        ContentType contentType = ContentType.Standard)
+        TMP_InputField.ContentType contentType = TMP_InputField.ContentType.Standard
+    )
     {
         if (!ES3.KeyExists(settingName, fileName)) return;
 
@@ -145,7 +155,9 @@ internal class SaveEditorWindow : ImperiumWindow
 
         var binding = new ImpBinding<string>(ES3.Load(settingName, fileName).ToString());
         binding.onUpdate += value => ES3.Save(settingName, value, fileName);
+
         ImpInput.Bind("Input", element, binding, theme);
+        element.Find("Input").GetComponent<TMP_InputField>().contentType = contentType;
     }
 
     private void BindBooleanSetting(string settingName, string fileName, Transform parent)

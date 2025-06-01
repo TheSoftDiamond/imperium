@@ -1,8 +1,8 @@
-![Imperium Logo](https://github.com/giosuel/imperium/blob/main/assets/imperium_full_beta_alpha.png?raw=true)
+![Imperium Logo](https://github.com/giosuel/imperium/blob/main/assets/imperium_full_alpha.png?raw=true)
 
 # Imperium
 
-Imperium is a powerful and highly performant all-in-one debugging tool to test and explore game mechanics and functionality in Lethal Company.
+Imperium is a powerful all-in-one debugging and admin tool to test and explore game mechanics and functionality in Lethal Company.
 
 Imperium works on the client-side and server-side, meaning it works in singleplayer as well as multiplayer, as long as Imperium is installed on the host.
 
@@ -25,7 +25,7 @@ Imperium works on the client-side and server-side, meaning it works in singlepla
 - Event log that logs in-game events related to entity spawning, targeting and more.
 - Entity, scrap and map hazard; spawning, de-spawning and teleportation.
 - Instant ship landing and takeoff and various other animation skips.
-- Ability to kill and revive players including the yourself.
+- Ability to kill and revive players including yourself.
 - Entity spawn prediction powered by the Oracle Prediction Algorithm.
 - Easy adjustment of game variables such as credits, quota deadline, spawn rates and many more.
 - Player tweaks such as god mode, infinite sprint, infinite battery, night vision, invisibility, custom movement speed, custom jump height, and many more.
@@ -37,8 +37,35 @@ Imperium works on the client-side and server-side, meaning it works in singlepla
 - Allows bypassing of the loading screen and instantly loading a save file on start-up.
 - Fully compatible with [Unity Explorer](https://github.com/sinai-dev/UnityExplorer) (Including mouse look fix).
 
+## Getting Started
+
+Imperium can be downloaded directly from [Thunderstore](https://thunderstore.io/c/lethal-company/p/giosuel/Imperium/) or installed manually from the [releases page](https://github.com/giosuel/imperium/releases). If you are downloading Imperium through Thunderstore, I highly recommend to use the [Gale](https://thunderstore.io/c/lethal-company/p/Kesomannen/GaleModManager/) mod manager to manage your mods.
+
+### Interface Navigation
+
+Imperium can be navigated using functional keys, or F-Keys. All the default key bindings can be changed through [InputUtil](https://thunderstore.io/c/lethal-company/p/Rune580/LethalCompany_InputUtils/)'s keybind interface in the Lethal Company settings.
+
+Imperium is divided into several main interfaces which can be opened directly with functional keys (e.g. `F1` for the Imperium UI). Alternatively, its possible to switch between these interfaces with the dock on the left.
+
+The main interface, called the "Imperium UI" is further divided into floating windows which contain Imperium's main settings and functionalities. These windows can be toggled on and off through the Imperium dock at the top of the screen. Altenatively, some of them can be opened through functional keys (e.g. `F3` to open the teleportation window).
+
+| Default Keybind | Action                                                      |
+| --------------- | ----------------------------------------------------------- |
+| F1              | Opens the Imperium UI.                                      |
+| F2              | Opens Imperium's spawn UI.                                  |
+| F3              | Opens the teleportation window within the Imperium UI.      |
+| F6              | Opens the Oracle spawn prediction UI.                       |
+| F8              | Opens the full-screen map UI.                               |
+| T               | Toggles interactive teleportation.                          |
+| F               | Opens the Imperium freecam.                                 |
+| M               | Toggles the Imperium minimap.                               |
+| X               | Toggles the freecam's picture-in-picture mode.              |
+| F11             | Toggles the freecam's picture-in-picture mode's fullscreen. |
+| Z               | Toggles the vanilla employee HUD.                           |
+
 ## Imperium's Minimap / Map
-Imperium comes with it's own built-in map and minimap.
+
+Imperium comes with its own minimap and full-screen map. The map can be used to follow yourself or other employees, as well as track entities or even map hazards. By default, the map is set to top-down view but you can adjust the viewing angle in the full-screen map.
 
 ![imperium-map](https://github.com/giosuel/imperium/blob/main/assets/imperium-map.png?raw=true)
 
@@ -46,7 +73,15 @@ Imperium comes with it's own built-in map and minimap.
 
 ## Imperium's Visualizers
 
-The visualizers windows allows access to all the static and dynamic collider visualizers, gizmos and screen-space overlays.
+Imperium comes with a multitude of built-in visualizers for colliders, position trackers, map hazards and more. The visualizers are divided into 5 main categories.
+
+### Overlays and Colliders
+
+Overlays are simple position trackers which highlight certain important coordinates in the game such as spawn locations, AI nodes and more. Collider visualizers highlight box, sphere and capsule colliders of game objects.
+
+### Insights
+
+Insights provide screen-space overlays for any game objects in the scene.
 
 ![imperium-visualizers](https://github.com/giosuel/imperium/blob/main/assets/imperium-visualizers.png?raw=true)
 
@@ -147,12 +182,13 @@ Various icons were provided by [FlatIcon](https://www.flaticon.com/).
 
 ### Special Thanks To
 
+- [sinai-dev](https://github.com/sinai-dev) for creating [Unity Explorer](https://github.com/sinai-dev/UnityExplorer), my favorite mod of all time!
 - [Adi](https://thunderstore.io/c/lethal-company/p/AdiBTW/) for helping with the [LOS](https://github.com/AdalynBlack/LC-EnemyDebug) visualizers!
 - [digger1213](https://github.com/digger1213) for writing the the shotgun visualizer!
 - [Xilo](https://github.com/Xilophor) for helping me with the networking and writing the [LethalNetworkingAPI](https://github.com/Xilophor/LethalNetworkAPI)!
+- [CTN](https://github.com/CTNOriginals) and [Flero](https://github.com/flerouwu) for providing me with code for the Quickload logic!
 - [Nebby](https://thunderstore.io/c/lethal-company/p/Nebulaetrix/) for helping with the documentation and the testing!
 - [Swaggies](https://thunderstore.io/c/lethal-company/p/Swaggies), [aminoob](https://thunderstore.io/c/lethal-company/p/aminoob/) and star0138 for the help with the testing of Imperium!
-- [sinai-dev](https://github.com/sinai-dev) for creating [Unity Explorer](https://github.com/sinai-dev/UnityExplorer), my favorite mod of all time!
 - [Dancemoon](https://thunderstore.io/c/lethal-company/p/dancemoon/) who made [DanceTools](https://thunderstore.io/c/lethal-company/p/dancemoon/DanceTools/), which was the initial inspiration for Imperium!
 - [chaser324](https://github.com/Chaser324) for providing the wireframe shaders for the collider visualizations!
 - [Sligili](https://thunderstore.io/c/lethal-company/p/Sligili/) for writing HDLethalCompany!

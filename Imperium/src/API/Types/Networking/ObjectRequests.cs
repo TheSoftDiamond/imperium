@@ -64,7 +64,7 @@ public readonly struct CompanyCruiserSpawnRequest()
 public readonly struct ObjectTeleportRequest()
 {
     // This can be either the network ID or the imperium unique identifier assigned when spawning.
-    [SerializeField] public ulong NetworkId { get; init; } = default;
+    [SerializeField] public ulong NetworkId { get; init; } = 0;
     [SerializeField] public Vector3 Destination { get; init; }
 }
 
@@ -81,9 +81,14 @@ public readonly struct LocalObjectTeleportRequest
     [SerializeField] public Vector3 Destination { get; init; }
 }
 
+public readonly struct VentToggleRequest
+{
+    [SerializeField] public ulong NetworkId { get; init; }
+    [SerializeField] public bool IsEnabled { get; init; }
+}
+
 public enum LocalObjectType
 {
-    VainShroud,
     OutsideObject
 }
 
@@ -94,11 +99,11 @@ public enum ObjectType
     Entity,
     Item,
     Landmine,
-    VainShroud,
     Player,
     SpiderWeb,
     SpikeTrap,
     SteamValve,
+    SecurityDoor,
     OutsideObject,
     Turret,
     Vent

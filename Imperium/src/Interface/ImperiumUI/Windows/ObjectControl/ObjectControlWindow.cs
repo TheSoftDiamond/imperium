@@ -6,9 +6,9 @@ using UnityEngine;
 
 #endregion
 
-namespace Imperium.Interface.ImperiumUI.Windows.ObjectSettings;
+namespace Imperium.Interface.ImperiumUI.Windows.ObjectControl;
 
-internal class ObjectSettingsWindow : ImperiumWindow
+internal class ObjectControlWindow : ImperiumWindow
 {
     private Transform content;
 

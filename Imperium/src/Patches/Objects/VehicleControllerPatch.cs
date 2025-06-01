@@ -13,17 +13,17 @@ namespace Imperium.Patches.Objects;
 public static class VehicleControllerPatch
 {
     [HarmonyPrefix]
-    [HarmonyPatch("ReactToDamage")]
-    internal static void ReactToDamagePrefixPatch(VehicleController __instance)
+    [HarmonyPatch("TakeControlOfVehicle")]
+    internal static void TakeControlOfVehiclePostfixPatch()
     {
-        if (Imperium.Settings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = false;
+        Imperium.PlayerManager.PlayerInCruiser.Set(true);
     }
 
-    [HarmonyPostfix]
-    [HarmonyPatch("ReactToDamage")]
-    internal static void ReactToDamagePostfixPatch(VehicleController __instance)
+    [HarmonyPrefix]
+    [HarmonyPatch("LoseControlOfVehicle")]
+    internal static void LoseControlOfVehiclePostfixPatch()
     {
-        if (Imperium.Settings.Preferences.OptimizeLogs.Value) Debug.unityLogger.logEnabled = true;
+        Imperium.PlayerManager.PlayerInCruiser.Set(false);
     }
 
     [HarmonyPrefix]

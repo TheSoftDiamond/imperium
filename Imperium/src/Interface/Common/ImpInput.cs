@@ -55,10 +55,7 @@ public abstract class ImpInput
 
         if (valueBinding != null)
         {
-            input.onValueChanged.AddListener(value =>
-            {
-                OnIntFieldInput(input, value, valueBinding.DefaultValue, min, max);
-            });
+            input.onValueChanged.AddListener(value => OnIntFieldInput(input, value, min, max));
 
             input.text = valueBinding.Value.ToString();
 
@@ -67,8 +64,8 @@ public abstract class ImpInput
             {
                 if (string.IsNullOrEmpty(value) || !int.TryParse(value, out var parsed))
                 {
-                    valueBinding.Set(valueBinding.DefaultValue);
-                    input.text = valueBinding.DefaultValue.ToString();
+                    // Reset field to previous value if current value is invalid
+                    input.text = valueBinding.Value.ToString();
                 }
                 else
                 {
@@ -116,6 +113,7 @@ public abstract class ImpInput
     /// <param name="min">Minimum input value</param>
     /// <param name="max">Maximum input value</param>
     /// <param name="interactableInvert">Whether the interactable binding values should be inverted</param>
+    /// <param name="negativeIsEmpty">Whether the input field should be cleared on updates with negative value</param>
     /// <param name="interactableBindings">List of boolean bindings that decide if the button is interactable</param>
     internal static TMP_InputField Bind(
         string path,
@@ -125,6 +123,7 @@ public abstract class ImpInput
         float min = float.MinValue,
         float max = float.MaxValue,
         bool interactableInvert = false,
+        bool negativeIsEmpty = false,
         params IBinding<bool>[] interactableBindings
     )
     {
@@ -136,25 +135,33 @@ public abstract class ImpInput
 
         if (valueBinding != null)
         {
-            input.onValueChanged.AddListener(value =>
-            {
-                OnFloatFieldInput(input, value, valueBinding.DefaultValue, min, max);
-            });
+            input.onValueChanged.AddListener(value => OnFloatFieldInput(input, value, min, max));
 
             input.text = valueBinding.Value.ToString(CultureInfo.InvariantCulture);
             input.onSubmit.AddListener(value =>
             {
                 if (string.IsNullOrEmpty(value) || !float.TryParse(value, out var parsed))
                 {
-                    valueBinding.Set(valueBinding.DefaultValue);
-                    input.text = valueBinding.DefaultValue.ToString(CultureInfo.InvariantCulture);
+                    // Reset field to previous value if current value is invalid
+                    input.text = valueBinding.Value.ToString(CultureInfo.InvariantCulture);
                 }
                 else
                 {
                     valueBinding.Set(parsed);
                 }
             });
-            valueBinding.onUpdate += value => input.text = value.ToString(CultureInfo.InvariantCulture);
+
+            valueBinding.onUpdate += value =>
+            {
+                if (value < 0 && negativeIsEmpty)
+                {
+                    input.text = "";
+                }
+                else
+                {
+                    input.text = value.ToString(CultureInfo.InvariantCulture);
+                }
+            };
         }
 
         if (interactableBindings.Length > 0)
@@ -257,63 +264,43 @@ public abstract class ImpInput
     private static void OnIntFieldInput(
         TMP_InputField field,
         string text,
-        int defaultValue,
         int min = int.MinValue,
         int max = int.MaxValue
     )
     {
-        if (string.IsNullOrEmpty(text)) return;
-
-        if (!int.TryParse(text, out var value))
-        {
-            field.text = defaultValue.ToString();
-            return;
-        }
+        if (string.IsNullOrEmpty(text) || !int.TryParse(text, out var value)) return;
 
         if (value > max)
         {
             field.text = max.ToString();
-            return;
         }
-
-        if (value < min)
+        else if (value < min)
         {
             field.text = min.ToString();
-            return;
         }
 
-        field.text = value.ToString();
+        // field.text = value.ToString();
     }
 
     private static void OnFloatFieldInput(
         TMP_InputField field,
         string text,
-        float defaultValue,
         float min = float.MinValue,
         float max = float.MaxValue
     )
     {
-        if (string.IsNullOrEmpty(text)) return;
-
-        if (!float.TryParse(text, out var value))
-        {
-            field.text = defaultValue.ToString(CultureInfo.InvariantCulture);
-            return;
-        }
+        if (string.IsNullOrEmpty(text) || !float.TryParse(text, out var value)) return;
 
         if (value > max)
         {
             field.text = max.ToString(CultureInfo.InvariantCulture);
-            return;
         }
-
-        if (value < min)
+        else if (value < min)
         {
             field.text = min.ToString(CultureInfo.InvariantCulture);
-            return;
         }
 
-        field.text = value.ToString(CultureInfo.InvariantCulture);
+        // field.text = value.ToString(CultureInfo.InvariantCulture);
     }
 
     private static void ToggleInteractable(Selectable input, bool isOn, bool inverted)

@@ -1,5 +1,6 @@
 #region
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -21,43 +22,40 @@ using Random = UnityEngine.Random;
 
 namespace Imperium.Core.Lifecycle;
 
+/// <summary>
+/// Lifecycle object that manages all object-related functionality. Keeps track of loaded and currently active objects.
+/// </summary>
 internal class ObjectManager : ImpLifecycleObject
 {
-    /*
-     * Entity name system.
-     */
-    private readonly List<string> AvailableEntityNames = ImpAssets.EntityNames.Select(name => name).ToList();
-    private readonly Dictionary<int, string> EntityNameMap = [];
-    private bool JohnExists;
-
     /*
      * Lists of globally loaded objects.
      *
      * These lists hold all the entities that can be spawned in Lethal Company, including the ones that are not in any
      * spawn list of any moon (e.g. Red Pill, Lasso Man).
      *
-     * Loaded on Imperium initialization.
+     * Loaded when Imperium initializes (Stage 1).
      */
     internal readonly ImpBinding<IReadOnlyCollection<Item>> LoadedItems = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<Item>> LoadedScrap = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<EnemyType>> LoadedEntities = new([]);
     internal readonly ImpBinding<IReadOnlyDictionary<string, GameObject>> LoadedMapHazards = new();
 
-    // Misc objects with network objects (e.g. clipboard, body, company cruiser)
+    // Lists of bjects with network behaviours (e.g. clipboard, body, company cruiser)
     internal readonly ImpBinding<IReadOnlyDictionary<string, GameObject>> LoadedStaticPrefabs = new();
     internal readonly ImpBinding<IReadOnlyDictionary<string, SpawnableOutsideObject>> LoadedOutsideObjects = new();
 
-    // Misc objects without network objects (e.g. trees, vain shrouds, rocks)
+    // Lists of bjects without network behaviours (e.g. trees, vain shrouds, rocks)
     internal readonly ImpBinding<IReadOnlyDictionary<string, GameObject>> LoadedLocalStaticPrefabs = new();
 
     /*
      * Lists of objects loaded in the current scene.
      *
-     * These lists hold the currently existing objects on the map
+     * These lists hold the currently existing objects in the scene.
      * These are used by the object list in Imperium UI and is always up-to-date but
      * CAN CONTAIN NULL elements that have been marked for but not yet deleted during the last refresh.
+     * Always ensure to check for null values before using the values in these lists.
      *
-     * Loaded on Imperium initialization. Refreshed when the ship is landing / taking off.
+     * Loaded when Imperium launches (Stage 2).
      */
     internal readonly ImpBinding<IReadOnlyCollection<Turret>> CurrentLevelTurrets = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<DoorLock>> CurrentLevelDoors = new([]);
@@ -73,12 +71,13 @@ internal class ObjectManager : ImpLifecycleObject
     internal readonly ImpBinding<IReadOnlyCollection<SandSpiderWebTrap>> CurrentLevelSpiderWebs = new([]);
     internal readonly ImpBinding<IReadOnlyCollection<TerminalAccessibleObject>> CurrentLevelSecurityDoors = new([]);
 
-    // Local objects without a network object or script to reference
-    internal readonly ImpBinding<IReadOnlyCollection<GameObject>> CurrentLevelVainShrouds = new([]);
+    /*
+     * Lists of local objects that don't have a network object or script to reference
+     */
     internal readonly ImpBinding<IReadOnlyCollection<GameObject>> CurrentLevelOutsideObjects = new([]);
 
-    // Event that is fired when multiple types of objects have been changed
-    internal readonly ImpEvent CurrentLevelObjectsChanged = new();
+    // Event that signalizes a change in any of the object lists
+    internal event Action CurrentLevelObjectsChanged;
 
     /*
      * Misc scene objects.
@@ -162,6 +161,18 @@ internal class ObjectManager : ImpLifecycleObject
         "treeLeafless.002_LOD0(Clone)",
         "treeLeafless.003_LOD0(Clone)"
     ];
+
+    /*
+     * Collections for the entity name system.
+     */
+    private readonly List<string> AvailableEntityNames = ImpAssets.EntityNames.Select(entityName => entityName).ToList();
+    private readonly Dictionary<int, string> EntityNameMap = [];
+    private bool JohnExists;
+
+    /*
+     * Assets loaded from the game's resources after loading objects
+     */
+    internal AudioClip BeaconDrop;
 
     protected override void Init()
     {
@@ -339,6 +350,7 @@ internal class ObjectManager : ImpLifecycleObject
 
         foreach (var enemyType in Resources.FindObjectsOfTypeAll<EnemyType>().Distinct())
         {
+            if (!enemyType.enemyPrefab) continue;
             allEntities.Add(enemyType);
 
             switch (enemyType.enemyName)
@@ -358,6 +370,8 @@ internal class ObjectManager : ImpLifecycleObject
         var allItems = Resources.FindObjectsOfTypeAll<Item>()
             .Where(item => item.spawnPrefab && !ImpConstants.ItemBlacklist.Contains(item.itemName))
             .ToHashSet();
+        BeaconDrop = allItems.First(item => item.itemName == "Radar-booster").dropSFX;
+
         var allScrap = allItems.Where(scrap => scrap.isScrap).ToHashSet();
 
         var allMapHazards = new Dictionary<string, GameObject>();
@@ -400,9 +414,6 @@ internal class ObjectManager : ImpLifecycleObject
                 case "StickyNoteItem":
                     allStaticPrefabs["StickyNote"] = obj;
                     break;
-                case "MoldSpore":
-                    allLocalStaticPrefabs["MoldSpore"] = obj;
-                    break;
             }
         }
 
@@ -416,6 +427,7 @@ internal class ObjectManager : ImpLifecycleObject
 
         GenerateDisplayNameMaps();
     }
+
 
     private static EnemyType CreateShiggyType(EnemyType type)
     {
@@ -467,11 +479,10 @@ internal class ObjectManager : ImpLifecycleObject
         }
 
         CurrentLevelEntities.Set(currentLevelEntities);
-        CurrentLevelObjectsChanged.Trigger();
+        CurrentLevelObjectsChanged?.Invoke();
     }
 
     private readonly LayerMask terrainMask = LayerMask.NameToLayer("Terrain");
-    private readonly LayerMask vainShroudMask = LayerMask.NameToLayer("MoldSpore");
 
     internal void RefreshLevelObjects()
     {
@@ -483,7 +494,6 @@ internal class ObjectManager : ImpLifecycleObject
         HashSet<EnemyAI> currentLevelEntities = [];
         HashSet<Landmine> currentLevelLandmines = [];
         HashSet<GrabbableObject> currentLevelItems = [];
-        HashSet<GameObject> currentLevelVainShrouds = [];
         HashSet<BreakerBox> currentLevelBreakerBoxes = [];
         HashSet<SpikeRoofTrap> currentLevelSpikeTraps = [];
         HashSet<GameObject> currentLevelOutsideObjects = [];
@@ -495,8 +505,6 @@ internal class ObjectManager : ImpLifecycleObject
 
         foreach (var obj in FindObjectsOfType<GameObject>())
         {
-            if (obj.layer == vainShroudMask && currentLevelVainShrouds.Add(obj)) continue;
-
             if (obj.layer == terrainMask
                 && OutsideObjectPrefabNameMap.Contains(obj.name)
                 && currentLevelOutsideObjects.Add(obj)
@@ -512,7 +520,7 @@ internal class ObjectManager : ImpLifecycleObject
                     case DoorLock doorLock:
                         currentLevelDoors.Add(doorLock);
                         break;
-                    case TerminalAccessibleObject securityDoor:
+                    case TerminalAccessibleObject { isBigDoor: true } securityDoor:
                         currentLevelSecurityDoors.Add(securityDoor);
                         break;
                     case Turret turret:
@@ -569,12 +577,11 @@ internal class ObjectManager : ImpLifecycleObject
         CurrentLevelSpiderWebs.Set(currentLevelSpiderWebs);
         CurrentScrapSpawnPoints.Set(currentScrapSpawnPoints);
         CurrentLevelCruisers.Set(currentLevelCompanyCruisers);
-        CurrentLevelVainShrouds.Set(currentLevelVainShrouds);
 
         stopwatch.Stop();
         Imperium.IO.LogInfo($"REFRESH : {stopwatch.ElapsedMilliseconds}");
 
-        CurrentLevelObjectsChanged.Trigger();
+        CurrentLevelObjectsChanged?.Invoke();
 
         stopwatch2.Stop();
         Imperium.IO.LogInfo($"TOTAL REFRESH : {stopwatch2.ElapsedMilliseconds}");
@@ -595,8 +602,6 @@ internal class ObjectManager : ImpLifecycleObject
             var displayName = item.spawnPrefab.GetComponentInChildren<ScanNodeProperties>()?.headerText;
             if (!string.IsNullOrEmpty(displayName)) displayNameMap[item.itemName] = displayName;
         }
-
-        displayNameMap["MoldSpore"] = "Vain Shroud";
 
         overrideDisplayNameMap["StickyNote"] = "Sticky Note";
         overrideDisplayNameMap["Clipboard"] = "Clipboard";
@@ -685,8 +690,10 @@ internal class ObjectManager : ImpLifecycleObject
                     Quaternion.identity
                 )
             };
+            var entity = entityObj.GetComponent<EnemyAI>();
+            Imperium.RoundManager.SpawnedEnemies.Add(entity);
 
-            if (request.Health > 0) entityObj.GetComponent<EnemyAI>().enemyHP = request.Health;
+            if (request.Health > 0) entity.enemyHP = request.Health;
 
             var netObject = entityObj.gameObject.GetComponentInChildren<NetworkObject>();
             netObject.Spawn(destroyWithScene: true);
@@ -755,7 +762,7 @@ internal class ObjectManager : ImpLifecycleObject
     }
 
     [ImpAttributes.LocalMethod]
-    private static void DespawnLocalObject(LocalObjectType type, Vector3 position, GameObject obj)
+    private void DespawnLocalObject(LocalObjectType type, Vector3 position, GameObject obj)
     {
         if (!obj)
         {
@@ -766,6 +773,7 @@ internal class ObjectManager : ImpLifecycleObject
         }
 
         Destroy(obj);
+        RefreshLevelObjects();
     }
 
     [ImpAttributes.LocalMethod]
@@ -826,8 +834,10 @@ internal class ObjectManager : ImpLifecycleObject
             var spawnedInInventory = false;
             if (request.SpawnInInventory)
             {
-                var invokingPlayer = Imperium.StartOfRound.allPlayerScripts[clientId];
-                var firstItemSlot = Reflection.Invoke<PlayerControllerB, int>(invokingPlayer, "FirstEmptyItemSlot");
+                var invokingPlayer = Imperium.StartOfRound.allPlayerScripts.First(
+                    player => player.actualClientId == clientId
+                );
+                var firstItemSlot = invokingPlayer.FirstEmptyItemSlot();
                 if (firstItemSlot != -1 && grabbableItem.grabbable)
                 {
                     grabbableItem.InteractItem();
@@ -1133,7 +1143,7 @@ internal class ObjectManager : ImpLifecycleObject
             var itemTransform = item.transform;
             itemTransform.position = request.Destination + Vector3.up;
             item.startFallingPosition = itemTransform.position;
-            if (item.transform.parent != null)
+            if (item.transform.parent)
             {
                 item.startFallingPosition = item.transform.parent.InverseTransformPoint(item.startFallingPosition);
             }
@@ -1156,16 +1166,6 @@ internal class ObjectManager : ImpLifecycleObject
     {
         switch (request.Type)
         {
-            case LocalObjectType.VainShroud:
-                TeleportLocalObject(
-                    request.Type,
-                    request.Position,
-                    CurrentLevelVainShrouds.Value
-                        .Where(obj => obj)
-                        .FirstOrDefault(obj => obj.transform.position == request.Position),
-                    request.Destination
-                );
-                break;
             case LocalObjectType.OutsideObject:
                 TeleportLocalObject(
                     request.Type,
@@ -1177,7 +1177,7 @@ internal class ObjectManager : ImpLifecycleObject
                 );
                 break;
             default:
-                Imperium.IO.LogError($"[NET] Teleportation request has invalid outside object type '{request.Type}'");
+                Imperium.IO.LogError($"[NET] Local teleportation request has invalid outside object type '{request.Type}'");
                 break;
         }
     }
@@ -1223,15 +1223,11 @@ internal class ObjectManager : ImpLifecycleObject
     {
         switch (request.Type)
         {
-            case LocalObjectType.VainShroud:
-                DespawnLocalObject(request.Type, request.Position, CurrentLevelVainShrouds.Value.FirstOrDefault(
-                    obj => obj.transform.position == request.Position
-                ));
-                break;
             case LocalObjectType.OutsideObject:
-                DespawnLocalObject(request.Type, request.Position, CurrentLevelOutsideObjects.Value.FirstOrDefault(
-                    obj => obj.transform.position == request.Position
-                ));
+                DespawnLocalObject(request.Type, request.Position, CurrentLevelOutsideObjects.Value
+                    .Where(obj => obj)
+                    .FirstOrDefault(obj => obj.transform.position == request.Position)
+                );
                 break;
             default:
                 Imperium.IO.LogError($"[NET] Despawn request has invalid outside object type '{request.Type}'");

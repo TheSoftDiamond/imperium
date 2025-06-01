@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using BepInEx.Configuration;
 using Imperium.Core.Lifecycle;
+using Imperium.Interface.ImperiumUI.Windows.Preferences;
 using Imperium.Patches.Objects;
 using Imperium.Types;
 using Imperium.Util;
@@ -29,6 +30,7 @@ public class ImpSettings(ConfigFile config)
     internal readonly EventLogSettings EventLog = new(config);
     internal readonly ShipSettings Ship = new(config);
     internal readonly CruiserSettings Cruiser = new(config);
+    internal readonly WaypointSettings Waypoint = new(config);
     internal readonly AnimationSkippingSettings AnimationSkipping = new(config);
     internal readonly VisualizationSettings Visualization = new(config);
     internal readonly RenderSettings Rendering = new(config);
@@ -44,7 +46,7 @@ public class ImpSettings(ConfigFile config)
         internal readonly ImpConfig<bool> Invisibility = new(config, "Player", "Invisibility", false);
         internal readonly ImpConfig<bool> Untargetable = new(config, "Player", "Untargetable", false);
         internal readonly ImpConfig<bool> Muted = new(config, "Player", "Muted", false);
-        internal readonly ImpConfig<bool> PickupOverwrite = new(config, "Player", "PickupOverwrite", false);
+        internal readonly ImpConfig<bool> PickupOverride = new(config, "Player", "PickupOverride", false);
         internal readonly ImpConfig<bool> DisableOOB = new(config, "Player", "DisableOOB", false);
 
         internal readonly ImpConfig<bool> EnableFlying = new(
@@ -52,7 +54,7 @@ public class ImpSettings(ConfigFile config)
             "Player",
             "EnableFlying",
             false,
-            onUpdate: value =>
+            primaryUpdate: value =>
             {
                 if (!value) Imperium.PlayerManager.IsFlying.SetFalse();
             }
@@ -189,6 +191,23 @@ public class ImpSettings(ConfigFile config)
         );
     }
 
+    internal class WaypointSettings(ConfigFile config) : SettingBase(config)
+    {
+        internal readonly ImpConfig<bool> EnableBeacons = new(
+            config,
+            "Waypoints",
+            "EnableBeacons",
+            true
+        );
+
+        internal readonly ImpConfig<bool> EnableOverlay = new(
+            config,
+            "Waypoints",
+            "EnableOverlay",
+            true
+        );
+    }
+
     internal class CruiserSettings(ConfigFile config) : SettingBase(config)
     {
         [ImpAttributes.HostMasterBinding] internal readonly ImpConfig<bool> Indestructible = new(
@@ -218,7 +237,7 @@ public class ImpSettings(ConfigFile config)
             "Game.Cruiser",
             "InstantIgnite",
             false,
-            onUpdate: value =>
+            primaryUpdate: value =>
             {
                 if (value)
                 {
@@ -289,13 +308,6 @@ public class ImpSettings(ConfigFile config)
             "Visualization.Visualizers",
             "SmoothAnimations",
             true
-        );
-
-        internal readonly ImpConfig<bool> RealtimeUpdates = new(
-            config,
-            "Visualization.Visualizers",
-            "RealtimeUpdates",
-            false
         );
 
         internal readonly ImpConfig<bool> SSAlwaysOnTop = new(
@@ -391,6 +403,14 @@ public class ImpSettings(ConfigFile config)
             "MoldAttractionPoints",
             false,
             value => Imperium.Visualization.Point(value, "MoldAttractionPoint", IdentifierType.TAG)
+        );
+
+        internal readonly ImpConfig<bool> LineOfSight = new(
+            config,
+            "Visualization.Colliders",
+            "LineOfSight",
+            false,
+            value => Imperium.Visualization.Collider(value, "LineOfSight", IdentifierType.LAYER)
         );
 
         internal readonly ImpConfig<bool> TileBorders = new(
@@ -877,7 +897,7 @@ public class ImpSettings(ConfigFile config)
             "Rendering.Overlays",
             "PlayerHUD",
             true,
-            value => Imperium.HUDManager.HideHUD(!value)
+            value => PlayerManager.ToggleHUD(!value)
         );
 
         internal readonly ImpConfig<bool> FearFilter = new(
@@ -934,9 +954,9 @@ public class ImpSettings(ConfigFile config)
         internal readonly ImpConfig<bool> GeneralLogging = new(config, "Preferences.General", "GeneralLogging", true);
         internal readonly ImpConfig<bool> OracleLogging = new(config, "Preferences.General", "OracleLogging", false);
         internal readonly ImpConfig<bool> LeftHandedMode = new(config, "Preferences.General", "LeftHandedMode", false);
-        internal readonly ImpConfig<bool> OptimizeLogs = new(config, "Preferences.General", "OptimizeLogsToggle", true);
         internal readonly ImpConfig<bool> CustomWelcome = new(config, "Preferences.General", "CustomWelcome", true);
-        internal readonly ImpConfig<bool> ShowTooltips = new(config, "Preferences.Tooltips", "CustomWelcome", true);
+        internal readonly ImpConfig<bool> ShowTooltips = new(config, "Preferences.General", "Tooltips", true);
+        internal readonly ImpConfig<bool> PlaySounds = new(config, "Preferences.General", "Sounds", true);
 
         internal readonly ImpConfig<string> ImperiumWindowLayout = new(
             config,
@@ -1030,18 +1050,53 @@ public class ImpSettings(ConfigFile config)
             true
         );
 
-        internal readonly ImpConfig<bool> QuickloadSkipStart = new(
+        internal readonly ImpConfig<bool> QuickloadSkipSplash = new(
             config,
             "Preferences.Quickload",
-            "SkipStart",
+            "SkipSplash",
             false,
             allowWhenDisabled: true
         );
 
-        internal readonly ImpConfig<bool> QuickloadSkipMenu = new(config, "Preferences.Quickload", "SkipMenu", false);
-        internal readonly ImpConfig<bool> QuickloadOnQuit = new(config, "Preferences.Quickload", "OnQuit", false);
-        internal readonly ImpConfig<bool> QuickloadCleanFile = new(config, "Preferences.Quickload", "CleanFile", false);
-        internal readonly ImpConfig<int> QuickloadSaveNumber = new(config, "Preferences.Quickload", "SaveFileNumber", 4);
+        internal readonly ImpConfig<bool> QuickloadAutoLaunch = new(
+            config,
+            "Preferences.Quickload",
+            "AutoLaunch",
+            false,
+            allowWhenDisabled: true
+        );
+
+        internal readonly ImpConfig<bool> QuickloadAutoLoad = new(
+            config,
+            "Preferences.Quickload",
+            "AutoLoad",
+            false,
+            allowWhenDisabled: true
+        );
+
+        internal readonly ImpConfig<bool> QuickloadCleanSave = new(
+            config,
+            "Preferences.Quickload",
+            "CleanSave",
+            false,
+            allowWhenDisabled: true
+        );
+
+        internal readonly ImpConfig<int> QuickloadSaveNumber = new(
+            config,
+            "Preferences.Quickload",
+            "SaveNumber",
+            4,
+            allowWhenDisabled: true
+        );
+
+        internal readonly ImpConfig<LaunchMode> QuickloadLaunchMode = new(
+            config,
+            "Preferences.Quickload",
+            "LaunchMode",
+            LaunchMode.Online,
+            allowWhenDisabled: true
+        );
 
         internal readonly ImpConfig<bool> DisableLeFunni = new(
             config,
