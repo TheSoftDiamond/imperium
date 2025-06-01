@@ -1,8 +1,8 @@
-![Imperium Logo](https://github.com/giosuel/imperium/blob/main/assets/imperium_full_beta_alpha.png?raw=true)
+![Imperium Logo](https://github.com/giosuel/imperium/blob/main/assets/imperium_full_alpha.png?raw=true)
 
 # Imperium
 
-Imperium is a powerful and highly performant all-in-one debugging tool to test and explore game mechanics and functionality in Lethal Company.
+Imperium is a powerful all-in-one debugging and admin tool to test and explore game mechanics and functionality in Lethal Company.
 
 Imperium works on the client-side and server-side, meaning it works in singleplayer as well as multiplayer, as long as Imperium is installed on the host.
 
